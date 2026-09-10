@@ -1,0 +1,164 @@
+.raiz {
+  background-color: var(--obs-navy);
+  color: white;
+  border-radius: var(--radius-2xl);
+  margin: 0 16px;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .raiz {
+    margin: 0 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .raiz {
+    margin: 0 32px;
+  }
+}
+
+.inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: grid;
+  gap: 32px;
+  padding: 24px 16px;
+}
+
+@media (min-width: 640px) {
+  .inner {
+    padding: 24px 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    grid-template-columns: repeat(4, 1fr);
+    align-items: center;
+    padding: 40px 16px;
+  }
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+}
+
+@media (min-width: 640px) {
+  .title {
+    font-size: 1.5rem;
+  }
+}
+
+.description {
+  margin-top: 8px;
+  font-size: 0.875rem;
+  color: var(--slate-300);
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--obs-gold);
+  transition: text-decoration var(--transition-fast);
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.linkIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Status Cards ── */
+.statusCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  border-radius: var(--radius-xl);
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 20px;
+}
+
+.iconCircle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+}
+
+.iconBlue {
+  background-color: rgba(30, 79, 217, 0.3);
+}
+
+.girando {
+  animation: giro 1s linear infinite;
+}
+
+@keyframes giro {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.iconInline {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 4px;
+  vertical-align: -2px;
+}
+
+.iconSvg {
+  width: 24px;
+  height: 24px;
+  color: var(--obs-blue);
+}
+
+.iconEmerald {
+  background-color: rgba(52, 211, 153, 0.2);
+}
+
+.iconSvgEmerald {
+  width: 24px;
+  height: 24px;
+  color: #34d399;
+}
+
+.statusLabel {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--slate-300);
+}
+
+.statusValue {
+  margin-top: 2px;
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #34d399;
+}
+
+.statusDesc {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--slate-300);
+}

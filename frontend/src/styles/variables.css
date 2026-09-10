@@ -1,0 +1,121 @@
+:root {
+  /* ============ COLORES BASE ============ */
+  /* Fondo general de la app: gris muy claro/azulado */
+  --color-fondo-general: #eef1f8;
+
+  /* Fondo del sidebar: azul claro/grisáceo */
+  --color-fondo-sidebar: #D6DEF5;
+
+  /* Color primario: azul índigo/rey (botones activos, íconos, paginación) */
+  --color-primario: #5484D6;
+  --color-primario-hover: #4370c0;
+  --color-primario-suave: #dce4f5;
+
+  /* Textos */
+  --color-texto-principal: #1f2432;
+  --color-texto-secundario: #6b7280;
+  --color-texto-terciario: #9ca3af;
+  --color-texto-invertido: #ffffff;
+
+  /* Tarjetas y superficies */
+  --color-tarjeta-fondo: #ffffff;
+  --color-superficie: #ffffff;
+  --color-borde: #e3e6f0;
+  --color-borde-suave: #edf0f7;
+
+  /* Estados */
+  --color-exito: #22c55e;
+  --color-exito-fondo: #dcfce7;
+  --color-advertencia: #f59e0b;
+  --color-advertencia-fondo: #fef3c7;
+  --color-peligro: #ef4444;
+  --color-peligro-fondo: #fee2e2;
+
+  /* Overlays */
+  --color-badge-fondo: rgba(15, 23, 42, 0.55);
+  --color-overlay-oscuro: rgba(17, 24, 39, 0.4);
+
+  /* ============ TIPOGRAFÍA ============ */
+  --fuente-principal: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+
+  --texto-xs: 0.75rem;
+  --texto-sm: 0.875rem;
+  --texto-base: 1rem;
+  --texto-md: 1.125rem;
+  --texto-lg: 1.375rem;
+  --texto-xl: 1.75rem;
+  --texto-2xl: 2rem;
+
+  --peso-regular: 400;
+  --peso-medio: 500;
+  --peso-semibold: 600;
+  --peso-bold: 700;
+  --peso-extrabold: 800;
+
+  /* ============ ESPACIADOS ============ */
+  --espacio-2xs: 4px;
+  --espacio-xs: 8px;
+  --espacio-sm: 12px;
+  --espacio-md: 16px;
+  --espacio-lg: 24px;
+  --espacio-xl: 32px;
+  --espacio-2xl: 48px;
+
+  /* ============ RADIOS DE BORDE ============ */
+  --radio-sm: 8px;
+  --radio-md: 12px;
+  --radio-lg: 16px;
+  --radio-xl: 20px;
+  --radio-pildora: 999px;
+  --radio-circulo: 50%;
+
+  /* ============ SOMBRAS ============ */
+  --sombra-suave: 0 2px 8px rgba(31, 36, 50, 0.06);
+  --sombra-tarjeta: 0 6px 18px rgba(31, 36, 50, 0.08);
+  --sombra-flotante: 0 10px 30px rgba(31, 36, 50, 0.14);
+
+  /* ============ LAYOUT ============ */
+  --ancho-sidebar: 240px;
+  --alto-header: 96px;
+  --transicion-rapida: 0.15s ease;
+  --transicion-media: 0.25s ease;
+
+  /* ============ OBSERVATORIO (portal público) ============ */
+  --obs-navy: #0B1E4D;
+  --obs-blue: #1E4FD9;
+  --obs-bluemed: #2E63E7;
+  --obs-blue-light: #5484D6;
+  --obs-purple: #6C2BD9;
+  --obs-purple2: #9333EA;
+  --obs-gold: #F5A623;
+  --obs-skyLight: #EEF3FC;
+  --obs-footer: #151946;
+  --obs-itm-blue: #4CC5FA;
+
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --shadow-card: 0 10px 30px -10px rgba(11, 30, 77, 0.25);
+  --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 300ms ease;
+
+  --max-width: 1280px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-full: 9999px;
+}

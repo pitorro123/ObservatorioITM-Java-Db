@@ -1,0 +1,187 @@
+/* ── Primera fila: hero + pilares ── */
+.primeraFila {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: grid;
+  gap: 24px;
+  padding: 24px 16px 8px;
+}
+
+@media (min-width: 640px) {
+  .primeraFila {
+    padding: 24px 24px 8px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .primeraFila {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    padding: 24px 32px 8px;
+  }
+}
+
+.heroCard {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  align-self: start;
+  border-radius: var(--radius-2xl);
+  padding: 32px;
+  background: linear-gradient(to bottom right, var(--obs-purple), var(--obs-purple2));
+  color: white;
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition-base);
+}
+
+.heroCard:hover {
+  transform: translateY(-4px);
+}
+
+.heroIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: var(--radius-xl);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.heroIcon {
+  width: 44px;
+  height: 44px;
+  color: white;
+}
+
+.heroContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.heroTitle {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.heroDescription {
+  margin-top: 12px;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+}
+
+.heroBtn {
+  margin-top: 24px;
+  align-self: flex-start;
+}
+
+/* ── Pilares ── */
+.pilaresBox {
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-2xl);
+  background-color: white;
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+}
+
+.pilaresGrid {
+  display: grid;
+}
+
+.pilarCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px 0;
+}
+
+.pilarCard:first-child {
+  padding-top: 0;
+}
+
+.pilarCard:last-child {
+  padding-bottom: 0;
+}
+
+.pilarCard:not(:first-child) {
+  border-top: 1px solid var(--slate-200);
+  padding-top: 20px;
+}
+
+.pilarContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.pilarIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background-color: var(--obs-skyLight);
+}
+
+.pilarIcon {
+  width: 24px;
+  height: 24px;
+  color: var(--obs-purple);
+}
+
+.pilarTitle {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--obs-navy);
+}
+
+.pilarDescription {
+  margin-top: 6px;
+  font-size: 0.875rem;
+  color: var(--slate-600);
+  line-height: 1.5;
+}
+
+/* ── Objetivos del semillero ── */
+.objetivosCard {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--slate-200);
+}
+
+.objetivosTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--obs-navy);
+}
+
+.objetivosList {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.objetivoItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.875rem;
+  color: var(--slate-600);
+  line-height: 1.5;
+}
+
+.objetivoBala {
+  width: 8px;
+  height: 8px;
+  margin-top: 6px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background-color: var(--obs-gold);
+}

@@ -1,0 +1,121 @@
+.pagina {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: var(--radio-xl);
+  padding: var(--espacio-lg);
+  gap: var(--espacio-lg);
+}
+
+.seccionSuperior {
+  background-color: #E8E9ED;
+  border-radius: var(--radio-xl);
+  padding: var(--espacio-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-md);
+}
+
+.contenedorTarjetas {
+  background-color: #E8E9ED;
+  border-radius: var(--radio-xl);
+  padding: var(--espacio-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-lg);
+}
+
+.botonFlotante {
+  position: fixed;
+  bottom: 32px;
+  left: 260px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #5484D6;
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(84, 132, 214, 0.4);
+  transition: background-color var(--transicion-rapida), box-shadow var(--transicion-rapida);
+  z-index: 1000;
+}
+
+.botonFlotante:hover {
+  background-color: #4370c0;
+  box-shadow: 0 6px 16px rgba(84, 132, 214, 0.5);
+}
+
+.botonFlotante:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.botonFlotante:hover .tooltip.tooltipOculto {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-50%) translateY(4px);
+}
+
+.iconoPlus {
+  width: 24px;
+  height: 24px;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background-color: #1e1e2f;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: #1e1e2f transparent transparent transparent;
+}
+
+@media (max-width: 768px) {
+  .botonFlotante {
+    left: 16px;
+  }
+
+  .botonFlotante .tooltip {
+    left: 0;
+    transform: translateY(4px);
+  }
+
+  .botonFlotante:hover .tooltip {
+    transform: translateY(0);
+  }
+
+  .botonFlotante:hover .tooltip.tooltipOculto {
+    transform: translateY(4px);
+  }
+
+  .botonFlotante .tooltip::after {
+    left: 28px;
+  }
+}

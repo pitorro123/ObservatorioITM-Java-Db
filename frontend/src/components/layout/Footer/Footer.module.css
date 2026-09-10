@@ -1,0 +1,155 @@
+.footer {
+  background-color: var(--obs-footer);
+  color: white;
+}
+
+.footerGrid {
+  display: grid;
+  gap: 40px;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 24px 16px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .footerGrid {
+    padding: 24px 24px;
+  }
+}
+
+@media (min-width: 768px) {
+  .footerGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .footerGrid {
+    padding: 24px 32px;
+  }
+}
+
+/* ── Logo footer ── */
+.brand {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.brandImg {
+  height: 64px;
+  width: auto;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.brandText {
+  line-height: 1.25;
+}
+
+.brandTextBlock {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.brandITM {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--obs-itm-blue);
+}
+
+/* ── Contacto ── */
+.contactTitle {
+  margin-bottom: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.contactList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 0.875rem;
+  color: var(--slate-300);
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.contactIcon {
+  height: 16px;
+  width: 16px;
+  flex-shrink: 0;
+  color: white;
+}
+
+.contactLink {
+  transition: color var(--transition-fast);
+}
+
+.contactLink:hover {
+  color: white;
+  text-decoration: underline;
+}
+
+/* ── Redes sociales ── */
+.socialTitle {
+  margin-bottom: 16px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.socialLinks {
+  display: flex;
+  gap: 12px;
+}
+
+.socialLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.socialLink:hover {
+  background-color: var(--obs-gold);
+  color: var(--obs-navy);
+}
+
+/* ── Copyright ── */
+.copyright {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.copyrightText {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 8px 16px;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--slate-400);
+}
+
+@media (min-width: 640px) {
+  .copyrightText {
+    padding: 8px 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .copyrightText {
+    padding: 8px 32px;
+  }
+}

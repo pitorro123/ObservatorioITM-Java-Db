@@ -1,0 +1,344 @@
+.raiz {
+  background-color: var(--slate-50);
+  min-height: 100vh;
+}
+
+.contenedor {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 32px 16px 64px;
+}
+
+@media (min-width: 640px) {
+  .contenedor {
+    padding: 40px 24px 64px;
+  }
+}
+
+.volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--obs-navy);
+  transition: opacity var(--transition-fast);
+}
+
+.volver:hover {
+  opacity: 0.75;
+}
+
+.iconoVolver {
+  width: 18px;
+  height: 18px;
+}
+
+.encabezado {
+  margin: 20px 0 28px;
+}
+
+.titulo {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--obs-navy);
+}
+
+.subtitulo {
+  margin-top: 8px;
+  max-width: 640px;
+  font-size: 0.95rem;
+  color: var(--slate-600);
+}
+
+/* ── Cargando / error ── */
+.cargando {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 56px 16px;
+  color: var(--slate-600);
+}
+
+.girando {
+  width: 32px;
+  height: 32px;
+  color: var(--obs-blue);
+  animation: giro 1s linear infinite;
+}
+
+@keyframes giro {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 40px 16px;
+  text-align: center;
+}
+
+.errorTitulo {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--slate-800);
+}
+
+.errorTexto {
+  color: var(--slate-600);
+}
+
+.botonReintentar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: var(--radius-lg);
+  background-color: var(--obs-navy);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.iconoBoton {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Grid actual ── */
+.gridActual {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .gridActual {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .gridActual {
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+  }
+}
+
+.tarjeta {
+  border-radius: var(--radius-2xl);
+  background-color: white;
+  border: 1px solid var(--slate-200);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.tarjetaPrincipal {
+  background-color: var(--obs-navy);
+  color: white;
+  border: none;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background-color: rgba(250, 204, 21, 0.15);
+  color: var(--obs-gold);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.temperaturaPrincipal {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.iconoTemperatura {
+  width: 32px;
+  height: 32px;
+}
+
+.descripcionClima {
+  margin-top: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.rango {
+  margin-top: 4px;
+  font-size: 0.875rem;
+  color: var(--slate-300);
+}
+
+.ubicacion {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 20px;
+  font-size: 0.8rem;
+  color: var(--slate-300);
+}
+
+.iconoInline {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+}
+
+.iconoTarjeta {
+  width: 28px;
+  height: 28px;
+  color: var(--obs-blue);
+}
+
+.tituloTarjeta {
+  margin-top: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--slate-500);
+}
+
+.valorTarjeta {
+  margin-top: 6px;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--obs-navy);
+}
+
+.textoTarjeta {
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: var(--slate-500);
+}
+
+/* ── Recomendación ── */
+.tarjetaRecomendacion {
+  margin-top: 16px;
+  border-radius: var(--radius-2xl);
+  background: var(--obs-navy);
+  color: white;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .tarjetaRecomendacion {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.recomendacionHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.iconoRecomendacion {
+  width: 28px;
+  height: 28px;
+  color: var(--obs-gold);
+}
+
+.tituloRecomendacion {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--slate-300);
+}
+
+.valorRecomendacion {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--obs-gold);
+}
+
+.textoRecomendacion {
+  font-size: 0.9rem;
+  color: var(--slate-300);
+}
+
+/* ── Pronóstico ── */
+.seccionPronostico {
+  margin-top: 32px;
+}
+
+.tituloPronostico {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--obs-navy);
+  margin-bottom: 16px;
+}
+
+.gridPronostico {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 640px) {
+  .gridPronostico {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .gridPronostico {
+    grid-template-columns: repeat(7, 1fr);
+  }
+}
+
+.tarjetaDia {
+  border-radius: var(--radius-xl);
+  background-color: white;
+  border: 1px solid var(--slate-200);
+  padding: 16px;
+  text-align: center;
+}
+
+.diaNombre {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--slate-500);
+  text-transform: capitalize;
+}
+
+.iconoDia {
+  margin: 10px auto;
+  width: 26px;
+  height: 26px;
+  color: var(--obs-blue);
+}
+
+.diaTemp {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--obs-navy);
+}
+
+.diaLluvia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: var(--slate-600);
+}

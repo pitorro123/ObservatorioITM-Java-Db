@@ -1,0 +1,116 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-overlay-oscuro);
+  padding: var(--espacio-md);
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-sm);
+  border-radius: var(--radio-xl);
+  background-color: var(--color-superficie);
+  padding: var(--espacio-xl);
+  text-align: center;
+  box-shadow: var(--sombra-flotante);
+}
+
+.iconoWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radio-circulo);
+  background-color: var(--color-peligro-fondo);
+}
+
+.icono {
+  width: 28px;
+  height: 28px;
+  color: var(--color-peligro);
+}
+
+.titulo {
+  font-size: var(--texto-md);
+  font-weight: var(--peso-bold);
+  color: var(--color-texto-principal);
+}
+
+.mensaje {
+  font-size: var(--texto-sm);
+  color: var(--color-texto-secundario);
+  line-height: 1.5;
+}
+
+.acciones {
+  display: flex;
+  justify-content: center;
+  gap: var(--espacio-sm);
+  margin-top: var(--espacio-sm);
+  width: 100%;
+}
+
+.botonCancelar {
+  flex: 1;
+  padding: var(--espacio-sm) var(--espacio-lg);
+  border-radius: var(--radio-sm);
+  border: 1px solid var(--color-borde);
+  background-color: transparent;
+  color: var(--color-texto-secundario);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-semibold);
+  transition: background-color var(--transicion-rapida);
+}
+
+.botonCancelar:hover {
+  background-color: var(--color-fondo-general);
+}
+
+.botonConfirmar {
+  flex: 1;
+  padding: var(--espacio-sm) var(--espacio-lg);
+  border-radius: var(--radio-sm);
+  background-color: var(--color-peligro);
+  color: var(--color-texto-invertido);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-semibold);
+  transition: background-color var(--transicion-rapida);
+}
+
+.botonConfirmar:hover {
+  background-color: #dc2626;
+}
+
+.botonCerrar {
+  position: absolute;
+  top: var(--espacio-sm);
+  right: var(--espacio-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radio-circulo);
+  color: var(--color-texto-terciario);
+  transition: background-color var(--transicion-rapida), color var(--transicion-rapida);
+}
+
+.botonCerrar:hover {
+  background-color: var(--color-fondo-general);
+  color: var(--color-texto-principal);
+}
+
+.iconoCerrar {
+  width: 18px;
+  height: 18px;
+}

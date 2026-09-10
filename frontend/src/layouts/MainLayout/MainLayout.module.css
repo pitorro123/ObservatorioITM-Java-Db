@@ -1,0 +1,18 @@
+.contenedor {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.areaContenido {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .areaContenido {
+    padding-top: 56px;
+  }
+}
+
+

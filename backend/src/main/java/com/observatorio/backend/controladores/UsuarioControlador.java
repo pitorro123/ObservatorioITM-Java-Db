@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.observatorio.backend.dtos.usuario.CrearDocenteRequest;
+import com.observatorio.backend.dtos.usuario.CrearDocenteResponse;
 import com.observatorio.backend.dtos.usuario.PerfilRequest;
 import com.observatorio.backend.dtos.usuario.UsuarioResponse;
 import com.observatorio.backend.servicios.SeguridadServicio;
@@ -37,7 +38,7 @@ public class UsuarioControlador {
 	}
 
 	@PostMapping("/docentes")
-	public UsuarioResponse crearDocente(@RequestBody CrearDocenteRequest request) {
+	public CrearDocenteResponse crearDocente(@RequestBody CrearDocenteRequest request) {
 		seguridad.exigirAdministrador();
 		return servicio.crearDocente(request);
 	}

@@ -1,0 +1,411 @@
+.pagina {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: var(--radio-xl);
+  padding: var(--espacio-lg);
+  gap: var(--espacio-lg);
+}
+
+.seccionSuperior {
+  background-color: #e8e9ed;
+  border-radius: var(--radio-xl);
+  padding: var(--espacio-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-md);
+}
+
+.descripcion {
+  font-size: var(--texto-sm);
+  color: var(--color-texto-secundario);
+  max-width: 560px;
+}
+
+.contenedorLista {
+  background-color: #e8e9ed;
+  border-radius: var(--radio-xl);
+  padding: var(--espacio-lg);
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-sm);
+  list-style: none;
+}
+
+.fila {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-sm);
+  background-color: #ffffff;
+  border-radius: var(--radio-lg);
+  padding: var(--espacio-md);
+  box-shadow: var(--sombra-suave);
+}
+
+.avatarDocente {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: var(--radio-circulo);
+  background-color: var(--color-primario-suave);
+  color: var(--color-primario);
+}
+
+.iconoAvatar {
+  width: 22px;
+  height: 22px;
+}
+
+.datosDocente {
+  flex: 1;
+  min-width: 0;
+}
+
+.nombreDocente {
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-bold);
+  color: var(--color-texto-principal);
+}
+
+.correoDocente {
+  margin-top: 2px;
+  font-size: var(--texto-xs);
+  color: var(--color-texto-secundario);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.insignia {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--radio-full);
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semibold);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.insigniaActivo {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.insigniaPendiente {
+  background-color: #fef9c3;
+  color: #a16207;
+}
+
+.insigniaDesactivado {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.acciones {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2xs);
+  flex-shrink: 0;
+}
+
+.botonAccion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radio-md);
+  border: none;
+  background-color: var(--color-primario-suave);
+  color: var(--color-primario);
+  cursor: pointer;
+  transition: background-color var(--transicion-rapida);
+}
+
+.botonAccion:hover {
+  background-color: var(--color-primario);
+  color: var(--color-texto-invertido);
+}
+
+.botonEliminar {
+  background-color: #fee2e2;
+  color: #dc2626;
+}
+
+.botonEliminar:hover {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+.iconoAccion {
+  width: 18px;
+  height: 18px;
+}
+
+.vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 48px 16px;
+  color: var(--color-texto-secundario);
+}
+
+.iconoVacio {
+  width: 40px;
+  height: 40px;
+}
+
+.botonFlotante {
+  position: fixed;
+  bottom: 32px;
+  left: 260px;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radio-circulo);
+  background-color: #5484d6;
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(84, 132, 214, 0.4);
+  transition: background-color var(--transicion-rapida);
+  z-index: 1000;
+}
+
+.botonFlotante:hover {
+  background-color: #4370c0;
+}
+
+.botonFlotante:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.botonFlotante:hover .tooltip.tooltipOculto {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-50%) translateY(4px);
+}
+
+.iconoPlus {
+  width: 24px;
+  height: 24px;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background-color: #1e1e2f;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px;
+  border-style: solid;
+  border-color: #1e1e2f transparent transparent transparent;
+}
+
+@media (max-width: 768px) {
+  .botonFlotante {
+    left: 16px;
+  }
+
+  .botonFlotante .tooltip {
+    left: 0;
+    transform: translateY(4px);
+  }
+
+  .botonFlotante:hover .tooltip {
+    transform: translateY(0);
+  }
+
+  .botonFlotante:hover .tooltip.tooltipOculto {
+    transform: translateY(4px);
+  }
+
+  .botonFlotante .tooltip::after {
+    left: 28px;
+  }
+}
+
+/* ── Modal correo enviado (HU-20) ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+.modalCorreo {
+  width: 100%;
+  max-width: 520px;
+  background-color: #ffffff;
+  border-radius: var(--radio-xl);
+  box-shadow: var(--sombra-fuerte);
+  padding: 28px;
+  text-align: center;
+}
+
+.iconoCorreoWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto;
+  border-radius: var(--radio-circulo);
+  background-color: var(--color-primario-suave);
+  color: var(--color-primario);
+}
+
+.iconoCorreo {
+  width: 28px;
+  height: 28px;
+}
+
+.tituloCorreo {
+  margin-top: 16px;
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-bold);
+  color: var(--color-texto-principal);
+}
+
+.textoCorreo {
+  margin-top: 8px;
+  font-size: var(--texto-sm);
+  color: var(--color-texto-secundario);
+  line-height: 1.5;
+}
+
+.codigo {
+  display: inline-block;
+  padding: 2px 8px;
+  background-color: var(--color-fondo);
+  border-radius: var(--radio-sm);
+  font-weight: var(--peso-bold);
+  color: var(--color-texto-principal);
+}
+
+.enlaceWrap {
+  margin-top: 16px;
+  text-align: left;
+}
+
+.enlaceLabel {
+  display: block;
+  margin-bottom: 6px;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semibold);
+  color: var(--color-texto-secundario);
+}
+
+.enlaceFila {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--radio-md);
+  background-color: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+}
+
+.enlaceCodigo {
+  flex: 1;
+  font-size: var(--texto-xs);
+  color: var(--color-texto-principal);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: break-all;
+}
+
+.botonCopiar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--radio-md);
+  background-color: var(--color-primario-suave);
+  color: var(--color-primario);
+  cursor: pointer;
+  transition: background-color var(--transicion-rapida);
+}
+
+.botonCopiar:hover {
+  background-color: var(--color-primario);
+  color: var(--color-texto-invertido);
+}
+
+.iconoBoton {
+  width: 16px;
+  height: 16px;
+}
+
+.botonEntendido {
+  width: 100%;
+  margin-top: 20px;
+  padding: 11px 16px;
+  border: none;
+  border-radius: var(--radio-md);
+  background-color: var(--color-primario);
+  color: var(--color-texto-invertido);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-semibold);
+  cursor: pointer;
+  transition: background-color var(--transicion-rapida);
+}
+
+.botonEntendido:hover {
+  background-color: #4370c0;
+}
+
+@media (max-width: 640px) {
+  .fila {
+    flex-wrap: wrap;
+  }
+
+  .insignia {
+    order: 3;
+  }
+
+  .acciones {
+    order: 4;
+  }
+}

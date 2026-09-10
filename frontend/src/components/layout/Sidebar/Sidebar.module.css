@@ -1,0 +1,301 @@
+.barraLateral {
+  width: var(--ancho-sidebar);
+  flex-shrink: 0;
+  background-color: var(--color-fondo-sidebar);
+  display: flex;
+  flex-direction: column;
+  padding: var(--espacio-lg) var(--espacio-md);
+  min-height: 100vh;
+}
+
+.encabezadoLogo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--espacio-sm) var(--espacio-xs) var(--espacio-xl);
+}
+
+.logo {
+  width: 100%;
+  max-width: 170px;
+  height: auto;
+}
+
+.botonCerrarMenu {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border: none;
+  border-radius: var(--radio-md);
+  background: none;
+  color: var(--obs-navy);
+  cursor: pointer;
+  transition: background-color var(--transicion-rapida);
+}
+
+.botonCerrarMenu:hover {
+  background-color: rgba(84, 132, 214, 0.15);
+}
+
+.iconoCerrarMenu {
+  width: 22px;
+  height: 22px;
+}
+
+/* ── Barra superior móvil (hamburguesa + logo) ── */
+.barraMovil {
+  display: none;
+}
+
+.overlayMovil {
+  display: none;
+}
+
+.navegacion {
+  flex: 1;
+}
+
+.listaEnlaces {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2xs);
+}
+
+.enlace {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-sm);
+  padding: var(--espacio-sm) var(--espacio-md);
+  border-radius: var(--radio-md);
+  border-left: 3px solid transparent;
+  color: var(--color-texto-secundario);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-semibold);
+  transition: background-color var(--transicion-rapida),
+    color var(--transicion-rapida), border-color var(--transicion-rapida);
+}
+
+.enlace:hover {
+  background-color: rgba(84, 132, 214, 0.1);
+  color: var(--color-primario);
+}
+
+.enlaceActivo {
+  background-color: rgba(255, 255, 255, 0.7);
+  color: var(--color-primario);
+  border-left: 3px solid var(--color-primario);
+  box-shadow: var(--sombra-suave);
+}
+
+.icono {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.botonCerrarSesion {
+  position: fixed;
+  bottom: var(--espacio-lg);
+  left: var(--espacio-md);
+  width: calc(var(--ancho-sidebar) - (var(--espacio-md) * 2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-xs);
+  padding: var(--espacio-sm) var(--espacio-md);
+  border-radius: var(--radio-md);
+  background-color: rgba(255, 255, 255, 0.7);
+  color: var(--color-texto-secundario);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-semibold);
+  box-shadow: none;
+  transition: color var(--transicion-rapida), background-color var(--transicion-rapida);
+}
+
+.botonCerrarSesion:hover {
+  color: var(--color-peligro);
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+@media (max-width: 768px) {
+  .barraMovil {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-sm);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 70;
+    padding: var(--espacio-xs) var(--espacio-sm);
+    background-color: var(--color-fondo-sidebar);
+    border-bottom: 1px solid var(--color-borde);
+    box-shadow: var(--sombra-suave);
+  }
+
+  .accionesMovil {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-sm);
+  }
+
+  .configMovilWrap {
+    position: relative;
+  }
+
+  .botonAccionMovil {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: var(--radio-circulo);
+    background-color: white;
+    color: var(--obs-navy);
+    cursor: pointer;
+    box-shadow: var(--sombra-suave);
+  }
+
+  .iconoAccionMovil {
+    width: 24px;
+    height: 24px;
+  }
+
+  .menuConfigMovil {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 75;
+    min-width: 240px;
+    max-width: calc(100vw - 32px);
+    padding: var(--espacio-xs);
+    border-radius: var(--radio-lg);
+    border: 1px solid var(--color-borde);
+    background-color: #ffffff;
+    box-shadow: var(--sombra-flotante);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .menuEncabezadoMovil {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-sm);
+    padding: var(--espacio-sm);
+    border-radius: var(--radio-md);
+    background-color: var(--color-fondo-general);
+    margin-bottom: 4px;
+  }
+
+  .menuIconoMovil {
+    width: 20px;
+    height: 20px;
+    color: var(--color-primario);
+    flex-shrink: 0;
+  }
+
+  .menuNombreMovil {
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-bold);
+    color: var(--color-texto-principal);
+    white-space: nowrap;
+  }
+
+  .menuCorreoMovil {
+    font-size: var(--texto-xs);
+    color: var(--color-texto-secundario);
+    white-space: nowrap;
+  }
+
+  .menuOpcionMovil {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-sm);
+    padding: var(--espacio-xs) var(--espacio-sm);
+    border: none;
+    border-radius: var(--radio-md);
+    background-color: transparent;
+    color: var(--color-texto-principal);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-semibold);
+    cursor: pointer;
+    text-align: left;
+    transition: background-color var(--transicion-rapida);
+  }
+
+  .menuOpcionMovil:hover {
+    background-color: var(--color-primario-suave);
+    color: var(--color-primario);
+  }
+
+  .menuIconoOpcionMovil {
+    width: 18px;
+    height: 18px;
+    color: var(--color-primario);
+  }
+
+  .botonMenu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: var(--radio-md);
+    background-color: white;
+    color: var(--obs-navy);
+    cursor: pointer;
+    box-shadow: var(--sombra-suave);
+  }
+
+  .iconoMenu {
+    width: 24px;
+    height: 24px;
+  }
+
+  .logoMovil {
+    height: 40px;
+    width: auto;
+  }
+
+  .overlayMovil {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    background-color: var(--color-overlay-oscuro);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--transicion-media), visibility var(--transicion-media);
+  }
+
+  .overlayMovilVisible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .barraLateral {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 90;
+    width: var(--ancho-sidebar);
+    min-height: 0;
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform var(--transicion-media);
+  }
+
+  .barraLateralAbierta {
+    transform: translateX(0);
+  }
+
+  .botonCerrarMenu {
+    display: flex;
+  }
+}

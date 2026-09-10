@@ -1,0 +1,21 @@
+/*
+  La familia "Inter" se carga desde Google Fonts en index.html.
+  Este archivo centraliza la declaración de la fuente principal
+  del proyecto para que toda la app la consuma desde una sola fuente
+  de verdad (var(--fuente-principal), definida en variables.css).
+*/
+
+body {
+  font-family: var(--fuente-principal);
+  font-weight: var(--peso-regular);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--fuente-principal);
+  font-weight: var(--peso-bold);
+}

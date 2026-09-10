@@ -1,0 +1,91 @@
+.raiz {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 12px 16px;
+}
+
+@media (min-width: 640px) {
+  .raiz {
+    padding: 12px 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .raiz {
+    padding: 12px 32px;
+  }
+}
+
+.grid {
+  display: grid;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  border-radius: var(--radius-2xl);
+  padding: 32px;
+  color: white;
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition-base);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.gradientBlue {
+  background: linear-gradient(to bottom right, var(--obs-blue), var(--obs-bluemed));
+}
+
+.gradientPurple {
+  background: linear-gradient(to bottom right, var(--obs-purple), var(--obs-purple2));
+}
+
+.iconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: var(--radius-xl);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.iconSvg {
+  width: 44px;
+  height: 44px;
+  color: white;
+}
+
+.cardContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.cardTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.cardDescription {
+  margin-top: 12px;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+}
+
+.cardBtn {
+  margin-top: 24px;
+  align-self: flex-start;
+}

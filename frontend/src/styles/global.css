@@ -1,0 +1,30 @@
+body {
+  background-color: var(--color-fondo-general);
+  color: var(--color-texto-principal);
+  font-size: var(--texto-base);
+}
+
+/* Foco visible accesible para toda la aplicación */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 2px;
+  border-radius: var(--radio-sm);
+}
+
+/* Scrollbar discreto y consistente con la paleta */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-borde);
+  border-radius: var(--radio-pildora);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-texto-terciario);
+}

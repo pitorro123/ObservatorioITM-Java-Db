@@ -1,0 +1,125 @@
+.raiz {
+  /* no background - white default */
+}
+
+.inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 8px 16px;
+}
+
+@media (min-width: 640px) {
+  .inner {
+    padding: 8px 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    padding: 8px 32px;
+  }
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--obs-blue);
+  transition: text-decoration var(--transition-fast);
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.linkIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Carousel ── */
+.carouselWrap {
+  position: relative;
+  margin-top: 24px;
+}
+
+.carousel {
+  display: flex;
+  gap: 16px;
+  padding: 0 44px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.carouselBtn {
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.carouselImg {
+  height: 224px;
+  width: 288px;
+  display: block;
+  border-radius: var(--radius-xl);
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+@media (min-width: 640px) {
+  .carouselImg {
+    height: 256px;
+    width: 320px;
+  }
+}
+
+.carouselBtn:hover .carouselImg {
+  transform: scale(1.03);
+}
+
+/* ── Nav Buttons ── */
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background-color: white;
+  padding: 8px;
+  box-shadow: var(--shadow-card);
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.navBtn:hover {
+  transform: translateY(-50%) scale(1.05);
+}
+
+.navPrev {
+  left: 0;
+}
+
+.navNext {
+  right: 0;
+}
+
+.navIcon {
+  width: 20px;
+  height: 20px;
+  color: var(--obs-navy);
+}

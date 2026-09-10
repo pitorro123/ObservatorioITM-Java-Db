@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.observatorio.backend.dtos.usuario.CrearDocenteRequest;
+import com.observatorio.backend.dtos.usuario.CrearDocenteResponse;
 import com.observatorio.backend.dtos.usuario.PerfilRequest;
 import com.observatorio.backend.dtos.usuario.UsuarioResponse;
 import com.observatorio.backend.excepciones.ApiException;
@@ -39,7 +40,7 @@ public class UsuarioServicio {
 		return repositorio.findByRol("Docente").stream().map(this::aRespuesta).toList();
 	}
 
-	public UsuarioResponse crearDocente(CrearDocenteRequest request) {
+	public CrearDocenteResponse crearDocente(CrearDocenteRequest request) {
 		String nombre = (request.nombre() == null ? "" : request.nombre()).trim();
 		String correoTexto = (request.correo() == null ? "" : request.correo()).trim();
 
@@ -68,7 +69,8 @@ public class UsuarioServicio {
 		correo.enviarHtml(docente.getCorreo(), "Activa tu cuenta de docente - Observatorio ITM",
 				correo.plantillas().correoActivacionDocente(nombre, enlace, passwordTemporal));
 
-		return aRespuesta(docente);
+		return new CrearDocenteResponse(docente.getId(), docente.getNombre(), docente.getCorreo(),
+				docente.getRol(), docente.getEstado(), passwordTemporal, enlace);
 	}
 
 	public UsuarioResponse editarDocente(Long id, CrearDocenteRequest request) {

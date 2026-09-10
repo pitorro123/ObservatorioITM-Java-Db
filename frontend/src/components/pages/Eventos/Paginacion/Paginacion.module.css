@@ -1,0 +1,61 @@
+.paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--espacio-xs);
+  margin-top: var(--espacio-xl);
+}
+
+.botonFlecha {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radio-circulo);
+  color: var(--color-texto-secundario);
+  transition: background-color var(--transicion-rapida), color var(--transicion-rapida);
+}
+
+.botonFlecha:hover:not(:disabled) {
+  background-color: var(--color-primario-suave);
+  color: var(--color-primario);
+}
+
+.botonFlecha:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.icono {
+  width: 18px;
+  height: 18px;
+}
+
+.numero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radio-circulo);
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-semibold);
+  color: var(--color-texto-secundario);
+  transition: background-color var(--transicion-rapida), color var(--transicion-rapida);
+}
+
+.numero:hover {
+  background-color: var(--color-primario-suave);
+  color: var(--color-primario);
+}
+
+.numeroActivo {
+  background-color: var(--color-primario);
+  color: var(--color-texto-invertido);
+}
+
+.numeroActivo:hover {
+  background-color: var(--color-primario-hover);
+  color: var(--color-texto-invertido);
+}

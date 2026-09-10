@@ -1,0 +1,30 @@
+.cuadricula {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--espacio-lg);
+}
+
+.mensajeVacio {
+  color: var(--color-texto-secundario);
+  font-size: var(--texto-sm);
+  padding: var(--espacio-xl) 0;
+  text-align: center;
+}
+
+@media (max-width: 1200px) {
+  .cuadricula {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .cuadricula {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .cuadricula {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,72 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  border-radius: var(--radius-2xl);
+  background-color: var(--obs-skyLight);
+  padding: 24px;
+}
+
+@media (min-width: 640px) {
+  .card {
+    padding: 32px;
+  }
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--obs-navy);
+}
+
+@media (min-width: 640px) {
+  .title {
+    font-size: 1.875rem;
+  }
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin-top: 32px;
+  padding: 0;
+}
+
+.listItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.iconCircle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background-color: white;
+  box-shadow: var(--shadow-card);
+}
+
+.iconSvg {
+  width: 20px;
+  height: 20px;
+  color: var(--obs-blue);
+}
+
+.itemTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--obs-navy);
+}
+
+.itemDescription {
+  margin-top: 6px;
+  font-size: 0.875rem;
+  color: var(--slate-600);
+  line-height: 1.5;
+}

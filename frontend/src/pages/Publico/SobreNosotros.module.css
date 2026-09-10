@@ -1,0 +1,235 @@
+/* ── Hero: tarjeta izquierda + trayectoria derecha ── */
+.hero {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 24px 16px 8px;
+  display: grid;
+  gap: 24px;
+}
+
+@media (min-width: 640px) {
+  .hero {
+    padding: 24px 24px 8px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    padding: 24px 32px 8px;
+  }
+}
+
+.heroCard {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  border-radius: var(--radius-2xl);
+  padding: 32px;
+  background: linear-gradient(to bottom right, var(--obs-blue), var(--obs-bluemed));
+  color: white;
+  box-shadow: var(--shadow-card);
+  transition: transform var(--transition-base);
+}
+
+.heroCard:hover {
+  transform: translateY(-4px);
+}
+
+.heroIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: var(--radius-xl);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.heroIcon {
+  width: 44px;
+  height: 44px;
+  color: white;
+}
+
+.heroContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.heroTitle {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.heroDescription {
+  margin-top: 12px;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+}
+
+/* ── Content ── */
+.colIzquierda {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.cardsGrid {
+  display: grid;
+  gap: 24px;
+}
+
+@media (min-width: 1024px) {
+  .cardsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.card {
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--slate-200);
+  background-color: white;
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+}
+
+.cardTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--obs-navy);
+}
+
+.cardTitleIcon {
+  width: 22px;
+  height: 22px;
+  color: var(--obs-blue);
+}
+
+.cardDescription {
+  margin-top: 8px;
+  font-size: 0.875rem;
+  color: var(--slate-600);
+  line-height: 1.6;
+}
+
+/* ── Trayectoria ── */
+.trayectoriaBox {
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-2xl);
+  background-color: white;
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+}
+
+.trayectoriaTitle,
+.serviciosTitle {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--obs-navy);
+}
+
+.trayectoriaList {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.trayectoriaItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.9375rem;
+  color: var(--slate-600);
+  line-height: 1.6;
+}
+
+.trayectoriaBala {
+  width: 8px;
+  height: 8px;
+  margin-top: 6px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background-color: var(--obs-gold);
+}
+
+.servicios {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--slate-200);
+}
+
+.serviciosList {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 0.875rem;
+  color: var(--slate-600);
+  line-height: 1.5;
+}
+
+.serviciosList strong {
+  color: var(--obs-navy);
+}
+
+/* ── Banner cierre ── */
+.bannerTelescopios {
+  max-width: var(--max-width);
+  margin: 8px auto 48px;
+  padding: 24px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+@media (min-width: 640px) {
+  .bannerTelescopios {
+    padding: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .bannerTelescopios {
+    padding: 24px 32px;
+  }
+}
+
+.bannerIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background-color: var(--obs-skyLight);
+}
+
+.bannerIcon {
+  width: 24px;
+  height: 24px;
+  color: var(--obs-blue);
+}
+
+.bannerText {
+  max-width: 640px;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--slate-500);
+}
+
+.bannerFuerte {
+  color: var(--obs-blue);
+  font-weight: 600;
+}

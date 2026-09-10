@@ -1,0 +1,49 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  padding: 12px 24px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all var(--transition-base);
+}
+
+.button:hover {
+  transform: translateY(-2px);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+/* ── Variantes ── */
+.primary {
+  background-color: var(--obs-blue-light);
+  color: white;
+  box-shadow: var(--shadow-card);
+}
+
+.primary:hover {
+  background-color: var(--obs-bluemed);
+}
+
+.secondary {
+  background-color: white;
+  color: var(--obs-blue-light);
+  box-shadow: var(--shadow-card);
+}
+
+.secondary:hover {
+  background-color: var(--slate-100);
+}
+
+.ghost {
+  border: 1px solid white;
+  background-color: transparent;
+  color: white;
+}
+
+.ghost:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
