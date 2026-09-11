@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import {
   Plus,
   Pencil,
@@ -83,11 +83,7 @@ const insigniasEstado = {
 };
 
 export default function Docentes() {
-  const { docentes, recargarDocentes, crearDocente, editarDocente, eliminarDocente } = useAuth();
-
-  useEffect(() => {
-    recargarDocentes();
-  }, [recargarDocentes]);
+  const { docentes, crearDocente, editarDocente, eliminarDocente } = useAuth();
 
   const [formularioAbierto, setFormularioAbierto] = useState(false);
   const [docenteEditando, setDocenteEditando] = useState(null);
@@ -119,13 +115,13 @@ export default function Docentes() {
     setFormularioAbierto(true);
   };
 
-  const manejarGuardar = async (datos) => {
+  const manejarGuardar = (datos) => {
     if (docenteEditando) {
-      const resultado = await editarDocente(docenteEditando.id, datos);
+      const resultado = editarDocente(docenteEditando.id, datos);
       if (!resultado.exito) return resultado;
       setNotificacion("Cuenta de docente actualizada correctamente.");
     } else {
-      const resultado = await crearDocente(datos);
+      const resultado = crearDocente(datos);
       if (!resultado.exito) return resultado;
       setNotificacion("Cuenta de docente creada correctamente.");
       setCorreoEnviado(resultado);
@@ -135,14 +131,10 @@ export default function Docentes() {
     return { exito: true };
   };
 
-  const manejarEliminar = async () => {
+  const manejarEliminar = () => {
     if (docenteEliminar) {
-      const resultado = await eliminarDocente(docenteEliminar.id);
-      if (!resultado.exito) {
-        setNotificacion(resultado.error);
-      } else {
-        setNotificacion("Cuenta de docente eliminada correctamente.");
-      }
+      eliminarDocente(docenteEliminar.id);
+      setNotificacion("Cuenta de docente eliminada correctamente.");
     }
     setDocenteEliminar(null);
   };

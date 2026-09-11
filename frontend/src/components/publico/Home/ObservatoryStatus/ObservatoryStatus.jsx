@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Building2, Sparkles, ArrowRight, CloudRain, MapPin, Loader2 } from "lucide-react";
 import { estadoObservatorio } from "../../../../data/observatorio.js";
 import { useClima } from "../../../../hooks/useClima.js";
+import telescopioImg from "../../../../assets/images/observatorio/icons/telescopio.png";
 import styles from "./ObservatoryStatus.module.css";
 
 export default function ObservatoryStatus() {
@@ -17,18 +18,27 @@ export default function ObservatoryStatus() {
     <section className={styles.raiz}>
       <div className={styles.inner}>
         <div className={styles.header}>
-          <h2 className={styles.title}>{estadoObservatorio.titulo}</h2>
-          <p className={styles.description}>
-            {cargando
-              ? "Consultando las condiciones meteorológicas en tiempo real…"
-              : error
-                ? "No pudimos consultar el clima en este momento."
-                : estadoObservatorio.descripcion}
-          </p>
-          <Link to="/clima" className={styles.link}>
-            {estadoObservatorio.linkLabel}
-            <ArrowRight className={styles.linkIcon} aria-hidden="true" />
-          </Link>
+          <span className={styles.iconCircleTelescopio}>
+            <img
+              src={telescopioImg}
+              alt="Telescopio del Observatorio"
+              className={styles.telescopioImg}
+            />
+          </span>
+          <div className={styles.headerText}>
+            <h2 className={styles.title}>{estadoObservatorio.titulo}</h2>
+            <p className={styles.description}>
+              {cargando
+                ? "Consultando las condiciones meteorológicas en tiempo real…"
+                : error
+                  ? "No pudimos consultar el clima en este momento."
+                  : estadoObservatorio.descripcion}
+            </p>
+            <Link to="/clima" className={styles.link}>
+              {estadoObservatorio.linkLabel}
+              <ArrowRight className={styles.linkIcon} aria-hidden="true" />
+            </Link>
+          </div>
         </div>
 
         {cargando ? (

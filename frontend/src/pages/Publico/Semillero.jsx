@@ -1,6 +1,8 @@
 import { GraduationCap, Telescope, BookOpen, Users } from "lucide-react";
 import Button from "../../components/common/Button/Button.jsx";
 import { useContenido } from "../../context/ContenidoContext.jsx";
+import nebulosaImg from "../../assets/images/observatorio/semillero/astronomia-nebulosa.jpg";
+import viaLacteaImg from "../../assets/images/observatorio/semillero/via-lactea-estrellas.jpg";
 import estilos from "./Semillero.module.css";
 
 const pilares = [
@@ -30,18 +32,42 @@ export default function Semillero() {
   return (
     <>
       <section className={estilos.primeraFila}>
-        <article className={estilos.heroCard}>
-          <span className={estilos.heroIconWrap}>
-            <GraduationCap className={estilos.heroIcon} aria-hidden="true" />
-          </span>
-          <div className={estilos.heroContent}>
-            <h1 className={estilos.heroTitle}>{semillero.titulo}</h1>
-            <p className={estilos.heroDescription}>{semillero.descripcion}</p>
-            <Button to="/eventos?tipo=semillero" variant="ghost" className={estilos.heroBtn}>
-              Ver próximas actividades
-            </Button>
+        <div className={estilos.columnaHero}>
+          <article className={estilos.heroCard}>
+            <span className={estilos.heroIconWrap}>
+              <GraduationCap className={estilos.heroIcon} aria-hidden="true" />
+            </span>
+            <div className={estilos.heroContent}>
+              <h1 className={estilos.heroTitle}>{semillero.titulo}</h1>
+              <p className={estilos.heroDescription}>{semillero.descripcion}</p>
+              <Button to="/eventos?tipo=semillero" variant="ghost" className={estilos.heroBtn}>
+                Ver próximas actividades
+              </Button>
+            </div>
+          </article>
+
+          {/* 2 imágenes de astronomía y estrellas debajo de la tarjeta */}
+          <div className={estilos.galeriaHero}>
+            <div className={estilos.imagenWrap}>
+              <img
+                src={nebulosaImg}
+                alt="Nebulosa cósmica del espacio profundo"
+                className={estilos.imagenSemillero}
+                loading="lazy"
+              />
+              <span className={estilos.imagenPie}>Nebulosa y formación estelar</span>
+            </div>
+            <div className={estilos.imagenWrap}>
+              <img
+                src={viaLacteaImg}
+                alt="Cielo nocturno y estrellas de la Vía Láctea"
+                className={estilos.imagenSemillero}
+                loading="lazy"
+              />
+              <span className={estilos.imagenPie}>Cielo nocturno y Vía Láctea</span>
+            </div>
           </div>
-        </article>
+        </div>
 
         <div className={estilos.pilaresBox}>
           <div className={estilos.pilaresGrid}>

@@ -3,7 +3,6 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { KeyRound, CheckCircle2, AlertCircle, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useAuth } from "../../context/AuthContext.jsx";
 import Navbar from "../../components/layout/Navbar/Navbar.jsx";
-import logo from "../../assets/images/observatorio/logo/logo.png";
 import estilos from "./CambiarPassword.module.css";
 
 export default function CambiarPassword() {
@@ -17,7 +16,7 @@ export default function CambiarPassword() {
   const [completado, setCompletado] = useState(false);
   const navegar = useNavigate();
 
-  const manejarEnvio = async (e) => {
+  const manejarEnvio = (e) => {
     e.preventDefault();
     setError("");
 
@@ -30,7 +29,7 @@ export default function CambiarPassword() {
       return;
     }
 
-    const resultado = await establecerPassword(token, password);
+    const resultado = establecerPassword(token, password);
     if (!resultado.exito) {
       setError(resultado.error);
       return;

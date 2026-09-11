@@ -18,6 +18,13 @@
   }
 }
 
+@media (min-width: 1536px) {
+  .raiz {
+    max-width: var(--max-width);
+    margin: 0 auto;
+  }
+}
+
 .inner {
   max-width: var(--max-width);
   margin: 0 auto;
@@ -34,7 +41,7 @@
 
 @media (min-width: 1024px) {
   .inner {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: 1.3fr repeat(3, 1fr);
     align-items: center;
     padding: 40px 16px;
   }
@@ -43,7 +50,31 @@
 /* ── Header ── */
 .header {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.iconCircleTelescopio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+  border-radius: var(--radius-2xl);
+  background-color: var(--obs-navy);
+}
+
+.telescopioImg {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(76, 197, 250, 0.45));
+}
+
+.headerText {
+  flex: 1;
+  min-width: 0;
 }
 
 .title {
@@ -129,7 +160,7 @@
 .iconSvg {
   width: 24px;
   height: 24px;
-  color: var(--obs-blue);
+  color: #4CC5FA;
 }
 
 .iconEmerald {

@@ -1,141 +1,214 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import {
-  obtenerToken,
-  guardarToken,
-  limpiarToken,
-} from "../api/cliente.js";
-import * as api from "../api/servicios.js";
+  leerAlmacenamiento,
+  escribirAlmacenamiento,
+} from "../utils/almacenamiento.js";
 
 const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
-  const [usuarioActual, setUsuarioActual] = useState(null);
-  const [restaurando, setRestaurando] = useState(() => Boolean(obtenerToken()));
-  const [docentes, setDocentes] = useState([]);
+const usuariosIniciales = [
+  {
+    id: 1,
+    nombre: "Administrador",
+    correo: "admin@itm.edu.co",
+    rol: "Administrador",
+    password: "admin123",
+    estado: "Activo",
+    token: null,
+  },
+  {
+    id: 2,
+    nombre: "Juan Camilo",
+    correo: "juan.camilo@itm.edu.co",
+    rol: "Docente",
+    password: "docente123",
+    estado: "Activo",
+    token: null,
+  },
+  {
+    id: 3,
+    nombre: "Laura Gómez",
+    correo: "laura.gomez@itm.edu.co",
+    rol: "Docente",
+    password: "docente123",
+    estado: "Activo",
+    token: null,
+  },
+];
 
-  const recargarDocentes = async () => {
-    try {
-      const lista = await api.listarDocentes();
-      setDocentes(lista);
-    } catch {
-      setDocentes([]);
-    }
-  };
+function generarToken() {
+  return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+}
+
+function generarPasswordTemporal() {
+  return Math.random().toString(36).slice(2, 10);
+}
+
+export function AuthProvider({ children }) {
+  const [usuarios, setUsuarios] = useState(() =>
+    leerAlmacenamiento("itm_usuarios", usuariosIniciales)
+  );
+  const [usuarioIdActual, setUsuarioIdActual] = useState(() =>
+    leerAlmacenamiento("itm_usuario_actual_id", null)
+  );
 
   useEffect(() => {
-    const token = obtenerToken();
-    if (!token) {
-      setRestaurando(false);
-      return;
+    escribirAlmacenamiento("itm_usuarios", usuarios);
+  }, [usuarios]);
+
+  useEffect(() => {
+    escribirAlmacenamiento("itm_usuario_actual_id", usuarioIdActual);
+  }, [usuarioIdActual]);
+
+  const usuarioActual = useMemo(() => {
+    if (usuarioIdActual === null || usuarioIdActual === undefined) return null;
+    return (
+      usuarios.find((usuario) => usuario.id === usuarioIdActual) ?? null
+    );
+  }, [usuarios, usuarioIdActual]);
+
+  const login = (correo, password) => {
+    const usuario = usuarios.find(
+      (u) => u.correo.toLowerCase() === correo.trim().toLowerCase()
+    );
+
+    if (!usuario) {
+      return { exito: false, error: "No existe una cuenta con ese correo." };
     }
 
-    api
-      .obtenerUsuarioActual()
-      .then((usuario) => {
-        setUsuarioActual(usuario);
-        if (usuario.rol === "Administrador") {
-          recargarDocentes();
-        }
-      })
-      .catch(() => {
-        limpiarToken();
-        setUsuarioActual(null);
-      })
-      .finally(() => setRestaurando(false));
-  }, []);
-
-  const login = async (correo, password) => {
-    try {
-      const resultado = await api.iniciarSesion({ correo, password });
-      guardarToken(resultado.token || resultado.loginToken);
-      setUsuarioActual({
-        id: resultado.id,
-        nombre: resultado.nombre,
-        correo: resultado.correo,
-        rol: resultado.rol,
-        estado: resultado.estado,
-      });
-      if (resultado.rol === "Administrador") {
-        recargarDocentes();
-      }
-      return { exito: true };
-    } catch (error) {
-      return { exito: false, error: error.mensaje || "No se pudo iniciar sesión." };
+    if (usuario.estado !== "Activo") {
+      return { exito: false, error: "La cuenta está desactivada. Contacta al administrador." };
     }
+
+    if (!usuario.password) {
+      return {
+        exito: false,
+        error:
+          "Tu contraseña aún no ha sido establecida. Usa el enlace enviado a tu correo para configurarla.",
+      };
+    }
+
+    if (usuario.password !== password) {
+      return { exito: false, error: "Correo o contraseña incorrectos." };
+    }
+
+    setUsuarioIdActual(usuario.id);
+    return { exito: true };
   };
 
   const logout = () => {
-    limpiarToken();
-    setUsuarioActual(null);
-    setDocentes([]);
-    api.cerrarSesion().catch(() => {});
+    setUsuarioIdActual(null);
   };
 
-  const actualizarPerfil = async ({ nombre, correo, nuevaPassword }) => {
-    try {
-      const actualizado = await api.actualizarPerfil({
-        nombre,
-        correo,
-        nuevaPassword: nuevaPassword || null,
-      });
-      setUsuarioActual(actualizado);
-      return { exito: true };
-    } catch (error) {
-      return { exito: false, error: error.mensaje || "No se pudo actualizar el perfil." };
+  const actualizarPerfil = ({ nombre, correo, nuevaPassword }) => {
+    const correoRepetido = usuarios.some(
+      (u) =>
+        u.id !== usuarioActual?.id &&
+        u.correo.toLowerCase() === (correo || "").trim().toLowerCase()
+    );
+    if (correoRepetido) {
+      return { exito: false, error: "Ya existe una cuenta con ese correo electrónico." };
     }
+
+    const cambios = {};
+    if (nombre) cambios.nombre = nombre.trim();
+    if (correo) cambios.correo = correo.trim();
+    if (nuevaPassword) cambios.password = nuevaPassword;
+
+    setUsuarios((prev) =>
+      prev.map((u) => (u.id === usuarioActual?.id ? { ...u, ...cambios } : u))
+    );
+
+    return { exito: true };
   };
 
-  const crearDocente = async ({ nombre, correo }) => {
-    try {
-      const docente = await api.crearDocente({ nombre, correo });
-      await recargarDocentes();
-      return {
-        exito: true,
-        docente,
-        passwordTemporal: docente.passwordTemporal,
-        enlace: docente.enlace,
-      };
-    } catch (error) {
-      return { exito: false, error: error.mensaje || "No se pudo crear el docente." };
+  const docentes = usuarios.filter((usuario) => usuario.rol === "Docente");
+
+  const crearDocente = ({ nombre, correo }) => {
+    const correoRegistrado = usuarios.some(
+      (u) => u.correo.toLowerCase() === correo.trim().toLowerCase()
+    );
+    if (correoRegistrado) {
+      return { exito: false, error: "Ya existe una cuenta con ese correo electrónico." };
     }
+
+    const token = generarToken();
+    const passwordTemporal = generarPasswordTemporal();
+    const nuevoDocente = {
+      id: usuarios.reduce((max, u) => Math.max(max, u.id), 0) + 1,
+      nombre: nombre.trim(),
+      correo: correo.trim(),
+      rol: "Docente",
+      password: null,
+      passwordTemporal,
+      estado: "Pendiente",
+      token,
+    };
+
+    setUsuarios((prev) => [...prev, nuevoDocente]);
+
+    const enlace = `${window.location.origin}/cambiar-password?token=${token}`;
+    return { exito: true, docente: nuevoDocente, enlace };
   };
 
-  const editarDocente = async (id, cambios) => {
-    try {
-      await api.editarDocente(id, cambios);
-      await recargarDocentes();
-      return { exito: true };
-    } catch (error) {
-      return { exito: false, error: error.mensaje || "No se pudo actualizar el docente." };
+  const editarDocente = (id, cambios) => {
+    const correoRepetido = usuarios.some(
+      (u) =>
+        u.id !== id &&
+        u.correo.toLowerCase() === (cambios.correo || "").toLowerCase()
+    );
+    if (correoRepetido) {
+      return { exito: false, error: "Ya existe una cuenta con ese correo electrónico." };
     }
+
+    setUsuarios((prev) =>
+      prev.map((u) => (u.id === id ? { ...u, ...cambios } : u))
+    );
+
+    return { exito: true };
   };
 
-  const eliminarDocente = async (id) => {
-    try {
-      await api.eliminarDocente(id);
-      await recargarDocentes();
-      return { exito: true };
-    } catch (error) {
-      return { exito: false, error: error.mensaje || "No se pudo eliminar el docente." };
-    }
+  const eliminarDocente = (id) => {
+    setUsuarios((prev) => prev.filter((u) => u.id !== id));
   };
 
-  const solicitarRecuperacion = async (correo) => {
-    try {
-      await api.solicitarRecuperacion({ correo });
-      return { exito: true };
-    } catch (error) {
-      return { exito: false, error: error.mensaje || "No se pudo enviar el correo." };
+  const solicitarRecuperacion = (correo) => {
+    const usuario = usuarios.find(
+      (u) => u.correo.toLowerCase() === correo.trim().toLowerCase()
+    );
+
+    if (!usuario) {
+      return { exito: false, error: "No existe una cuenta con ese correo." };
     }
+
+    if (usuario.estado !== "Activo") {
+      return { exito: false, error: "La cuenta está desactivada. Contacta al administrador." };
+    }
+
+    const token = generarToken();
+    setUsuarios((prev) =>
+      prev.map((u) => (u.id === usuario.id ? { ...u, token } : u))
+    );
+
+    const enlace = `${window.location.origin}/cambiar-password?token=${token}`;
+    return { exito: true, enlace, usuario };
   };
 
-  const establecerPassword = async (token, nuevaPassword) => {
-    try {
-      const usuario = await api.cambiarPassword({ token, nuevaPassword });
-      return { exito: true, usuario };
-    } catch (error) {
-      return { exito: false, error: error.mensaje || "El enlace no es válido o ya fue utilizado." };
+  const establecerPassword = (token, nuevaPassword) => {
+    const usuario = usuarios.find((u) => u.token === token);
+    if (!usuario) {
+      return { exito: false, error: "El enlace no es válido o ya fue utilizado." };
     }
+
+    setUsuarios((prev) =>
+      prev.map((u) =>
+        u.id === usuario.id
+          ? { ...u, password: nuevaPassword, token: null, estado: "Activo", passwordTemporal: null }
+          : u
+      )
+    );
+
+    return { exito: true, usuario };
   };
 
   const esAdmin = usuarioActual?.rol === "Administrador";
@@ -143,16 +216,15 @@ export function AuthProvider({ children }) {
   const estaAutenticado = Boolean(usuarioActual);
 
   const value = {
+    usuarios,
     usuarioActual,
     estaAutenticado,
     esAdmin,
     esDocente,
-    restaurando,
     login,
     logout,
     actualizarPerfil,
     docentes,
-    recargarDocentes,
     crearDocente,
     editarDocente,
     eliminarDocente,

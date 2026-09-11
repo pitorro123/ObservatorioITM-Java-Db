@@ -11,7 +11,15 @@ export default function WhyAttend() {
         {porQueAsistir.items.map((item) => (
           <li key={item.id} className={styles.listItem}>
             <span className={styles.iconCircle}>
-              <Icon name={item.icono} className={styles.iconSvg} />
+              {item.imagen ? (
+                <img
+                  src={item.imagen}
+                  alt={item.titulo}
+                  className={styles.iconImg}
+                />
+              ) : (
+                <Icon name={item.icono} className={styles.iconSvg} />
+              )}
             </span>
             <div>
               <p className={styles.itemTitle}>{item.titulo}</p>

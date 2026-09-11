@@ -1,39 +1,85 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import * as api from "../api/servicios.js";
-import { useAuth } from "./AuthContext.jsx";
+import { eventosIniciales } from "../data/eventos.js";
+import {
+  leerAlmacenamiento,
+  escribirAlmacenamiento,
+} from "../utils/almacenamiento.js";
 
 const EventosContext = createContext(null);
 
+function generarCodigoInscripcion() {
+  const sufijo = Math.random().toString(36).slice(2, 8).toUpperCase();
+  return `ITM-${Date.now().toString(36).toUpperCase()}-${sufijo}`;
+}
+
 export function EventosProvider({ children }) {
-  const { estaAutenticado } = useAuth();
-  const [eventos, setEventos] = useState([]);
-  const [inscripciones, setInscripciones] = useState([]);
-  const [feedback, setFeedback] = useState([]);
-
-  const cargarTodos = async () => {
-    try {
-      setEventos(await api.listarEventos());
-    } catch {
-      guardarPublicos();
-    }
-  };
-
-  const guardarPublicos = async () => {
-    try {
-      setEventos(await api.listarEventosPublicados());
-    } catch {
-      setEventos([]);
-    }
-  };
+  const [eventos, setEventos] = useState(() =>
+    leerAlmacenamiento("itm_eventos", eventosIniciales)
+  );
+  const [inscripciones, setInscripciones] = useState(() =>
+    leerAlmacenamiento("itm_inscripciones", [])
+  );
+  const [feedback, setFeedback] = useState(() =>
+    leerAlmacenamiento("itm_feedback", [])
+  );
 
   useEffect(() => {
-    if (estaAutenticado) {
-      cargarTodos();
-    } else {
-      guardarPublicos();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [estaAutenticado]);
+    escribirAlmacenamiento("itm_eventos", eventos);
+  }, [eventos]);
+
+  useEffect(() => {
+    escribirAlmacenamiento("itm_inscripciones", inscripciones);
+  }, [inscripciones]);
+
+  useEffect(() => {
+    escribirAlmacenamiento("itm_feedback", feedback);
+  }, [feedback]);
+
+  const crearEvento = (datos) => {
+    const nuevoId =
+      eventos.reduce((max, evento) => Math.max(max, evento.id), 0) + 1;
+    const evento = {
+      id: nuevoId,
+      titulo: datos.titulo.trim(),
+      descripcion: datos.descripcion.trim(),
+      fecha: datos.fecha,
+      hora: datos.hora,
+      lugar: datos.lugar.trim(),
+      imagen: datos.imagen || "/images/Imagen.png",
+      estado: datos.estado || "borrador",
+      tipo: datos.tipo || "abierto",
+      inscritos: 0,
+      asistentes: 0,
+    };
+    setEventos((prev) => [...prev, evento]);
+    return evento;
+  };
+
+  const editarEvento = (id, cambios) => {
+    setEventos((prev) =>
+      prev.map((evento) => (evento.id === id ? { ...evento, ...cambios } : evento))
+    );
+  };
+
+  const eliminarEvento = (id) => {
+    setEventos((prev) => prev.filter((evento) => evento.id !== id));
+  };
+
+  const publicarEvento = (id) => {
+    setEventos((prev) =>
+      prev.map((evento) =>
+        evento.id === id ? { ...evento, estado: "publicado" } : evento
+      )
+    );
+  };
+
+  const cancelarEvento = (id) => {
+    setEventos((prev) =>
+      prev.map((evento) =>
+        evento.id === id ? { ...evento, estado: "cancelado" } : evento
+      )
+    );
+  };
 
   const eventosPublicados = useMemo(
     () => eventos.filter((evento) => evento.estado === "publicado"),
@@ -41,160 +87,7 @@ export function EventosProvider({ children }) {
   );
 
   const obtenerEvento = (id) =>
-    eventos.find((evento) => evento.id === Number(id)) ?? null;
-
-  const cargarEventoPublico = async (id) => {
-    try {
-      const evento = await api.obtenerEventoPublico(id);
-      setEventos((prev) =>
-        prev.some((e) => e.id === evento.id)
-          ? prev.map((e) => (e.id === evento.id ? evento : e))
-          : [...prev, evento]
-      );
-      return evento;
-    } catch {
-      return null;
-    }
-  };
-
-  const crearEvento = async (datos) => {
-    try {
-      const evento = await api.crearEvento(datos);
-      setEventos((prev) => [...prev, evento]);
-      return { exito: true, evento };
-    } catch (error) {
-      return { exito: false, error: error.mensaje || "No se pudo crear el evento." };
-    }
-  };
-
-  const editarEvento = async (id, cambios) => {
-    try {
-      const evento = await api.editarEvento(id, cambios);
-      setEventos((prev) => prev.map((e) => (e.id === evento.id ? evento : e)));
-      return { exito: true };
-    } catch (error) {
-      return { exito: false, error: error.mensaje || "No se pudo actualizar el evento." };
-    }
-  };
-
-  const eliminarEvento = async (id) => {
-    try {
-      await api.eliminarEvento(id);
-      setEventos((prev) => prev.filter((evento) => evento.id !== id));
-      return { exito: true };
-    } catch (error) {
-      return { exito: false, error: error.mensaje || "No se pudo eliminar el evento." };
-    }
-  };
-
-  const cambiarEstado = async (id, estado, exitoTexto) => {
-    try {
-      const evento = estado === "publicado"
-        ? await api.publicarEvento(id)
-        : await api.cancelarEvento(id);
-      setEventos((prev) => prev.map((e) => (e.id === evento.id ? evento : e)));
-      return { exito: true };
-    } catch (error) {
-      return { exito: false, error: error.mensaje || `No se pudo ${exitoTexto}.` };
-    }
-  };
-
-  const publicarEvento = (id) => cambiarEstado(id, "publicado", "publicar el evento");
-  const cancelarEvento = (id) => cambiarEstado(id, "cancelado", "cancelar el evento");
-
-  const inscribir = async ({ eventoId, nombre, correo, telefono }) => {
-    try {
-      const inscripcion = await api.inscribir({ eventoId, nombre, correo, telefono });
-      setInscripciones((prev) => [inscripcion, ...prev]);
-      setEventos((prev) =>
-        prev.map((evento) =>
-          evento.id === Number(eventoId)
-            ? { ...evento, inscritos: (evento.inscritos || 0) + 1 }
-            : evento
-        )
-      );
-      return { exito: true, inscripcion };
-    } catch (error) {
-      return { exito: false, error: error.mensaje || "No se pudo completar la inscripción." };
-    }
-  };
-
-  const obtenerInscripcion = async (codigo) => {
-    try {
-      const inscripcion = await api.validarInscripcion(codigo);
-      return { exito: true, inscripcion };
-    } catch (error) {
-      return {
-        exito: false,
-        error: error.mensaje || "Código de registro no encontrado.",
-        yaValidado: (error.mensaje || "").includes("ya fue validado"),
-      };
-    }
-  };
-
-  const marcarAsistencia = async (codigo) => {
-    try {
-      const inscripcion = await api.marcarAsistencia({ codigo });
-      setInscripciones((prev) =>
-        prev.map((i) => (i.codigo === inscripcion.codigo ? inscripcion : i))
-      );
-      setEventos((prev) =>
-        prev.map((evento) =>
-          evento.id === inscripcion.eventoId
-            ? { ...evento, asistentes: (evento.asistentes || 0) + 1 }
-            : evento
-        )
-      );
-      return { exito: true, inscripcion };
-    } catch (error) {
-      return { exito: false, error: error.mensaje || "No se pudo registrar la asistencia." };
-    }
-  };
-
-  const cargarInscripcionesEvento = async (eventoId) => {
-    try {
-      const lista = await api.listarInscripcionesEvento(eventoId);
-      setInscripciones((prev) => [
-        ...prev.filter((i) => i.eventoId !== Number(eventoId)),
-        ...lista,
-      ]);
-    } catch {
-      // sin inscripciones o sin permisos
-    }
-  };
-
-  const inscripcionesPorEvento = (eventoId) =>
-    inscripciones.filter((i) => i.eventoId === Number(eventoId));
-
-  const agregarFeedback = async ({ eventoId, nombre, calificacion, comentario }) => {
-    try {
-      const resena = await api.agregarFeedback({
-        eventoId,
-        nombre,
-        calificacion: Number(calificacion),
-        comentario,
-      });
-      setFeedback((prev) => [resena, ...prev]);
-      return { exito: true, resena };
-    } catch (error) {
-      return { exito: false, error: error.mensaje || "No se pudo enviar la opinión." };
-    }
-  };
-
-  const cargarFeedbackEvento = async (eventoId) => {
-    try {
-      const lista = await api.listarFeedbackEvento(eventoId);
-      setFeedback((prev) => [
-        ...prev.filter((f) => f.eventoId !== Number(eventoId)),
-        ...lista,
-      ]);
-    } catch {
-      // sin feedback o sin permisos
-    }
-  };
-
-  const feedbackPorEvento = (eventoId) =>
-    feedback.filter((f) => f.eventoId === Number(eventoId));
+    eventos.find((evento) => evento.id === Number(id));
 
   const conteoPorEstado = useMemo(
     () => ({
@@ -205,24 +98,139 @@ export function EventosProvider({ children }) {
     [eventos]
   );
 
-  const hoy = new Date().toISOString().slice(0, 10);
   const resumenDashboard = useMemo(
     () => ({
-      eventosActivos: eventos.filter((e) => e.estado === "publicado" && e.fecha >= hoy).length,
-      eventosFinalizados: eventos.filter((e) => e.estado === "publicado" && e.fecha < hoy).length,
-      totalInscritos: eventos.reduce((acc, e) => acc + (e.inscritos || 0), 0),
-      totalAsistentes: eventos.reduce((acc, e) => acc + (e.asistentes || 0), 0),
-      proximosEventos: eventos.filter((e) => e.estado === "publicado" && e.fecha >= hoy).length,
+      eventosActivos: eventos.filter(
+        (e) => e.estado === "publicado" && e.fecha >= new Date().toISOString().slice(0, 10)
+      ).length,
+      eventosFinalizados: eventos.filter(
+        (e) => e.estado === "publicado" && e.fecha < new Date().toISOString().slice(0, 10)
+      ).length,
+      totalInscritos: inscripciones.length,
+      totalAsistentes: inscripciones.filter((i) => i.asistencia === "Asistió").length,
+      proximosEventos: eventos.filter(
+        (e) => e.estado === "publicado" && e.fecha >= new Date().toISOString().slice(0, 10)
+      ).length,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [eventos]
+    [eventos, inscripciones]
   );
+
+  const inscribir = ({ eventoId, nombre, correo, telefono }) => {
+    const yaInscrito = inscripciones.some(
+      (i) =>
+        i.eventoId === Number(eventoId) &&
+        i.correo.toLowerCase() === correo.trim().toLowerCase()
+    );
+    if (yaInscrito) {
+      return { exito: false, error: "Ya estás inscrito en este evento con ese correo." };
+    }
+
+    const codigo = generarCodigoInscripcion();
+    const inscripcion = {
+      codigo,
+      eventoId: Number(eventoId),
+      nombre: nombre.trim(),
+      correo: correo.trim(),
+      telefono: telefono.trim(),
+      asistencia: "Pendiente",
+      fechaInscripcion: new Date().toISOString(),
+    };
+
+    setInscripciones((prev) => [...prev, inscripcion]);
+    setEventos((prev) =>
+      prev.map((evento) =>
+        evento.id === Number(eventoId)
+          ? { ...evento, inscritos: (evento.inscritos || 0) + 1 }
+          : evento
+      )
+    );
+
+    return { exito: true, inscripcion };
+  };
+
+  const obtenerInscripcion = (codigo) => {
+    const inscripcion = inscripciones.find(
+      (i) => i.codigo.toLowerCase() === (codigo || "").trim().toLowerCase()
+    );
+    if (!inscripcion) {
+      return { exito: false, error: "Código de registro no encontrado." };
+    }
+    if (inscripcion.asistencia === "Asistió") {
+      return {
+        exito: false,
+        error: "Este código ya fue validado anteriormente.",
+        inscripcion,
+      };
+    }
+    return { exito: true, inscripcion };
+  };
+
+  const marcarAsistencia = (codigo) => {
+    const inscripcion = inscripciones.find(
+      (i) => i.codigo.toLowerCase() === (codigo || "").trim().toLowerCase()
+    );
+    if (!inscripcion) {
+      return { exito: false, error: "Código de registro no encontrado." };
+    }
+    if (inscripcion.asistencia === "Asistió") {
+      return { exito: false, error: "Este código ya fue validado anteriormente." };
+    }
+
+    setInscripciones((prev) =>
+      prev.map((i) =>
+        i.codigo === inscripcion.codigo ? { ...i, asistencia: "Asistió" } : i
+      )
+    );
+    setEventos((prev) =>
+      prev.map((evento) =>
+        evento.id === inscripcion.eventoId
+          ? { ...evento, asistentes: (evento.asistentes || 0) + 1 }
+          : evento
+      )
+    );
+
+    return { exito: true, inscripcion: { ...inscripcion, asistencia: "Asistió" } };
+  };
+
+  const inscripcionesPorEvento = (eventoId) =>
+    inscripciones.filter((i) => i.eventoId === Number(eventoId));
+
+  const agregarFeedback = ({ eventoId, nombre, calificacion, comentario }) => {
+    const nombreLimpio = (nombre || "").trim();
+
+    if (!calificacion || calificacion < 1 || calificacion > 5) {
+      return { exito: false, error: "Selecciona una calificación de 1 a 5 estrellas." };
+    }
+
+    const yaComento = feedback.some(
+      (f) =>
+        f.eventoId === Number(eventoId) &&
+        (f.nombre || "").toLowerCase() === nombreLimpio.toLowerCase()
+    );
+    if (nombreLimpio && yaComento) {
+      return { exito: false, error: "Ya enviaste tu opinión para este evento." };
+    }
+
+    const resena = {
+      id: feedback.reduce((max, f) => Math.max(max, f.id), 0) + 1,
+      eventoId: Number(eventoId),
+      nombre: nombreLimpio || "Anónimo",
+      calificacion: Number(calificacion),
+      comentario: (comentario || "").trim(),
+      fecha: new Date().toISOString(),
+    };
+
+    setFeedback((prev) => [...prev, resena]);
+    return { exito: true, resena };
+  };
+
+  const feedbackPorEvento = (eventoId) =>
+    feedback.filter((f) => f.eventoId === Number(eventoId));
 
   const value = {
     eventos,
     eventosPublicados,
     obtenerEvento,
-    cargarEventoPublico,
     crearEvento,
     editarEvento,
     eliminarEvento,
@@ -234,11 +242,9 @@ export function EventosProvider({ children }) {
     inscribir,
     obtenerInscripcion,
     marcarAsistencia,
-    cargarInscripcionesEvento,
     inscripcionesPorEvento,
     feedback,
     agregarFeedback,
-    cargarFeedbackEvento,
     feedbackPorEvento,
   };
 

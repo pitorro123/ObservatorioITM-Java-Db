@@ -36,26 +36,32 @@
 
 .listItem {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
+  align-items: center;
+  gap: 20px;
 }
 
 .iconCircle {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 64px;
+  height: 64px;
   flex-shrink: 0;
-  border-radius: var(--radius-full);
-  background-color: white;
-  box-shadow: var(--shadow-card);
+  border-radius: var(--radius-xl);
+  background-color: var(--obs-skyLight);
+  box-shadow: none;
 }
 
 .iconSvg {
-  width: 20px;
-  height: 20px;
+  width: 32px;
+  height: 32px;
   color: var(--obs-blue);
+}
+
+.iconImg {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
 }
 
 .itemTitle {

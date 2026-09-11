@@ -3,7 +3,7 @@ import { NavLink, Link } from "react-router-dom";
 import { Menu, UserRound } from "lucide-react";
 import { enlacesNavegacionPublica } from "../../../data/navegacion-publica.js";
 import MobileMenu from "../MobileMenu/MobileMenu.jsx";
-import logo from "../../../assets/images/observatorio/logo/logo.png";
+import logo from "../../../assets/images/observatorio/logo/logo-footer.png";
 import styles from "./Navbar.module.css";
 
 export default function Navbar({ simple = false }) {
@@ -13,6 +13,18 @@ export default function Navbar({ simple = false }) {
     <header className={styles.header}>
       <div className={styles.topBar}>
         <div className={styles.topBarInner}>
+          {!simple && (
+            <button
+              type="button"
+              className={styles.menuToggle}
+              onClick={() => setIsMenuOpen(true)}
+              aria-label="Abrir menú de navegación"
+              aria-expanded={isMenuOpen}
+            >
+              <Menu size={28} aria-hidden="true" />
+            </button>
+          )}
+
           <NavLink
             to="/"
             className={styles.logoLink}
@@ -58,16 +70,6 @@ export default function Navbar({ simple = false }) {
                 </NavLink>
               ))}
             </nav>
-
-            <button
-              type="button"
-              className={styles.menuToggle}
-              onClick={() => setIsMenuOpen(true)}
-              aria-label="Abrir menú de navegación"
-              aria-expanded={isMenuOpen}
-            >
-              <Menu size={28} aria-hidden="true" />
-            </button>
           </div>
         </div>
       )}

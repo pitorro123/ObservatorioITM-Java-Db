@@ -1,76 +1,53 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import * as api from "../api/servicios.js";
+import { contenidoSemillero, contenidoObservatorio } from "../data/observatorio.js";
+import {
+  leerAlmacenamiento,
+  escribirAlmacenamiento,
+} from "../utils/almacenamiento.js";
 
 const ContenidoContext = createContext(null);
 
-const semilleroVacio = { titulo: "", descripcion: "", objetivos: [], comoParticipar: "" };
-const observatorioVacio = {
-  titulo: "",
-  descripcion: "",
-  trayectoria: [],
-  mision: "",
-  vision: "",
-};
-
 export function ContenidoProvider({ children }) {
-  const [semillero, setSemillero] = useState(semilleroVacio);
-  const [observatorio, setObservatorio] = useState(observatorioVacio);
-
-  const cargarContenido = async () => {
-    try {
-      const [s, o] = await Promise.all([api.obtenerSemillero(), api.obtenerObservatorio()]);
-      if (s) setSemillero({ ...semilleroVacio, ...s });
-      if (o) setObservatorio({ ...observatorioVacio, ...o });
-    } catch {
-      // el contenido llega cuando el servidor responda
-    }
-  };
+  const [semillero, setSemillero] = useState(() =>
+    leerAlmacenamiento("itm_semillero", contenidoSemillero)
+  );
+  const [observatorio, setObservatorio] = useState(() =>
+    leerAlmacenamiento("itm_observatorio", contenidoObservatorio)
+  );
 
   useEffect(() => {
-    cargarContenido();
-  }, []);
+    escribirAlmacenamiento("itm_semillero", semillero);
+  }, [semillero]);
 
-  const guardarSemillero = async ({ titulo, descripcion, objetivos, comoParticipar }) => {
-    try {
-      const datos = {
-        titulo: titulo.trim(),
-        descripcion: descripcion.trim(),
-        objetivos: objetivos
-          .split("\n")
-          .map((o) => o.trim())
-          .filter(Boolean),
-        comoParticipar: comoParticipar.trim(),
-      };
-      setSemillero(await api.guardarSemillero(datos));
-      return { exito: true };
-    } catch (error) {
-      return { exito: false, error: error.mensaje || "No se pudo guardar el semillero." };
-    }
+  useEffect(() => {
+    escribirAlmacenamiento("itm_observatorio", observatorio);
+  }, [observatorio]);
+
+  const guardarSemillero = ({ titulo, descripcion, objetivos, comoParticipar }) => {
+    setSemillero({
+      titulo: titulo.trim(),
+      descripcion: descripcion.trim(),
+      objetivos: objetivos
+        .split("\n")
+        .map((o) => o.trim())
+        .filter(Boolean),
+      comoParticipar: comoParticipar.trim(),
+    });
+    return { exito: true };
   };
 
-  const guardarObservatorio = async ({
-    titulo,
-    descripcion,
-    trayectoria,
-    mision,
-    vision,
-  }) => {
-    try {
-      const datos = {
-        titulo: titulo.trim(),
-        descripcion: descripcion.trim(),
-        trayectoria: trayectoria
-          .split("\n")
-          .map((t) => t.trim())
-          .filter(Boolean),
-        mision: mision.trim(),
-        vision: vision.trim(),
-      };
-      setObservatorio(await api.guardarObservatorio(datos));
-      return { exito: true };
-    } catch (error) {
-      return { exito: false, error: error.mensaje || "No se pudo guardar el observatorio." };
-    }
+  const guardarObservatorio = ({ titulo, descripcion, trayectoria, mision, vision }) => {
+    setObservatorio({
+      titulo: titulo.trim(),
+      descripcion: descripcion.trim(),
+      trayectoria: trayectoria
+        .split("\n")
+        .map((t) => t.trim())
+        .filter(Boolean),
+      mision: mision.trim(),
+      vision: vision.trim(),
+    });
+    return { exito: true };
   };
 
   const value = {

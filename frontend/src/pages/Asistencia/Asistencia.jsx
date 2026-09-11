@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   CalendarDays,
   Users,
@@ -18,7 +18,6 @@ export default function Asistencia() {
   const {
     eventos,
     inscripcionesPorEvento,
-    cargarInscripcionesEvento,
     marcarAsistencia,
     obtenerInscripcion,
   } = useEventosContext();
@@ -32,11 +31,6 @@ export default function Asistencia() {
   );
   const [notificacion, setNotificacion] = useState("");
 
-  useEffect(() => {
-    if (eventoId) cargarInscripcionesEvento(eventoId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [eventoId]);
-
   const evento = eventos.find((e) => e.id === Number(eventoId));
   const inscripciones = eventoId ? inscripcionesPorEvento(eventoId) : [];
   const totalInscritos = inscripciones.length;
@@ -44,17 +38,13 @@ export default function Asistencia() {
     (i) => i.asistencia === "Asistió"
   ).length;
 
-  const manejarMarcar = async (codigo) => {
-    const verificar = await obtenerInscripcion(codigo);
-    if (!verificar.exito && verificar.yaValidado) {
+  const manejarMarcar = (codigo) => {
+    const verificar = obtenerInscripcion(codigo);
+    if (!verificar.exito && verificar.error.includes("ya fue")) {
       setNotificacion("Este código ya fue validado anteriormente.");
       return;
     }
-    if (!verificar.exito) {
-      setNotificacion(verificar.error);
-      return;
-    }
-    const resultado = await marcarAsistencia(codigo);
+    const resultado = marcarAsistencia(codigo);
     setNotificacion(
       resultado.exito
         ? `Asistencia registrada para ${resultado.inscripcion.nombre}.`

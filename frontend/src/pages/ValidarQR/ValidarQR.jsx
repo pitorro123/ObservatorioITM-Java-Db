@@ -28,13 +28,12 @@ export default function ValidarQR() {
   const [notificacion, setNotificacion] = useState("");
   const [escanerAbierto, setEscanerAbierto] = useState(false);
 
-  const validarCodigo = async (texto) => {
-    const verificar = await obtenerInscripcion(texto);
+  const validarCodigo = (texto) => {
+    const verificar = obtenerInscripcion(texto);
     if (!verificar.exito) {
       setResultado({
-        inscripcion: verificar.yaValidado ? verificar.inscripcion || null : null,
+        inscripcion: verificar.inscripcion || null,
         error: verificar.error,
-        yaValidado: verificar.yaValidado,
       });
       setTipoResultado("error");
       setNotificacion(verificar.error);
@@ -45,12 +44,13 @@ export default function ValidarQR() {
     setResultado({
       inscripcion: verificar.inscripcion,
       evento,
+      mensaje: verificar.error,
     });
     setTipoResultado("encontrado");
     setCodigo("");
   };
 
-  const manejarValidar = async (e) => {
+  const manejarValidar = (e) => {
     e.preventDefault();
     if (!codigo.trim()) return;
     validarCodigo(codigo.trim());
@@ -61,9 +61,9 @@ export default function ValidarQR() {
     validarCodigo(texto);
   };
 
-  const manejarConfirmar = async () => {
+  const manejarConfirmar = () => {
     if (!resultado) return;
-    const marcado = await marcarAsistencia(resultado.inscripcion.codigo);
+    const marcado = marcarAsistencia(resultado.inscripcion.codigo);
     if (!marcado.exito) {
       setNotificacion(marcado.error);
       setTipoResultado("error");
@@ -193,14 +193,14 @@ export default function ValidarQR() {
 
         {tipoResultado === "error" && (
           <div className={estilos.error} role="alert">
-            {resultado?.yaValidado ? (
+            {resultado?.inscripcion ? (
               <AlertTriangle className={estilos.iconoError} aria-hidden="true" />
             ) : (
               <XCircle className={estilos.iconoError} aria-hidden="true" />
             )}
             <div>
               <h2 className={estilos.tituloError}>
-                {resultado?.yaValidado
+                {resultado?.inscripcion
                   ? "Este código ya fue validado"
                   : "Código no válido"}
               </h2>

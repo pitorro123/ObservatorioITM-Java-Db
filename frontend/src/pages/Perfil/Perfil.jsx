@@ -28,7 +28,7 @@ export default function Perfil() {
     if (error) setError("");
   };
 
-  const manejarEnvio = async (e) => {
+  const manejarEnvio = (e) => {
     e.preventDefault();
 
     const nombre = datos.nombre.trim();
@@ -54,7 +54,7 @@ export default function Perfil() {
       }
     }
 
-    const resultado = await actualizarPerfil({
+    const resultado = actualizarPerfil({
       nombre,
       correo,
       nuevaPassword: datos.nuevaPassword || null,

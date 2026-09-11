@@ -1,5 +1,4 @@
 import { Star, MessageSquareHeart, CalendarDays } from "lucide-react";
-import { useEffect } from "react";
 import Header from "../../components/layout/Header/Header.jsx";
 import { useEventosContext } from "../../context/EventosContext.jsx";
 import { formatearFecha } from "../../utils/formato.js";
@@ -68,12 +67,7 @@ function TarjetaEventoFeedback({ evento, reseñas }) {
 }
 
 export default function Feedback() {
-  const { eventos, cargarFeedbackEvento, feedbackPorEvento } = useEventosContext();
-
-  useEffect(() => {
-    eventos.forEach((evento) => cargarFeedbackEvento(evento.id));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [eventos]);
+  const { eventos, feedbackPorEvento } = useEventosContext();
 
   const eventosConFeedback = eventos.filter(
     (evento) => feedbackPorEvento(evento.id).length > 0

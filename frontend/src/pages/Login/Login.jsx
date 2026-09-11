@@ -18,10 +18,9 @@ export default function Login() {
     return <Navigate to="/admin/dashboard" replace />;
   }
 
-  const manejarEnvio = async (e) => {
+  const manejarEnvio = (e) => {
     e.preventDefault();
-    setError("");
-    const resultado = await login(correo, password);
+    const resultado = login(correo, password);
     if (resultado.exito) {
       const destino = ubicacion.state?.desde || "/admin/dashboard";
       navegar(destino, { replace: true });
@@ -114,14 +113,14 @@ export default function Login() {
         <div className={estilos.aviso}>
           <Info className={estilos.iconoInfo} aria-hidden="true" />
           <div>
-            <p className={estilos.avisoTitulo}>Primera cuenta</p>
+            <p className={estilos.avisoTitulo}>Cuentas de demostración</p>
             <p className={estilos.avisoTexto}>
-              Administrador inicial: <strong>admin@itm.edu.co</strong> ·{" "}
+              Administrador: <strong>admin@itm.edu.co</strong> ·{" "}
               <strong>admin123</strong>
             </p>
             <p className={estilos.avisoTexto}>
-              Las cuentas de docentes se crean desde el panel de administración y
-              reciben su enlace por correo.
+              Docente: <strong>juan.camilo@itm.edu.co</strong> ·{" "}
+              <strong>docente123</strong>
             </p>
           </div>
         </div>

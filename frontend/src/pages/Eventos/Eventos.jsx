@@ -58,57 +58,36 @@ export default function Eventos() {
     setFormularioAbierto(true);
   };
 
-  const manejarGuardar = async (datos) => {
+  const manejarGuardar = (datos) => {
     if (eventoEditando) {
-      const resultado = await editarEvento(eventoEditando.id, datos);
-      if (!resultado.exito) {
-        setNotificacion(resultado.error);
-        return resultado;
-      }
+      editarEvento(eventoEditando.id, datos);
       setNotificacion("Evento actualizado correctamente.");
     } else {
-      const resultado = await crearEvento(datos);
-      if (!resultado.exito) {
-        setNotificacion(resultado.error);
-        return resultado;
-      }
+      crearEvento(datos);
       setNotificacion("Evento creado correctamente.");
       setPaginaActual(1);
     }
     setFormularioAbierto(false);
     setEventoEditando(null);
-    return { exito: true };
   };
 
-  const manejarEliminar = async () => {
+  const manejarEliminar = () => {
     if (eventoEliminar) {
-      const resultado = await eliminarEvento(eventoEliminar.id);
-      setNotificacion(
-        resultado.exito
-          ? "Evento eliminado correctamente."
-          : resultado.error
-      );
+      eliminarEvento(eventoEliminar.id);
+      setNotificacion("Evento eliminado correctamente.");
     }
     setEventoEliminar(null);
   };
 
-  const manejarPublicar = async (evento) => {
-    const resultado = await publicarEvento(evento.id);
-    setNotificacion(
-      resultado.exito
-        ? `"${evento.titulo}" publicado en el portal.`
-        : resultado.error
-    );
+  const manejarPublicar = (evento) => {
+    publicarEvento(evento.id);
+    setNotificacion(`"${evento.titulo}" publicado en el portal.`);
   };
 
-  const manejarCancelar = async () => {
+  const manejarCancelar = () => {
     if (eventoCancelar) {
-      const resultado = await cancelarEvento(eventoCancelar.id);
-      setNotificacion(
-        resultado.exito
-          ? `"${eventoCancelar.titulo}" cancelado.`
-          : resultado.error
-      );
+      cancelarEvento(eventoCancelar.id);
+      setNotificacion(`"${eventoCancelar.titulo}" cancelado.`);
     }
     setEventoCancelar(null);
   };

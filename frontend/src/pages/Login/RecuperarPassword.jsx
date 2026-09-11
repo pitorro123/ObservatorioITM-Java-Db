@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, MailCheck, AlertCircle, ArrowLeft } from "lucide-react";
+import { Mail, MailCheck, AlertCircle, ArrowLeft, ExternalLink } from "lucide-react";
 import { useAuth } from "../../context/AuthContext.jsx";
 import Navbar from "../../components/layout/Navbar/Navbar.jsx";
 import estilos from "./RecuperarPassword.module.css";
@@ -9,10 +9,10 @@ export default function RecuperarPassword() {
   const { solicitarRecuperacion } = useAuth();
   const [correo, setCorreo] = useState("");
   const [error, setError] = useState("");
-  const [enviado, setEnviado] = useState(false);
+  const [enviado, setEnviado] = useState(null);
   const navegar = useNavigate();
 
-  const manejarEnvio = async (e) => {
+  const manejarEnvio = (e) => {
     e.preventDefault();
     setError("");
 
@@ -22,13 +22,13 @@ export default function RecuperarPassword() {
       return;
     }
 
-    const resultado = await solicitarRecuperacion(correo);
+    const resultado = solicitarRecuperacion(correo);
     if (!resultado.exito) {
       setError(resultado.error);
       return;
     }
 
-    setEnviado(true);
+    setEnviado(resultado);
   };
 
   return (
@@ -49,6 +49,26 @@ export default function RecuperarPassword() {
                 Si existe una cuenta con <strong>{correo.trim()}</strong>, te enviamos un
                 mensaje con las instrucciones para restablecer tu contraseña.
               </p>
+
+              <div className={estilos.demo}>
+                <p className={estilos.demoTitulo}>
+                  Modo demostración (sin envío real de correo)
+                </p>
+                <p className={estilos.demoTexto}>
+                  En esta demo el enlace se muestra aquí para que puedas continuar:
+                </p>
+                <a
+                  href={enviado.enlace}
+                  className={estilos.demoEnlace}
+                  onClick={(evento) => {
+                    evento.preventDefault();
+                    navegar(enviado.enlace.replace(window.location.origin, ""));
+                  }}
+                >
+                  <ExternalLink className={estilos.iconoDemo} aria-hidden="true" />
+                  Abrir enlace de recuperación
+                </a>
+              </div>
 
               <button
                 type="button"

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Save, Rocket, GraduationCap, Building2, Info } from "lucide-react";
 import Header from "../../components/layout/Header/Header.jsx";
 import Notificacion from "../../components/pages/Eventos/Notificacion/Notificacion.jsx";
@@ -15,29 +15,14 @@ function SeccionSemillero({ onNotificar }) {
     comoParticipar: semillero.comoParticipar,
   });
 
-  useEffect(() => {
-    if (semillero?.titulo) {
-      setFormulario({
-        titulo: semillero.titulo,
-        descripcion: semillero.descripcion,
-        objetivos: semillero.objetivos.join("\n"),
-        comoParticipar: semillero.comoParticipar,
-      });
-    }
-  }, [semillero]);
-
   const manejarCambio = (campo) => (e) => {
     setFormulario((prev) => ({ ...prev, [campo]: e.target.value }));
   };
 
-  const manejarGuardar = async (e) => {
+  const manejarGuardar = (e) => {
     e.preventDefault();
-    const resultado = await guardarSemillero(formulario);
-    onNotificar(
-      resultado.exito
-        ? "Información del semillero actualizada correctamente."
-        : resultado.error
-    );
+    guardarSemillero(formulario);
+    onNotificar("Información del semillero actualizada correctamente.");
   };
 
   return (
@@ -112,30 +97,14 @@ function SeccionObservatorio({ onNotificar }) {
     vision: observatorio.vision,
   });
 
-  useEffect(() => {
-    if (observatorio?.titulo) {
-      setFormulario({
-        titulo: observatorio.titulo,
-        descripcion: observatorio.descripcion,
-        trayectoria: observatorio.trayectoria.join("\n"),
-        mision: observatorio.mision,
-        vision: observatorio.vision,
-      });
-    }
-  }, [observatorio]);
-
   const manejarCambio = (campo) => (e) => {
     setFormulario((prev) => ({ ...prev, [campo]: e.target.value }));
   };
 
-  const manejarGuardar = async (e) => {
+  const manejarGuardar = (e) => {
     e.preventDefault();
-    const resultado = await guardarObservatorio(formulario);
-    onNotificar(
-      resultado.exito
-        ? "Información del observatorio actualizada correctamente."
-        : resultado.error
-    );
+    guardarObservatorio(formulario);
+    onNotificar("Información del observatorio actualizada correctamente.");
   };
 
   return (

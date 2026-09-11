@@ -1,4 +1,4 @@
-import { Telescope, Presentation, Users, GraduationCap } from "lucide-react";
+import { Telescope, Presentation, Users, GraduationCap, Building2 } from "lucide-react";
 import styles from "./Icon.module.css";
 
 const iconos = {
@@ -6,6 +6,7 @@ const iconos = {
   Presentation,
   Users,
   GraduationCap,
+  Building2,
 };
 
 export default function Icon({

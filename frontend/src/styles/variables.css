@@ -90,6 +90,7 @@
   --obs-gold: #F5A623;
   --obs-skyLight: #EEF3FC;
   --obs-footer: #151946;
+  --obs-header: #151946;
   --obs-itm-blue: #4CC5FA;
 
   --slate-50: #f8fafc;
@@ -118,4 +119,49 @@
   --radius-xl: 16px;
   --radius-2xl: 20px;
   --radius-full: 9999px;
+}
+
+@media (min-width: 1440px) {
+  :root {
+    --max-width: 1400px;
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --max-width: 1680px;
+  }
+}
+
+@media (min-width: 2400px) {
+  :root {
+    --max-width: 2100px;
+  }
+}
+
+@media (min-width: 2800px) {
+  :root {
+    --max-width: 2500px;
+  }
+}
+
+/* ── Zoom 50% (~3600px - 4800px) ── */
+@media (min-width: 3600px) {
+  :root {
+    --max-width: 3400px;
+  }
+}
+
+/* ── Zoom 33% (~5000px+) ── */
+@media (min-width: 5000px) {
+  :root {
+    --max-width: 4800px;
+  }
+}
+
+/* ── Zoom 25% / 8K (~6800px+) ── */
+@media (min-width: 6800px) {
+  :root {
+    --max-width: 6200px;
+  }
 }
