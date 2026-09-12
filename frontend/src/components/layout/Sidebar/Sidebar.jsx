@@ -4,10 +4,8 @@ import {
   LayoutGrid,
   CalendarDays,
   ClipboardCheck,
-  QrCode,
+  KeyRound,
   GraduationCap,
-  FileEdit,
-  Grid3x3,
   LogOut,
   Menu,
   X,
@@ -23,10 +21,8 @@ const mapaIconos = {
   LayoutGrid: LayoutGrid,
   CalendarDays: CalendarDays,
   ClipboardCheck: ClipboardCheck,
-  QrCode: QrCode,
+  KeyRound: KeyRound,
   GraduationCap: GraduationCap,
-  FileEdit: FileEdit,
-  Grid3x3: Grid3x3,
 };
 
 export default function Sidebar() {

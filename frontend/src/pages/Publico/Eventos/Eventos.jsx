@@ -7,15 +7,17 @@ import {
   Calendar,
   RotateCcw,
   ChevronDown,
+  Users,
 } from "lucide-react";
 import Button from "../../../components/common/Button/Button.jsx";
 import BuscadorSelect from "../../../components/common/BuscadorSelect/BuscadorSelect.jsx";
+import ModalEventoCancelado from "../../../components/common/ModalEventoCancelado/ModalEventoCancelado.jsx";
 import { useEventosContext } from "../../../context/EventosContext.jsx";
 import { formatearFecha, formatearHora } from "../../../utils/formato.js";
 import estilos from "./Eventos.module.css";
 
 /* ── Carrusel Continuo de Eventos (Movimiento de Izquierda a Derecha) ── */
-function CarruselSuperior({ eventos }) {
+function CarruselSuperior({ eventos, onAbrirCancelado }) {
   const eventosCarrusel = useMemo(() => {
     return eventos.filter((e) => e.imagen && e.estado !== "borrador");
   }, [eventos]);
@@ -41,6 +43,12 @@ function CarruselSuperior({ eventos }) {
           <Link
             key={`${evento.id}-${index}`}
             to={`/eventos/${evento.id}`}
+            onClick={(e) => {
+              if (evento.estado === "cancelado") {
+                e.preventDefault();
+                onAbrirCancelado?.(evento);
+              }
+            }}
             className={estilos.carruselCard}
             title={`Ver detalles de ${evento.titulo}`}
           >
@@ -63,13 +71,15 @@ function CarruselSuperior({ eventos }) {
                 {evento.estado === "publicado" ? "Publicado" : "Cancelado"}
               </span>
               <span
-                className={
-                  evento.tipo === "semillero"
-                    ? estilos.badgeSemillero
-                    : estilos.badgeAbierto
-                }
+                className={`${estilos.badgeTipo} ${
+                  estilos[`badgeTipo_${evento.tipo}`] || estilos.badgeTipo_abierto
+                }`}
               >
-                {evento.tipo === "semillero" ? "Semillero" : "Abierto"}
+                {evento.tipo === "charla"
+                  ? "Charla"
+                  : evento.tipo === "observacion"
+                    ? "Observación"
+                    : "Abierto al público"}
               </span>
             </div>
 
@@ -110,6 +120,7 @@ export default function Eventos() {
   const [fechaSeleccionada, setFechaSeleccionada] = useState(
     searchParams.get("fecha") || ""
   );
+  const [eventoCanceladoModal, setEventoCanceladoModal] = useState(null);
 
   // Sincronizar parámetros con la URL
   const actualizarParams = (eventoId, tipo, estado, fecha) => {
@@ -197,7 +208,10 @@ export default function Eventos() {
   return (
     <section className={estilos.raiz}>
       {/* 1. Carrusel continuo de fotos de eventos (movimiento de izquierda a derecha) */}
-      <CarruselSuperior eventos={eventos} />
+      <CarruselSuperior
+        eventos={eventos}
+        onAbrirCancelado={(ev) => setEventoCanceladoModal(ev)}
+      />
 
       {/* 2. Encabezado de la sección */}
       <div className={estilos.headerSeccion}>
@@ -234,8 +248,9 @@ export default function Eventos() {
               onChange={(e) => cambiarTipo(e.target.value)}
             >
               <option value="todos">Todos los tipos</option>
-              <option value="semillero">Semillero</option>
-              <option value="abierto">Abiertos a la comunidad</option>
+              <option value="abierto">Abierto al público</option>
+              <option value="charla">Charla</option>
+              <option value="observacion">Observación</option>
             </select>
             <ChevronDown className={estilos.selectChevron} aria-hidden="true" />
           </div>
@@ -344,13 +359,15 @@ export default function Eventos() {
                           : "Borrador"}
                     </span>
                     <span
-                      className={
-                        evento.tipo === "semillero"
-                          ? estilos.badgeSemillero
-                          : estilos.badgeAbierto
-                      }
+                      className={`${estilos.badgeTipo} ${
+                        estilos[`badgeTipo_${evento.tipo}`] || estilos.badgeTipo_abierto
+                      }`}
                     >
-                      {evento.tipo === "semillero" ? "Semillero" : "Abierto"}
+                      {evento.tipo === "charla"
+                        ? "Charla"
+                        : evento.tipo === "observacion"
+                          ? "Observación"
+                          : "Abierto al público"}
                     </span>
                   </div>
                 </div>
@@ -376,14 +393,21 @@ export default function Eventos() {
                           : "Borrador"}
                     </span>
                     <span
-                      className={
-                        evento.tipo === "semillero"
-                          ? estilos.badgeSemillero
-                          : estilos.badgeAbierto
-                      }
+                      className={`${estilos.badgeTipo} ${
+                        estilos[`badgeTipo_${evento.tipo}`] || estilos.badgeTipo_abierto
+                      }`}
                     >
-                      {evento.tipo === "semillero" ? "Semillero" : "Abierto"}
+                      {evento.tipo === "charla"
+                        ? "Charla"
+                        : evento.tipo === "observacion"
+                          ? "Observación"
+                          : "Abierto al público"}
                     </span>
+                    {evento.esMasivo && (
+                      <span className={estilos.badgeMasivo}>
+                        Aforo libre
+                      </span>
+                    )}
                   </div>
                 )}
 
@@ -403,20 +427,43 @@ export default function Eventos() {
                     <MapPin className={estilos.metaIcon} aria-hidden="true" />
                     {evento.lugar}
                   </li>
+                  {!evento.esMasivo && (evento.inscritos || 0) >= (evento.capacidad || 50) && (
+                    <li className={`${estilos.metaItem} ${estilos.metaItemAgotado}`}>
+                      <Users className={estilos.metaIcon} aria-hidden="true" />
+                      No hay cupos disponibles
+                    </li>
+                  )}
                 </ul>
 
-                <Button
-                  to={`/eventos/${evento.id}`}
-                  variant="primary"
-                  className={estilos.cardBtn}
-                >
-                  Ver detalle
-                </Button>
+                {evento.estado === "cancelado" ? (
+                  <Button
+                    onClick={() => setEventoCanceladoModal(evento)}
+                    variant="primary"
+                    className={estilos.cardBtn}
+                  >
+                    Ver detalle
+                  </Button>
+                ) : (
+                  <Button
+                    to={`/eventos/${evento.id}`}
+                    variant="primary"
+                    className={estilos.cardBtn}
+                  >
+                    Ver detalle
+                  </Button>
+                )}
               </div>
             </article>
           ))}
         </div>
       )}
+
+      <ModalEventoCancelado
+        abierto={Boolean(eventoCanceladoModal)}
+        onCerrar={() => setEventoCanceladoModal(null)}
+        tituloEvento={eventoCanceladoModal?.titulo}
+        motivo={eventoCanceladoModal?.motivoCancelacion || "clima"}
+      />
     </section>
   );
 }

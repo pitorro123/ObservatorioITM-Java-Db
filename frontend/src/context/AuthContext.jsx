@@ -168,6 +168,13 @@ export function AuthProvider({ children }) {
     return { exito: true };
   };
 
+  const cambiarEstadoDocente = (id, nuevoEstado) => {
+    setUsuarios((prev) =>
+      prev.map((u) => (u.id === id ? { ...u, estado: nuevoEstado } : u))
+    );
+    return { exito: true };
+  };
+
   const eliminarDocente = (id) => {
     setUsuarios((prev) => prev.filter((u) => u.id !== id));
   };
@@ -213,7 +220,9 @@ export function AuthProvider({ children }) {
 
   const esAdmin = usuarioActual?.rol === "Administrador";
   const esDocente = usuarioActual?.rol === "Docente";
-  const estaAutenticado = Boolean(usuarioActual);
+  const estaAutenticado = Boolean(
+    usuarioActual && usuarioActual.estado !== "Desactivado"
+  );
 
   const value = {
     usuarios,
@@ -227,6 +236,7 @@ export function AuthProvider({ children }) {
     docentes,
     crearDocente,
     editarDocente,
+    cambiarEstadoDocente,
     eliminarDocente,
     solicitarRecuperacion,
     establecerPassword,

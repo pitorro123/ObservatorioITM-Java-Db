@@ -1,6 +1,7 @@
-import { CalendarDays, CalendarCheck, Users, UserCheck } from "lucide-react";
+import { CalendarDays, CalendarCheck, Users, UserCheck, CloudRain } from "lucide-react";
 import Header from "../../components/layout/Header/Header.jsx";
 import { useEventosContext } from "../../context/EventosContext.jsx";
+import { useClima } from "../../hooks/useClima.js";
 import estilos from "./Dashboard.module.css";
 
 const HOY = new Date().toISOString().slice(0, 10);
@@ -20,6 +21,8 @@ const tarjetasResumen = [
 
 export default function Dashboard() {
   const { eventos, resumenDashboard } = useEventosContext();
+  const { estado: estadoClima } = useClima();
+  const esDesfavorable = estadoClima?.observatorio?.esDesfavorable;
 
   const eventosOrdenados = [...eventos].sort((a, b) => a.fecha.localeCompare(b.fecha));
 
@@ -36,6 +39,16 @@ export default function Dashboard() {
             comunidad.
           </p>
         </div>
+
+        {esDesfavorable && (
+          <div className={estilos.bannerAvisoClima} role="alert">
+            <CloudRain className={estilos.bannerIcono} aria-hidden="true" />
+            <div className={estilos.bannerTexto}>
+              <strong>Aviso meteorológico:</strong> Clima no favorable.{" "}
+              <strong>Directriz ITM:</strong> no canceles el evento, trasládalo a aula o auditorio bajo techo.
+            </div>
+          </div>
+        )}
 
         <div className={estilos.grillaResumen}>
           {tarjetasResumen.map((tarjeta) => {
@@ -68,6 +81,7 @@ export default function Dashboard() {
                 <thead>
                   <tr>
                     <th>Evento</th>
+                    <th>Docente</th>
                     <th>Estado</th>
                     <th>Inscritos</th>
                     <th>Asistentes</th>
@@ -83,6 +97,17 @@ export default function Dashboard() {
                         <td>
                           <p className={estilos.nombreEvento}>{evento.titulo}</p>
                           <p className={estilos.fechaEvento}>{evento.fecha}</p>
+                          {evento.esMasivo && (
+                            <span className={estilos.badgeMasivoEvento}>Aforo libre</span>
+                          )}
+                          {esDesfavorable && evento.tipo === "observacion" && evento.estado === "publicado" && (
+                            <span className={estilos.badgeClimaEvento}>Modalidad en sala</span>
+                          )}
+                        </td>
+                        <td>
+                          <span className={estilos.docenteTexto}>
+                            {evento.creadoPorNombre || "Docente ITM"}
+                          </span>
                         </td>
                         <td>
                           <span

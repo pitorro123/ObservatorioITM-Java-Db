@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Settings, User, UserRoundPen } from "lucide-react";
+import { Settings, User, UserRoundPen, CloudRain } from "lucide-react";
 import estilos from "./Header.module.css";
 import { useAuth } from "../../../context/AuthContext.jsx";
+import { useClima } from "../../../hooks/useClima.js";
 
 /**
  * Header compartido del panel.
@@ -11,22 +12,30 @@ import { useAuth } from "../../../context/AuthContext.jsx";
  */
 export default function Header({ rutaBreadcrumb = [], titulo = "" }) {
   const { usuarioActual } = useAuth();
+  const { estado: estadoClima } = useClima();
+  const esDesfavorable = estadoClima?.observatorio?.esDesfavorable;
+
   const navigate = useNavigate();
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const [alertaAbierta, setAlertaAbierta] = useState(false);
   const botonRef = useRef(null);
+  const alertaRef = useRef(null);
 
   useEffect(() => {
-    if (!menuAbierto) return;
+    if (!menuAbierto && !alertaAbierta) return;
 
     const manejarClicFuera = (evento) => {
       if (botonRef.current && !botonRef.current.contains(evento.target)) {
         setMenuAbierto(false);
       }
+      if (alertaRef.current && !alertaRef.current.contains(evento.target)) {
+        setAlertaAbierta(false);
+      }
     };
 
     document.addEventListener("mousedown", manejarClicFuera);
     return () => document.removeEventListener("mousedown", manejarClicFuera);
-  }, [menuAbierto]);
+  }, [menuAbierto, alertaAbierta]);
 
   const irAPerfil = () => {
     setMenuAbierto(false);
@@ -58,6 +67,39 @@ export default function Header({ rutaBreadcrumb = [], titulo = "" }) {
       </div>
 
       <div className={estilos.bloqueAcciones}>
+        {esDesfavorable && (
+          <div className={estilos.alertaWrap} ref={alertaRef}>
+            <button
+              type="button"
+              className={estilos.botonAlertaClima}
+              aria-label="Aviso meteorológico para docentes"
+              aria-expanded={alertaAbierta}
+              onClick={() => setAlertaAbierta((prev) => !prev)}
+            >
+              <CloudRain className={estilos.iconoAlerta} aria-hidden="true" />
+              <span className={estilos.puntoAlerta} aria-hidden="true" />
+            </button>
+
+            {alertaAbierta && (
+              <div className={estilos.popoverAlerta} role="dialog" aria-label="Aviso meteorológico">
+                <div className={estilos.popoverCabecera}>
+                  <CloudRain className={estilos.popoverIcono} aria-hidden="true" />
+                  <div>
+                    <h4 className={estilos.popoverTitulo}>Aviso Meteorológico</h4>
+                    <span className={estilos.popoverSubtitulo}>Directriz del Observatorio</span>
+                  </div>
+                </div>
+                <p className={estilos.popoverCuerpo}>
+                  {estadoClima?.observatorio?.mensajeDocente}
+                </p>
+                <div className={estilos.popoverPie}>
+                  <span>Estado: <strong>No cancelar eventos</strong> · Trasladar a sala</span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className={estilos.configuracionWrap} ref={botonRef}>
           <button
             type="button"

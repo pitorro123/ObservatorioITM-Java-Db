@@ -1,7 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Clock, CalendarDays, MapPin } from "lucide-react";
 import Button from "../../../common/Button/Button.jsx";
+import ModalEventoCancelado from "../../../common/ModalEventoCancelado/ModalEventoCancelado.jsx";
 import { useEventosContext } from "../../../../context/EventosContext.jsx";
+import { useClima } from "../../../../hooks/useClima.js";
 import { formatearFecha, formatearHora } from "../../../../utils/formato.js";
 import styles from "./FeaturedEvent.module.css";
 
@@ -9,6 +11,9 @@ const hoyEnTexto = () => new Date().toISOString().slice(0, 10);
 
 export default function FeaturedEvent() {
   const { eventosPublicados } = useEventosContext();
+  const { estado: estadoClima } = useClima();
+  const esDesfavorable = estadoClima?.observatorio?.esDesfavorable;
+  const [modalCancelado, setModalCancelado] = useState(false);
 
   const evento = useMemo(() => {
     const hoy = hoyEnTexto();
@@ -55,9 +60,35 @@ export default function FeaturedEvent() {
           </li>
         </ul>
 
-        <Button to={`/eventos/${evento.id}`} variant="primary" className={styles.btn}>
-          Inscribirme
-        </Button>
+        {esDesfavorable && (
+          <div className={styles.avisoClima} role="status">
+            <span className={styles.avisoClimaPunto} aria-hidden="true" />
+            <p className={styles.avisoClimaTexto}>
+              <strong>Evento confirmado</strong>
+            </p>
+          </div>
+        )}
+
+        {evento.estado === "cancelado" ? (
+          <button
+            type="button"
+            className={`${styles.btn} ${styles.btnCancelado}`}
+            onClick={() => setModalCancelado(true)}
+          >
+            Inscribirme
+          </button>
+        ) : (
+          <Button to={`/eventos/${evento.id}`} variant="primary" className={styles.btn}>
+            Inscribirme
+          </Button>
+        )}
+
+        <ModalEventoCancelado
+          abierto={modalCancelado}
+          onCerrar={() => setModalCancelado(false)}
+          tituloEvento={evento?.titulo}
+          motivo={evento?.motivoCancelacion || "clima"}
+        />
       </div>
     </article>
   );

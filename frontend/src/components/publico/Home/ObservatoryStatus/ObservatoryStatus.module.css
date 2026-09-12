@@ -173,6 +173,16 @@
   color: #34d399;
 }
 
+.iconAmber {
+  background-color: rgba(251, 191, 36, 0.2);
+}
+
+.iconSvgAmber {
+  width: 24px;
+  height: 24px;
+  color: #fbbf24;
+}
+
 .statusLabel {
   font-size: 0.75rem;
   font-weight: 500;
@@ -186,6 +196,13 @@
   font-size: 1.125rem;
   font-weight: 800;
   color: #34d399;
+}
+
+.statusValueAmber {
+  margin-top: 2px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fbbf24;
 }
 
 .statusDesc {

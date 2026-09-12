@@ -51,6 +51,8 @@ export default function BarraFiltros({
   onCambiarBusqueda,
   filtroMes,
   onCambiarFiltroMes,
+  filtroAutor,
+  onCambiarFiltroAutor,
 }) {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const meses = generarMeses();
@@ -62,29 +64,54 @@ export default function BarraFiltros({
 
   return (
     <div className={estilos.barra}>
-      <div
-        className={estilos.grupoPestañas}
-        role="tablist"
-        aria-label="Estado del evento"
-      >
-        {pestañas.map((pestaña) => {
-          const activa = pestañaActiva === pestaña.clave;
-          return (
+      <div className={estilos.grupoIzquierda}>
+        {onCambiarFiltroAutor && (
+          <div className={estilos.grupoAutor} role="group" aria-label="Filtro por autor">
             <button
-              key={pestaña.clave}
               type="button"
-              role="tab"
-              aria-selected={activa}
-              className={
-                activa ? `${estilos.pildora} ${estilos.pildoraActiva}` : estilos.pildora
-              }
-              onClick={() => onCambiarPestaña(pestaña.clave)}
+              className={`${estilos.btnAutor} ${
+                filtroAutor === "todos" ? estilos.btnAutorActivo : ""
+              }`}
+              onClick={() => onCambiarFiltroAutor("todos")}
             >
-              {pestaña.etiqueta}
-              <span className={estilos.contador}>({conteos[pestaña.clave]})</span>
+              Todos los eventos
             </button>
-          );
-        })}
+            <button
+              type="button"
+              className={`${estilos.btnAutor} ${
+                filtroAutor === "mis_eventos" ? estilos.btnAutorActivo : ""
+              }`}
+              onClick={() => onCambiarFiltroAutor("mis_eventos")}
+            >
+              Mis eventos
+            </button>
+          </div>
+        )}
+
+        <div
+          className={estilos.grupoPestañas}
+          role="tablist"
+          aria-label="Estado del evento"
+        >
+          {pestañas.map((pestaña) => {
+            const activa = pestañaActiva === pestaña.clave;
+            return (
+              <button
+                key={pestaña.clave}
+                type="button"
+                role="tab"
+                aria-selected={activa}
+                className={
+                  activa ? `${estilos.pildora} ${estilos.pildoraActiva}` : estilos.pildora
+                }
+                onClick={() => onCambiarPestaña(pestaña.clave)}
+              >
+                {pestaña.etiqueta}
+                <span className={estilos.contador}>({conteos[pestaña.clave] ?? 0})</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div className={estilos.grupoAcciones}>

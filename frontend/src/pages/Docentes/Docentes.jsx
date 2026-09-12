@@ -2,7 +2,8 @@ import { useState, useRef } from "react";
 import {
   Plus,
   Pencil,
-  Trash2,
+  UserX,
+  UserCheck,
   Mail,
   Copy,
   Check,
@@ -83,11 +84,11 @@ const insigniasEstado = {
 };
 
 export default function Docentes() {
-  const { docentes, crearDocente, editarDocente, eliminarDocente } = useAuth();
+  const { docentes, crearDocente, editarDocente, cambiarEstadoDocente } = useAuth();
 
   const [formularioAbierto, setFormularioAbierto] = useState(false);
   const [docenteEditando, setDocenteEditando] = useState(null);
-  const [docenteEliminar, setDocenteEliminar] = useState(null);
+  const [docenteCambiarEstado, setDocenteCambiarEstado] = useState(null);
   const [correoEnviado, setCorreoEnviado] = useState(null);
   const [notificacion, setNotificacion] = useState("");
 
@@ -131,12 +132,22 @@ export default function Docentes() {
     return { exito: true };
   };
 
-  const manejarEliminar = () => {
-    if (docenteEliminar) {
-      eliminarDocente(docenteEliminar.id);
-      setNotificacion("Cuenta de docente eliminada correctamente.");
+  const manejarCambiarEstado = () => {
+    if (docenteCambiarEstado) {
+      const nuevoEstado =
+        docenteCambiarEstado.estado === "Desactivado" ? "Activo" : "Desactivado";
+      cambiarEstadoDocente(docenteCambiarEstado.id, nuevoEstado);
+      if (nuevoEstado === "Desactivado") {
+        setNotificacion(
+          `Cuenta de ${docenteCambiarEstado.nombre} desactivada. Sus eventos y registros se mantienen intactos.`
+        );
+      } else {
+        setNotificacion(
+          `Cuenta de ${docenteCambiarEstado.nombre} reactivada correctamente.`
+        );
+      }
     }
-    setDocenteEliminar(null);
+    setDocenteCambiarEstado(null);
   };
 
   return (
@@ -144,8 +155,8 @@ export default function Docentes() {
       <div className={estilos.seccionSuperior}>
         <Header rutaBreadcrumb={["Dashboard", "Docentes"]} titulo="Cuentas de docentes" />
         <p className={estilos.descripcion}>
-          Crea, edita y elimina las cuentas de acceso de los docentes encargados de la gestión
-          del observatorio y el semillero.
+          Crea, edita y gestiona el estado (activar/desactivar) de las cuentas de acceso
+          de los docentes encargados de la gestión del observatorio astronómico.
         </p>
       </div>
 
@@ -186,15 +197,27 @@ export default function Docentes() {
                   >
                     <Pencil className={estilos.iconoAccion} aria-hidden="true" />
                   </button>
-                  <button
-                    type="button"
-                    className={`${estilos.botonAccion} ${estilos.botonEliminar}`}
-                    onClick={() => setDocenteEliminar(docente)}
-                    aria-label={`Eliminar a ${docente.nombre}`}
-                    title="Eliminar cuenta"
-                  >
-                    <Trash2 className={estilos.iconoAccion} aria-hidden="true" />
-                  </button>
+                  {docente.estado === "Desactivado" ? (
+                    <button
+                      type="button"
+                      className={`${estilos.botonAccion} ${estilos.botonReactivar}`}
+                      onClick={() => setDocenteCambiarEstado(docente)}
+                      aria-label={`Reactivar a ${docente.nombre}`}
+                      title="Reactivar cuenta"
+                    >
+                      <UserCheck className={estilos.iconoAccion} aria-hidden="true" />
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className={`${estilos.botonAccion} ${estilos.botonDesactivar}`}
+                      onClick={() => setDocenteCambiarEstado(docente)}
+                      aria-label={`Desactivar a ${docente.nombre}`}
+                      title="Desactivar cuenta"
+                    >
+                      <UserX className={estilos.iconoAccion} aria-hidden="true" />
+                    </button>
+                  )}
                 </div>
               </li>
             ))}
@@ -239,16 +262,27 @@ export default function Docentes() {
       />
 
       <ConfirmacionModal
-        abierto={Boolean(docenteEliminar)}
-        titulo="¿Eliminar esta cuenta de docente?"
+        abierto={Boolean(docenteCambiarEstado)}
+        titulo={
+          docenteCambiarEstado?.estado === "Desactivado"
+            ? "¿Reactivar esta cuenta de docente?"
+            : "¿Desactivar esta cuenta de docente?"
+        }
         mensaje={
-          docenteEliminar
-            ? `Se eliminará la cuenta de ${docenteEliminar.nombre}. El docente perderá el acceso al panel de forma permanente.`
+          docenteCambiarEstado
+            ? docenteCambiarEstado.estado === "Desactivado"
+              ? `Se reactivará la cuenta de ${docenteCambiarEstado.nombre}. El docente podrá volver a iniciar sesión y gestionar sus eventos.`
+              : `Al desactivar la cuenta de ${docenteCambiarEstado.nombre}, el docente no podrá acceder al sistema, pero todos sus eventos y registros se conservarán intactos.`
             : ""
         }
-        onCerrar={() => setDocenteEliminar(null)}
-        onConfirmar={manejarEliminar}
-        etiquetaConfirmar="Eliminar"
+        onCerrar={() => setDocenteCambiarEstado(null)}
+        onConfirmar={manejarCambiarEstado}
+        etiquetaConfirmar={
+          docenteCambiarEstado?.estado === "Desactivado" ? "Reactivar" : "Desactivar"
+        }
+        variante={
+          docenteCambiarEstado?.estado === "Desactivado" ? "exito" : "peligro"
+        }
       />
 
       <Notificacion mensaje={notificacion} onCerrar={() => setNotificacion("")} />

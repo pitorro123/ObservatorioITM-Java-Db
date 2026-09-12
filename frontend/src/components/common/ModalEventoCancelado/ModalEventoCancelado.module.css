@@ -1,0 +1,206 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(4px);
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  background-color: white;
+  border-radius: 20px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
+  animation: popIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.botonCerrar {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background-color: #f1f5f9;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.botonCerrar:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.iconoCerrar {
+  width: 18px;
+  height: 18px;
+}
+
+.iconoWrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fee2e2 0%, #fef3c7 100%);
+  border: 4px solid #fff;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.iconoClima {
+  width: 32px;
+  height: 32px;
+  color: #dc2626;
+}
+
+.iconoWrapPersonal {
+  background: linear-gradient(135deg, #fef3c7 0%, #fee2e2 100%);
+  box-shadow: 0 4px 12px rgba(217, 119, 6, 0.15);
+}
+
+.iconoPersonal {
+  width: 32px;
+  height: 32px;
+  color: #d97706;
+}
+
+.badgeCancelado {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.725rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background-color: #fee2e2;
+  color: #b91c1c;
+  margin-bottom: 12px;
+}
+
+.titulo {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.35;
+  margin: 0 0 8px 0;
+}
+
+.nombreEvento {
+  font-size: 0.875rem;
+  color: #475569;
+  margin: 0 0 16px 0;
+}
+
+.nombreEvento strong {
+  color: #0f172a;
+}
+
+.cajaExplicativa {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.textoExplicativo {
+  font-size: 0.875rem;
+  color: #334155;
+  line-height: 1.5;
+  margin: 0 0 8px 0;
+}
+
+.textoAviso {
+  font-size: 0.8125rem;
+  color: #64748b;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.botonExplorar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: none;
+  background-color: #1e3a8a;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.botonExplorar:hover {
+  background-color: #1d4ed8;
+}
+
+.iconoBoton {
+  width: 16px;
+  height: 16px;
+}
+
+.botonCerrarModal {
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background-color: transparent;
+  color: #475569;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.botonCerrarModal:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+

@@ -1,11 +1,10 @@
 import { Building2, Target, Eye, Mail } from "lucide-react";
-import { useContenido } from "../../context/ContenidoContext.jsx";
-import { equipoDocente } from "../../data/observatorio.js";
+import { contenidoObservatorio, equipoDocente } from "../../data/observatorio.js";
 import telescopioImg from "../../assets/images/observatorio/icons/telescopio.png";
 import estilos from "./SobreNosotros.module.css";
 
 export default function SobreNosotros() {
-  const { observatorio } = useContenido();
+  const observatorio = contenidoObservatorio;
 
   return (
     <>

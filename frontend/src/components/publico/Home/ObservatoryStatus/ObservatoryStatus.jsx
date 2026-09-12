@@ -8,11 +8,12 @@ import styles from "./ObservatoryStatus.module.css";
 export default function ObservatoryStatus() {
   const { estado, cargando, error } = useClima();
 
+  const esDesfavorable = estado?.observatorio?.esDesfavorable;
   const estadoAbierto = cargando
     ? "CONSULTANDO"
     : error
       ? "SIN CONSULTA"
-      : estado.observatorio.estadoValor;
+      : (estado?.observatorio?.observatorioEstado ?? "ABIERTO");
 
   return (
     <section className={styles.raiz}>
@@ -63,11 +64,11 @@ export default function ObservatoryStatus() {
             </span>
             <div>
               <p className={styles.statusLabel}>{estadoObservatorio.estado.etiqueta}</p>
-              <p className={styles.statusValue}>{estadoAbierto.replace(/_/g, " ")}</p>
+              <p className={styles.statusValue}>{estadoAbierto}</p>
               <p className={styles.statusDesc}>
                 {error
                   ? "Activa el modo automático para obtener datos en tiempo real."
-                  : estado.observatorio.estadoDescripcion}
+                  : (estado?.observatorio?.observatorioEstadoDesc ?? estadoObservatorio.estado.descripcion)}
               </p>
             </div>
           </div>
@@ -75,13 +76,28 @@ export default function ObservatoryStatus() {
 
         {!cargando && !error && (
           <div className={styles.statusCard}>
-            <span className={`${styles.iconCircle} ${styles.iconEmerald}`}>
-              <Sparkles className={styles.iconSvgEmerald} aria-hidden="true" />
+            <span
+              className={`${styles.iconCircle} ${
+                esDesfavorable ? styles.iconAmber : styles.iconEmerald
+              }`}
+            >
+              <Sparkles
+                className={
+                  esDesfavorable ? styles.iconSvgAmber : styles.iconSvgEmerald
+                }
+                aria-hidden="true"
+              />
             </span>
             <div>
               <p className={styles.statusLabel}>{estadoObservatorio.condiciones.etiqueta}</p>
-              <p className={styles.statusValue}>{estado.observatorio.estadoValor}</p>
-              <p className={styles.statusDesc}>{estado.observatorio.recomendacion}</p>
+              <p className={esDesfavorable ? styles.statusValueAmber : styles.statusValue}>
+                {esDesfavorable ? "ACTIVIDAD EN SALA" : estado.observatorio.estadoValor}
+              </p>
+              <p className={styles.statusDesc}>
+                {esDesfavorable
+                  ? estado.observatorio.mensajeLanding
+                  : estado.observatorio.recomendacion}
+              </p>
             </div>
           </div>
         )}

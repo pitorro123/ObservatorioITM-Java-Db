@@ -136,13 +136,23 @@
   color: var(--color-texto-invertido);
 }
 
-.botonEliminar {
+.botonDesactivar {
   background-color: #fee2e2;
   color: #dc2626;
 }
 
-.botonEliminar:hover {
+.botonDesactivar:hover {
   background-color: #dc2626;
+  color: #ffffff;
+}
+
+.botonReactivar {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.botonReactivar:hover {
+  background-color: #16a34a;
   color: #ffffff;
 }
 

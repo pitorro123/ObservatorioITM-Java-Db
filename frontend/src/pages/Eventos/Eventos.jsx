@@ -5,15 +5,21 @@ import GridEventos from "../../components/pages/Eventos/GridEventos/GridEventos.
 import Paginacion from "../../components/pages/Eventos/Paginacion/Paginacion.jsx";
 import FormularioEvento from "../../components/pages/Eventos/FormularioEvento/FormularioEvento.jsx";
 import ConfirmacionModal from "../../components/pages/Eventos/ConfirmacionModal/ConfirmacionModal.jsx";
+import ModalCancelarEvento from "../../components/pages/Eventos/ModalCancelarEvento/ModalCancelarEvento.jsx";
 import Notificacion from "../../components/pages/Eventos/Notificacion/Notificacion.jsx";
 import { useEventos } from "../../hooks/useEventos.js";
 import { useEventosContext } from "../../context/EventosContext.jsx";
-import { Plus } from "lucide-react";
+import { useAuth } from "../../context/AuthContext.jsx";
+import { useClima } from "../../hooks/useClima.js";
+import { Plus, CloudRain } from "lucide-react";
 import estilos from "./Eventos.module.css";
 
 export default function Eventos() {
-  const { eventos, crearEvento, editarEvento, eliminarEvento, publicarEvento, cancelarEvento, conteoPorEstado } =
+  const { usuarioActual, esAdmin } = useAuth();
+  const { eventos, crearEvento, editarEvento, eliminarEvento, publicarEvento, cancelarEvento } =
     useEventosContext();
+  const { estado: estadoClima } = useClima();
+  const esDesfavorable = estadoClima?.observatorio?.esDesfavorable;
 
   const {
     pestañaActiva,
@@ -22,11 +28,14 @@ export default function Eventos() {
     cambiarBusqueda,
     filtroMes,
     cambiarFiltroMes,
+    filtroAutor,
+    cambiarFiltroAutor,
+    conteosPorEstado,
     paginaActual,
     setPaginaActual,
     totalPaginas,
     eventosPagina,
-  } = useEventos(eventos);
+  } = useEventos(eventos, usuarioActual);
 
   const [formularioAbierto, setFormularioAbierto] = useState(false);
   const [eventoEditando, setEventoEditando] = useState(null);
@@ -36,6 +45,9 @@ export default function Eventos() {
 
   const [tooltipOculto, setTooltipOculto] = useState(false);
   const temporizadorTooltip = useRef(null);
+
+  const puedeGestionar = (evento) =>
+    esAdmin || (usuarioActual && Number(usuarioActual.id) === Number(evento?.creadoPorId));
 
   const mostrarTooltip = () => {
     clearTimeout(temporizadorTooltip.current);
@@ -54,12 +66,20 @@ export default function Eventos() {
   };
 
   const abrirEditar = (evento) => {
+    if (!puedeGestionar(evento)) {
+      setNotificacion("Solo el docente creador o un administrador puede editar este evento.");
+      return;
+    }
     setEventoEditando(evento);
     setFormularioAbierto(true);
   };
 
   const manejarGuardar = (datos) => {
     if (eventoEditando) {
+      if (!puedeGestionar(eventoEditando)) {
+        setNotificacion("No tienes permisos para modificar este evento.");
+        return;
+      }
       editarEvento(eventoEditando.id, datos);
       setNotificacion("Evento actualizado correctamente.");
     } else {
@@ -73,6 +93,11 @@ export default function Eventos() {
 
   const manejarEliminar = () => {
     if (eventoEliminar) {
+      if (!puedeGestionar(eventoEliminar)) {
+        setNotificacion("No tienes permisos para eliminar este evento.");
+        setEventoEliminar(null);
+        return;
+      }
       eliminarEvento(eventoEliminar.id);
       setNotificacion("Evento eliminado correctamente.");
     }
@@ -80,14 +105,27 @@ export default function Eventos() {
   };
 
   const manejarPublicar = (evento) => {
+    if (!puedeGestionar(evento)) {
+      setNotificacion("No tienes permisos para publicar este evento.");
+      return;
+    }
     publicarEvento(evento.id);
     setNotificacion(`"${evento.titulo}" publicado en el portal.`);
   };
 
-  const manejarCancelar = () => {
+  const manejarCancelar = (motivo = "clima") => {
     if (eventoCancelar) {
-      cancelarEvento(eventoCancelar.id);
-      setNotificacion(`"${eventoCancelar.titulo}" cancelado.`);
+      if (!puedeGestionar(eventoCancelar)) {
+        setNotificacion("No tienes permisos para cancelar este evento.");
+        setEventoCancelar(null);
+        return;
+      }
+      cancelarEvento(eventoCancelar.id, motivo);
+      setNotificacion(
+        `"${eventoCancelar.titulo}" cancelado por ${
+          motivo === "personal" ? "asuntos personales" : "condiciones climáticas"
+        }.`
+      );
     }
     setEventoCancelar(null);
   };
@@ -97,14 +135,26 @@ export default function Eventos() {
       <div className={estilos.seccionSuperior}>
         <Header rutaBreadcrumb={["Dashboard", "Eventos"]} titulo="Eventos" />
 
+        {esDesfavorable && (
+          <div className={estilos.avisoClimaDocente} role="alert">
+            <CloudRain className={estilos.avisoClimaIcono} aria-hidden="true" />
+            <div className={estilos.avisoClimaTexto}>
+              <strong>Aviso meteorológico:</strong> Clima no favorable. 
+              <strong> Directriz ITM:</strong> no canceles el evento, trasládalo a aula o auditorio bajo techo.
+            </div>
+          </div>
+        )}
+
         <BarraFiltros
-          conteos={conteoPorEstado}
+          conteos={conteosPorEstado}
           pestañaActiva={pestañaActiva}
           onCambiarPestaña={cambiarPestaña}
           valorBusqueda={valorBusqueda}
           onCambiarBusqueda={cambiarBusqueda}
           filtroMes={filtroMes}
           onCambiarFiltroMes={cambiarFiltroMes}
+          filtroAutor={filtroAutor}
+          onCambiarFiltroAutor={cambiarFiltroAutor}
         />
       </div>
 
@@ -164,17 +214,11 @@ export default function Eventos() {
         etiquetaConfirmar="Eliminar"
       />
 
-      <ConfirmacionModal
+      <ModalCancelarEvento
         abierto={Boolean(eventoCancelar)}
-        titulo="¿Cancelar este evento?"
-        mensaje={
-          eventoCancelar
-            ? `Se cancelará "${eventoCancelar.titulo}". Dejará de mostrarse en el portal público.`
-            : ""
-        }
+        evento={eventoCancelar}
         onCerrar={() => setEventoCancelar(null)}
         onConfirmar={manejarCancelar}
-        etiquetaConfirmar="Cancelar evento"
       />
 
       <Notificacion mensaje={notificacion} onCerrar={() => setNotificacion("")} />

@@ -195,6 +195,53 @@
   white-space: nowrap;
 }
 
+.badgeSinCodigo {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: var(--radio-sm);
+  background-color: #f1f5f9;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semibold);
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.textoDocumento {
+  font-size: var(--texto-xs);
+  color: var(--color-texto-principal);
+  white-space: nowrap;
+}
+
+.badgeRelacion {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radio-sm);
+  background-color: #eff6ff;
+  color: #1e40af;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semibold);
+  white-space: nowrap;
+}
+
+.programaTexto {
+  font-size: 0.75rem;
+  color: var(--color-texto-secundario);
+  margin-top: 2px;
+  max-width: 220px;
+  line-height: 1.3;
+}
+
+.telefonoTexto {
+  font-size: var(--texto-xs);
+  color: var(--color-texto-secundario);
+  margin-top: 2px;
+}
+
+.textoVacio {
+  color: #94a3b8;
+  font-size: var(--texto-xs);
+}
+
 .badgeAsistencia {
   display: inline-flex;
   align-items: center;

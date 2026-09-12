@@ -6,6 +6,45 @@
   gap: var(--espacio-md);
 }
 
+.grupoIzquierda {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-md);
+  flex-wrap: wrap;
+}
+
+.grupoAutor {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--color-fondo-general);
+  padding: 3px;
+  border-radius: var(--radio-pildora);
+  border: 1px solid var(--color-borde);
+}
+
+.btnAutor {
+  padding: 6px 14px;
+  border-radius: var(--radio-pildora);
+  border: none;
+  background: transparent;
+  font-size: var(--texto-xs);
+  font-weight: var(--peso-semibold);
+  color: var(--color-texto-secundario);
+  cursor: pointer;
+  transition: all var(--transicion-rapida);
+  white-space: nowrap;
+}
+
+.btnAutor:hover {
+  color: var(--color-texto-principal);
+}
+
+.btnAutorActivo {
+  background-color: #ffffff;
+  color: var(--color-primario);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 .grupoPestañas {
   display: flex;
   align-items: center;

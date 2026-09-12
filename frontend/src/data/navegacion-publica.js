@@ -7,7 +7,7 @@ export const enlacesNavegacionPublica = [
 ];
 
 export const redesSociales = [
-  { nombre: "YouTube", icono: "Youtube", enlace: "https://www.youtube.com/@itminstitucional" },
-  { nombre: "Facebook", icono: "Facebook", enlace: "https://www.facebook.com/ITMinstitucional" },
-  { nombre: "Instagram", icono: "Instagram", enlace: "https://www.instagram.com/itminstitucional" },
+  { nombre: "Instagram", icono: "Instagram", enlace: "https://www.instagram.com/museoitm" },
+  { nombre: "YouTube", icono: "Youtube", enlace: "https://www.youtube.com/@museoitm" },
+  { nombre: "Facebook", icono: "Facebook", enlace: "https://www.facebook.com/share/1GZ3XK4EQT/?mibextid=wwXIfr" },
 ];

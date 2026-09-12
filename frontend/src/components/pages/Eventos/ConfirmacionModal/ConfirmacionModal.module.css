@@ -34,10 +34,18 @@
   background-color: var(--color-peligro-fondo);
 }
 
+.iconoWrapExito {
+  background-color: #dcfce7;
+}
+
 .icono {
   width: 28px;
   height: 28px;
   color: var(--color-peligro);
+}
+
+.iconoExito {
+  color: #16a34a;
 }
 
 .titulo {
@@ -50,6 +58,22 @@
   font-size: var(--texto-sm);
   color: var(--color-texto-secundario);
   line-height: 1.5;
+}
+
+.advertenciaCaja {
+  margin-top: var(--espacio-xs);
+  padding: 10px 14px;
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: var(--radio-md);
+  text-align: left;
+}
+
+.advertenciaTexto {
+  font-size: var(--texto-xs);
+  color: #92400e;
+  line-height: 1.45;
+  margin: 0;
 }
 
 .acciones {
@@ -89,6 +113,14 @@
 
 .botonConfirmar:hover {
   background-color: #dc2626;
+}
+
+.botonConfirmarExito {
+  background-color: #16a34a;
+}
+
+.botonConfirmarExito:hover {
+  background-color: #15803d;
 }
 
 .botonCerrar {

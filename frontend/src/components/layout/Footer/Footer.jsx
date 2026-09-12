@@ -64,6 +64,8 @@ export default function Footer() {
                 <a
                   key={red.nombre}
                   href={red.enlace}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={red.nombre}
                   className={styles.socialLink}
                 >
