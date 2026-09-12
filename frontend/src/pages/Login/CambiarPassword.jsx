@@ -16,7 +16,7 @@ export default function CambiarPassword() {
   const [completado, setCompletado] = useState(false);
   const navegar = useNavigate();
 
-  const manejarEnvio = (e) => {
+  const manejarEnvio = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -29,7 +29,7 @@ export default function CambiarPassword() {
       return;
     }
 
-    const resultado = establecerPassword(token, password);
+    const resultado = await establecerPassword(token, password);
     if (!resultado.exito) {
       setError(resultado.error);
       return;

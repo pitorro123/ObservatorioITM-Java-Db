@@ -50,7 +50,7 @@ export default function FormularioDocente({
     if (error) setError("");
   };
 
-  const manejarEnvio = (e) => {
+  const manejarEnvio = async (e) => {
     e.preventDefault();
 
     if (esEdicion) {
@@ -83,7 +83,7 @@ export default function FormularioDocente({
         cambios.estado = datos.estado;
       }
 
-      const resultado = onGuardar(cambios);
+      const resultado = await onGuardar(cambios);
 
       if (resultado && !resultado.exito) {
         setError(resultado.error);
@@ -112,7 +112,7 @@ export default function FormularioDocente({
       return;
     }
 
-    const resultado = onGuardar({
+    const resultado = await onGuardar({
       nombre,
       correo,
       estado: "Pendiente",

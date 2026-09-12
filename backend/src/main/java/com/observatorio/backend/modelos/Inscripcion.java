@@ -24,7 +24,7 @@ public class Inscripcion {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(nullable = false, unique = true, length = 40)
+	@Column(length = 40)
 	private String codigo;
 
 	@Column(nullable = false)
@@ -33,10 +33,20 @@ public class Inscripcion {
 	@Column(nullable = false)
 	private String nombre;
 
+	private String tipoDocumento;
+
+	private String numeroDocumento;
+
 	@Column(nullable = false)
 	private String correo;
 
 	private String telefono;
+
+	private String relacionUniversidad;
+
+	private String programaAcademico;
+
+	private Boolean esMasivo;
 
 	@Column(nullable = false)
 	private String asistencia; // Pendiente | Asistió
@@ -47,6 +57,9 @@ public class Inscripcion {
 	void prePersist() {
 		if (asistencia == null) {
 			asistencia = "Pendiente";
+		}
+		if (esMasivo == null) {
+			esMasivo = false;
 		}
 		if (fechaInscripcion == null) {
 			fechaInscripcion = Instant.now();

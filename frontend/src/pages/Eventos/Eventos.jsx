@@ -74,16 +74,16 @@ export default function Eventos() {
     setFormularioAbierto(true);
   };
 
-  const manejarGuardar = (datos) => {
+  const manejarGuardar = async (datos) => {
     if (eventoEditando) {
       if (!puedeGestionar(eventoEditando)) {
         setNotificacion("No tienes permisos para modificar este evento.");
         return;
       }
-      editarEvento(eventoEditando.id, datos);
+      await editarEvento(eventoEditando.id, datos);
       setNotificacion("Evento actualizado correctamente.");
     } else {
-      crearEvento(datos);
+      await crearEvento(datos);
       setNotificacion("Evento creado correctamente.");
       setPaginaActual(1);
     }
@@ -91,36 +91,36 @@ export default function Eventos() {
     setEventoEditando(null);
   };
 
-  const manejarEliminar = () => {
+  const manejarEliminar = async () => {
     if (eventoEliminar) {
       if (!puedeGestionar(eventoEliminar)) {
         setNotificacion("No tienes permisos para eliminar este evento.");
         setEventoEliminar(null);
         return;
       }
-      eliminarEvento(eventoEliminar.id);
+      await eliminarEvento(eventoEliminar.id);
       setNotificacion("Evento eliminado correctamente.");
     }
     setEventoEliminar(null);
   };
 
-  const manejarPublicar = (evento) => {
+  const manejarPublicar = async (evento) => {
     if (!puedeGestionar(evento)) {
       setNotificacion("No tienes permisos para publicar este evento.");
       return;
     }
-    publicarEvento(evento.id);
+    await publicarEvento(evento.id);
     setNotificacion(`"${evento.titulo}" publicado en el portal.`);
   };
 
-  const manejarCancelar = (motivo = "clima") => {
+  const manejarCancelar = async (motivo = "clima") => {
     if (eventoCancelar) {
       if (!puedeGestionar(eventoCancelar)) {
         setNotificacion("No tienes permisos para cancelar este evento.");
         setEventoCancelar(null);
         return;
       }
-      cancelarEvento(eventoCancelar.id, motivo);
+      await cancelarEvento(eventoCancelar.id, motivo);
       setNotificacion(
         `"${eventoCancelar.titulo}" cancelado por ${
           motivo === "personal" ? "asuntos personales" : "condiciones climáticas"

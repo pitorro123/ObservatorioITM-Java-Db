@@ -12,6 +12,13 @@ public record EventoResponse(
 		String imagen,
 		String estado,
 		String tipo,
+		Boolean esMasivo,
+		Integer capacidad,
+		String ubicacionMapa,
+		Long creadoPorId,
+		String creadoPorNombre,
+		String creadoPorRol,
+		String motivoCancelacion,
 		int inscritos,
 		int asistentes) {
 }

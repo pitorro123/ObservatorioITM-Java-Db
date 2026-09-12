@@ -62,6 +62,10 @@ export function apiPut(ruta, cuerpo) {
   return peticion(ruta, { metodo: "PUT", cuerpo });
 }
 
+export function apiPatch(ruta, cuerpo) {
+  return peticion(ruta, { metodo: "PATCH", cuerpo });
+}
+
 export function apiDelete(ruta) {
   return peticion(ruta, { metodo: "DELETE" });
 }

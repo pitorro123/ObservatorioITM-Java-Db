@@ -18,9 +18,9 @@ export default function Login() {
     return <Navigate to="/admin/dashboard" replace />;
   }
 
-  const manejarEnvio = (e) => {
+  const manejarEnvio = async (e) => {
     e.preventDefault();
-    const resultado = login(correo, password);
+    const resultado = await login(correo, password);
     if (resultado.exito) {
       const destino = ubicacion.state?.desde || "/admin/dashboard";
       navegar(destino, { replace: true });

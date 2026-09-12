@@ -1,5 +1,7 @@
 package com.observatorio.backend.servicios;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -11,6 +13,8 @@ import jakarta.mail.internet.MimeMessage;
 
 @Service
 public class CorreoServicio {
+
+	private static final Logger log = LoggerFactory.getLogger(CorreoServicio.class);
 
 	private final JavaMailSender mailSender;
 	private final CorreoPlantillas plantillas;
@@ -29,8 +33,8 @@ public class CorreoServicio {
 
 	public void enviarHtml(String para, String asunto, String cuerpoHtml) {
 		if (remitente == null || remitente.isBlank()) {
-			throw new ApiException(500,
-					"SMTP no configurado: define MAIL_USERNAME y MAIL_PASSWORD (tu token) en el archivo .env");
+			log.warn("SMTP no configurado (MAIL_USERNAME no definido). Omitiendo envio de correo a {}", para);
+			return;
 		}
 		try {
 			MimeMessage mensaje = mailSender.createMimeMessage();
@@ -40,8 +44,8 @@ public class CorreoServicio {
 			helper.setSubject(asunto);
 			helper.setText(cuerpoHtml, true);
 			mailSender.send(mensaje);
-		} catch (jakarta.mail.MessagingException e) {
-			throw new ApiException(502, "No se pudo enviar el correo a " + para + ": " + e.getMessage());
+		} catch (Exception e) {
+			log.error("No se pudo enviar el correo a {}: {}", para, e.getMessage());
 		}
 	}
 }

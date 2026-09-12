@@ -25,9 +25,23 @@ public class EventoServicio {
 	}
 
 	private EventoResponse aRespuesta(Evento evento) {
-		return new EventoResponse(evento.getId(), evento.getTitulo(), evento.getDescripcion(),
-				evento.getFecha(), evento.getHora(), evento.getLugar(), evento.getImagen(),
-				evento.getEstado(), evento.getTipo(),
+		return new EventoResponse(
+				evento.getId(),
+				evento.getTitulo(),
+				evento.getDescripcion(),
+				evento.getFecha(),
+				evento.getHora(),
+				evento.getLugar(),
+				evento.getImagen(),
+				evento.getEstado(),
+				evento.getTipo(),
+				evento.getEsMasivo(),
+				evento.getCapacidad(),
+				evento.getUbicacionMapa(),
+				evento.getCreadoPorId(),
+				evento.getCreadoPorNombre(),
+				evento.getCreadoPorRol(),
+				evento.getMotivoCancelacion(),
 				evento.getInscritos() == null ? 0 : evento.getInscritos(),
 				evento.getAsistentes() == null ? 0 : evento.getAsistentes());
 	}
@@ -86,6 +100,17 @@ public class EventoServicio {
 				? "borrador" : request.estado());
 		evento.setTipo(request.tipo() == null || request.tipo().isBlank()
 				? "abierto" : request.tipo());
+		boolean esMasivo = Boolean.TRUE.equals(request.esMasivo());
+		evento.setEsMasivo(esMasivo);
+		evento.setCapacidad(esMasivo ? null : (request.capacidad() != null && request.capacidad() > 0 ? request.capacidad() : 50));
+		evento.setUbicacionMapa(request.ubicacionMapa() != null && !request.ubicacionMapa().isBlank()
+				? request.ubicacionMapa().trim() : evento.getLugar());
+		evento.setCreadoPorId(request.creadoPorId() != null ? request.creadoPorId() : 1L);
+		evento.setCreadoPorNombre(request.creadoPorNombre() != null && !request.creadoPorNombre().isBlank()
+				? request.creadoPorNombre().trim() : "Administrador");
+		evento.setCreadoPorRol(request.creadoPorRol() != null && !request.creadoPorRol().isBlank()
+				? request.creadoPorRol().trim() : "Docente");
+		evento.setMotivoCancelacion(request.motivoCancelacion());
 		evento.setInscritos(0);
 		evento.setAsistentes(0);
 
@@ -107,6 +132,20 @@ public class EventoServicio {
 		if (request.lugar() != null && !request.lugar().isBlank()) evento.setLugar(request.lugar().trim());
 		if (request.imagen() != null && !request.imagen().isBlank()) evento.setImagen(request.imagen().trim());
 		if (request.tipo() != null && !request.tipo().isBlank()) evento.setTipo(request.tipo().trim());
+		if (request.esMasivo() != null) {
+			evento.setEsMasivo(request.esMasivo());
+			if (Boolean.TRUE.equals(request.esMasivo())) {
+				evento.setCapacidad(null);
+			}
+		}
+		if (!Boolean.TRUE.equals(evento.getEsMasivo()) && request.capacidad() != null) {
+			evento.setCapacidad(request.capacidad() > 0 ? request.capacidad() : 50);
+		}
+		if (request.ubicacionMapa() != null) evento.setUbicacionMapa(request.ubicacionMapa().trim());
+		if (request.creadoPorId() != null) evento.setCreadoPorId(request.creadoPorId());
+		if (request.creadoPorNombre() != null) evento.setCreadoPorNombre(request.creadoPorNombre().trim());
+		if (request.creadoPorRol() != null) evento.setCreadoPorRol(request.creadoPorRol().trim());
+		if (request.motivoCancelacion() != null) evento.setMotivoCancelacion(request.motivoCancelacion().trim());
 		if (request.estado() != null && !request.estado().isBlank()) {
 			if (!ESTADOS_VALIDOS.contains(request.estado())) {
 				throw new ApiException(400, "El estado del evento no es válido.");
@@ -132,9 +171,14 @@ public class EventoServicio {
 	}
 
 	public EventoResponse cancelar(Long id) {
+		return cancelar(id, "clima");
+	}
+
+	public EventoResponse cancelar(Long id, String motivo) {
 		Evento evento = repositorio.findById(id)
 				.orElseThrow(() -> new ApiException(404, "El evento no existe."));
 		evento.setEstado("cancelado");
+		evento.setMotivoCancelacion(motivo != null && !motivo.isBlank() ? motivo.trim() : "clima");
 		return aRespuesta(repositorio.save(evento));
 	}
 }

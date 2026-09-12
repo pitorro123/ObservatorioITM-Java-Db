@@ -65,13 +65,13 @@ export default function ValidarAsistencia() {
     setCodigo("");
   };
 
-  const validarCodigo = (texto, idTarget = eventoId) => {
+  const validarCodigo = async (texto, idTarget = eventoId) => {
     if (!idTarget) {
       setNotificacion("Por favor selecciona un evento primero.");
       return;
     }
 
-    const verificar = obtenerInscripcion(texto, idTarget);
+    const verificar = await obtenerInscripcion(texto, idTarget);
     if (!verificar.exito) {
       setResultado({
         inscripcion: verificar.inscripcion || null,
@@ -99,7 +99,7 @@ export default function ValidarAsistencia() {
     validarCodigo(codigo.trim());
   };
 
-  const manejarConfirmar = () => {
+  const manejarConfirmar = async () => {
     if (!resultado || !resultado.inscripcion) return;
     const clave =
       resultado.inscripcion.id ||
@@ -107,7 +107,7 @@ export default function ValidarAsistencia() {
       resultado.inscripcion.correo ||
       resultado.inscripcion.numeroDocumento;
 
-    const marcado = marcarAsistencia(clave, eventoId);
+    const marcado = await marcarAsistencia(clave, eventoId);
     if (!marcado.exito) {
       setNotificacion(marcado.error);
       setTipoResultado("error");

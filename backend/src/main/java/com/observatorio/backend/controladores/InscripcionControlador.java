@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.observatorio.backend.dtos.inscripcion.AsistenciaRequest;
@@ -36,23 +37,30 @@ public class InscripcionControlador {
 		return servicio.inscribir(request);
 	}
 
+	@GetMapping
+	public List<InscripcionResponse> listarTodas() {
+		return servicio.listarTodas();
+	}
+
 	@GetMapping("/evento/{eventoId}")
 	public List<InscripcionResponse> listarPorEvento(@PathVariable Long eventoId) {
 		return servicio.listarPorEvento(eventoId);
 	}
 
-	@GetMapping("/validar/{codigo}")
-	public ValidacionResponse validar(@PathVariable String codigo) {
-		ValidacionResponse resultado = servicio.validarCodigo(codigo);
+	@GetMapping("/validar/{termino}")
+	public ValidacionResponse validar(
+			@PathVariable String termino,
+			@RequestParam(required = false) Long eventoId) {
+		ValidacionResponse resultado = servicio.validarCodigo(termino, eventoId);
 		if ("Asistió".equals(resultado.asistencia())) {
-			throw new ApiException(409, "Este código ya fue validado anteriormente.");
+			throw new ApiException(409, "Este registro ya fue validado anteriormente.");
 		}
 		return resultado;
 	}
 
 	@PostMapping("/asistencia")
 	public InscripcionResponse marcarAsistencia(@RequestBody AsistenciaRequest request) {
-		return servicio.marcarAsistencia(request.codigo());
+		return servicio.marcarAsistencia(request.valorTermino(), request.eventoId());
 	}
 
 	@PostMapping("/{codigo}/enviar-qr-docente")

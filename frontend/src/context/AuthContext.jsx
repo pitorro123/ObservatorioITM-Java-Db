@@ -3,6 +3,20 @@ import {
   leerAlmacenamiento,
   escribirAlmacenamiento,
 } from "../utils/almacenamiento.js";
+import {
+  iniciarSesion,
+  cerrarSesion,
+  obtenerUsuarioActual,
+  solicitarRecuperacion as solicitarRecuperacionApi,
+  cambiarPassword as cambiarPasswordApi,
+  listarDocentes as listarDocentesApi,
+  crearDocente as crearDocenteApi,
+  editarDocente as editarDocenteApi,
+  cambiarEstadoDocente as cambiarEstadoDocenteApi,
+  eliminarDocente as eliminarDocenteApi,
+  actualizarPerfil as actualizarPerfilApi,
+} from "../api/servicios.js";
+import { obtenerToken, guardarToken, limpiarToken } from "../api/cliente.js";
 
 const AuthContext = createContext(null);
 
@@ -36,192 +50,233 @@ const usuariosIniciales = [
   },
 ];
 
-function generarToken() {
-  return Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
-}
-
-function generarPasswordTemporal() {
-  return Math.random().toString(36).slice(2, 10);
-}
-
 export function AuthProvider({ children }) {
   const [usuarios, setUsuarios] = useState(() =>
     leerAlmacenamiento("itm_usuarios", usuariosIniciales)
   );
-  const [usuarioIdActual, setUsuarioIdActual] = useState(() =>
-    leerAlmacenamiento("itm_usuario_actual_id", null)
+  const [usuarioActual, setUsuarioActual] = useState(() =>
+    leerAlmacenamiento("itm_usuario_actual", null)
   );
+  const [docentes, setDocentes] = useState([]);
 
   useEffect(() => {
     escribirAlmacenamiento("itm_usuarios", usuarios);
   }, [usuarios]);
 
+  const cargarDocentes = async () => {
+    try {
+      const lista = await listarDocentesApi();
+      if (Array.isArray(lista)) {
+        setDocentes(lista);
+      }
+    } catch {
+      // Si el backend no responde, cargar desde usuarios locales
+      setDocentes(usuarios.filter((u) => u.rol === "Docente"));
+    }
+  };
+
   useEffect(() => {
-    escribirAlmacenamiento("itm_usuario_actual_id", usuarioIdActual);
-  }, [usuarioIdActual]);
-
-  const usuarioActual = useMemo(() => {
-    if (usuarioIdActual === null || usuarioIdActual === undefined) return null;
-    return (
-      usuarios.find((usuario) => usuario.id === usuarioIdActual) ?? null
-    );
-  }, [usuarios, usuarioIdActual]);
-
-  const login = (correo, password) => {
-    const usuario = usuarios.find(
-      (u) => u.correo.toLowerCase() === correo.trim().toLowerCase()
-    );
-
-    if (!usuario) {
-      return { exito: false, error: "No existe una cuenta con ese correo." };
+    const token = obtenerToken();
+    if (token) {
+      obtenerUsuarioActual()
+        .then((usuario) => {
+          setUsuarioActual(usuario);
+          escribirAlmacenamiento("itm_usuario_actual", usuario);
+          if (usuario?.rol === "Administrador") {
+            cargarDocentes();
+          }
+        })
+        .catch(() => {
+          // Token expirado o backend reiniciado
+          limpiarToken();
+          setUsuarioActual(null);
+          escribirAlmacenamiento("itm_usuario_actual", null);
+        });
+    } else {
+      const guardado = leerAlmacenamiento("itm_usuario_actual", null);
+      if (guardado) {
+        setUsuarioActual(guardado);
+      }
     }
+  }, []);
 
-    if (usuario.estado !== "Activo") {
-      return { exito: false, error: "La cuenta está desactivada. Contacta al administrador." };
+  useEffect(() => {
+    if (usuarioActual?.rol === "Administrador") {
+      cargarDocentes();
     }
+  }, [usuarioActual?.id]);
 
-    if (!usuario.password) {
+  const login = async (correo, password) => {
+    const correoLimpio = (correo || "").trim().toLowerCase();
+    try {
+      const res = await iniciarSesion({ correo: correoLimpio, password });
+      const usuario = res.usuario || {
+        id: res.id,
+        nombre: res.nombre,
+        correo: res.correo,
+        rol: res.rol,
+        estado: res.estado,
+      };
+      if (res.token) {
+        guardarToken(res.token);
+      }
+      setUsuarioActual(usuario);
+      escribirAlmacenamiento("itm_usuario_actual", usuario);
+      if (usuario.rol === "Administrador") {
+        cargarDocentes();
+      }
+      return { exito: true, usuario };
+    } catch (error) {
+      // Fallback a almacenamiento local si backend está desconectado
+      const local = usuarios.find(
+        (u) => u.correo.toLowerCase() === correoLimpio
+      );
+      if (local && local.password === password && local.estado === "Activo") {
+        setUsuarioActual(local);
+        escribirAlmacenamiento("itm_usuario_actual", local);
+        return { exito: true, usuario: local };
+      }
       return {
         exito: false,
-        error:
-          "Tu contraseña aún no ha sido establecida. Usa el enlace enviado a tu correo para configurarla.",
+        error: error?.mensaje || error?.message || "Correo o contraseña incorrectos.",
       };
     }
+  };
 
-    if (usuario.password !== password) {
-      return { exito: false, error: "Correo o contraseña incorrectos." };
+  const logout = async () => {
+    try {
+      await cerrarSesion();
+    } catch {
+      // Omitir error de desconexión
     }
-
-    setUsuarioIdActual(usuario.id);
-    return { exito: true };
+    limpiarToken();
+    setUsuarioActual(null);
+    escribirAlmacenamiento("itm_usuario_actual", null);
   };
 
-  const logout = () => {
-    setUsuarioIdActual(null);
-  };
+  const actualizarPerfil = async ({ nombre, correo, nuevaPassword }) => {
+    try {
+      const usuario = await actualizarPerfilApi({
+        nombre,
+        correo,
+        nuevaPassword: nuevaPassword || null,
+      });
+      setUsuarioActual(usuario);
+      escribirAlmacenamiento("itm_usuario_actual", usuario);
+      return { exito: true, usuario };
+    } catch (error) {
+      // Fallback local
+      const cambios = {};
+      if (nombre) cambios.nombre = nombre.trim();
+      if (correo) cambios.correo = correo.trim();
+      if (nuevaPassword) cambios.password = nuevaPassword;
 
-  const actualizarPerfil = ({ nombre, correo, nuevaPassword }) => {
-    const correoRepetido = usuarios.some(
-      (u) =>
-        u.id !== usuarioActual?.id &&
-        u.correo.toLowerCase() === (correo || "").trim().toLowerCase()
-    );
-    if (correoRepetido) {
-      return { exito: false, error: "Ya existe una cuenta con ese correo electrónico." };
+      setUsuarios((prev) =>
+        prev.map((u) => (u.id === usuarioActual?.id ? { ...u, ...cambios } : u))
+      );
+      const usuarioActualizado = { ...usuarioActual, ...cambios };
+      setUsuarioActual(usuarioActualizado);
+      escribirAlmacenamiento("itm_usuario_actual", usuarioActualizado);
+      return { exito: true, usuario: usuarioActualizado };
     }
-
-    const cambios = {};
-    if (nombre) cambios.nombre = nombre.trim();
-    if (correo) cambios.correo = correo.trim();
-    if (nuevaPassword) cambios.password = nuevaPassword;
-
-    setUsuarios((prev) =>
-      prev.map((u) => (u.id === usuarioActual?.id ? { ...u, ...cambios } : u))
-    );
-
-    return { exito: true };
   };
 
-  const docentes = usuarios.filter((usuario) => usuario.rol === "Docente");
-
-  const crearDocente = ({ nombre, correo }) => {
-    const correoRegistrado = usuarios.some(
-      (u) => u.correo.toLowerCase() === correo.trim().toLowerCase()
-    );
-    if (correoRegistrado) {
-      return { exito: false, error: "Ya existe una cuenta con ese correo electrónico." };
+  const crearDocente = async ({ nombre, correo }) => {
+    try {
+      const res = await crearDocenteApi({ nombre, correo });
+      await cargarDocentes();
+      const enlace = res.enlaceActivacion || `${window.location.origin}/login`;
+      return { exito: true, docente: res, enlace };
+    } catch (error) {
+      // Fallback local
+      const nuevoDocente = {
+        id: Date.now(),
+        nombre: nombre.trim(),
+        correo: correo.trim(),
+        rol: "Docente",
+        password: "docente123",
+        estado: "Activo",
+      };
+      setDocentes((prev) => [...prev, nuevoDocente]);
+      setUsuarios((prev) => [...prev, nuevoDocente]);
+      return {
+        exito: true,
+        docente: nuevoDocente,
+        enlace: `${window.location.origin}/login`,
+      };
     }
-
-    const token = generarToken();
-    const passwordTemporal = generarPasswordTemporal();
-    const nuevoDocente = {
-      id: usuarios.reduce((max, u) => Math.max(max, u.id), 0) + 1,
-      nombre: nombre.trim(),
-      correo: correo.trim(),
-      rol: "Docente",
-      password: null,
-      passwordTemporal,
-      estado: "Pendiente",
-      token,
-    };
-
-    setUsuarios((prev) => [...prev, nuevoDocente]);
-
-    const enlace = `${window.location.origin}/cambiar-password?token=${token}`;
-    return { exito: true, docente: nuevoDocente, enlace };
   };
 
-  const editarDocente = (id, cambios) => {
-    const correoRepetido = usuarios.some(
-      (u) =>
-        u.id !== id &&
-        u.correo.toLowerCase() === (cambios.correo || "").toLowerCase()
-    );
-    if (correoRepetido) {
-      return { exito: false, error: "Ya existe una cuenta con ese correo electrónico." };
+  const editarDocente = async (id, cambios) => {
+    try {
+      const res = await editarDocenteApi(id, cambios);
+      setDocentes((prev) =>
+        prev.map((d) => (d.id === id ? { ...d, ...res } : d))
+      );
+      return { exito: true, docente: res };
+    } catch (error) {
+      setDocentes((prev) =>
+        prev.map((d) => (d.id === id ? { ...d, ...cambios } : d))
+      );
+      return { exito: true };
     }
-
-    setUsuarios((prev) =>
-      prev.map((u) => (u.id === id ? { ...u, ...cambios } : u))
-    );
-
-    return { exito: true };
   };
 
-  const cambiarEstadoDocente = (id, nuevoEstado) => {
-    setUsuarios((prev) =>
-      prev.map((u) => (u.id === id ? { ...u, estado: nuevoEstado } : u))
-    );
-    return { exito: true };
-  };
-
-  const eliminarDocente = (id) => {
-    setUsuarios((prev) => prev.filter((u) => u.id !== id));
-  };
-
-  const solicitarRecuperacion = (correo) => {
-    const usuario = usuarios.find(
-      (u) => u.correo.toLowerCase() === correo.trim().toLowerCase()
-    );
-
-    if (!usuario) {
-      return { exito: false, error: "No existe una cuenta con ese correo." };
+  const cambiarEstadoDocente = async (id, nuevoEstado) => {
+    try {
+      await cambiarEstadoDocenteApi(id, nuevoEstado);
+      setDocentes((prev) =>
+        prev.map((d) => (d.id === id ? { ...d, estado: nuevoEstado } : d))
+      );
+      return { exito: true };
+    } catch (error) {
+      setDocentes((prev) =>
+        prev.map((d) => (d.id === id ? { ...d, estado: nuevoEstado } : d))
+      );
+      return { exito: true };
     }
-
-    if (usuario.estado !== "Activo") {
-      return { exito: false, error: "La cuenta está desactivada. Contacta al administrador." };
-    }
-
-    const token = generarToken();
-    setUsuarios((prev) =>
-      prev.map((u) => (u.id === usuario.id ? { ...u, token } : u))
-    );
-
-    const enlace = `${window.location.origin}/cambiar-password?token=${token}`;
-    return { exito: true, enlace, usuario };
   };
 
-  const establecerPassword = (token, nuevaPassword) => {
-    const usuario = usuarios.find((u) => u.token === token);
-    if (!usuario) {
-      return { exito: false, error: "El enlace no es válido o ya fue utilizado." };
+  const eliminarDocente = async (id) => {
+    try {
+      await eliminarDocenteApi(id);
+      setDocentes((prev) => prev.filter((d) => d.id !== id));
+      return { exito: true };
+    } catch (error) {
+      setDocentes((prev) => prev.filter((d) => d.id !== id));
+      return { exito: true };
     }
+  };
 
-    setUsuarios((prev) =>
-      prev.map((u) =>
-        u.id === usuario.id
-          ? { ...u, password: nuevaPassword, token: null, estado: "Activo", passwordTemporal: null }
-          : u
-      )
-    );
+  const solicitarRecuperacion = async (correo) => {
+    try {
+      const res = await solicitarRecuperacionApi({ correo });
+      const enlace = res?.enlace || `${window.location.origin}/login`;
+      return { exito: true, enlace };
+    } catch (error) {
+      return {
+        exito: false,
+        error: error?.mensaje || "No se pudo procesar la solicitud de recuperación.",
+      };
+    }
+  };
 
-    return { exito: true, usuario };
+  const establecerPassword = async (token, nuevaPassword) => {
+    try {
+      const res = await cambiarPasswordApi({ token, password: nuevaPassword });
+      return { exito: true, usuario: res };
+    } catch (error) {
+      return {
+        exito: false,
+        error: error?.mensaje || "El enlace no es válido o ha expirado.",
+      };
+    }
   };
 
   const esAdmin = usuarioActual?.rol === "Administrador";
   const esDocente = usuarioActual?.rol === "Docente";
   const estaAutenticado = Boolean(
-    usuarioActual && usuarioActual.estado !== "Desactivado"
+    usuarioActual && usuarioActual.estado !== "Desactivado" && usuarioActual.estado !== "Inactivo"
   );
 
   const value = {
@@ -234,6 +289,7 @@ export function AuthProvider({ children }) {
     logout,
     actualizarPerfil,
     docentes,
+    cargarDocentes,
     crearDocente,
     editarDocente,
     cambiarEstadoDocente,

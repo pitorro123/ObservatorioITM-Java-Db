@@ -97,7 +97,7 @@ export default function DetalleEvento() {
     if (error) setError("");
   };
 
-  const manejarEnvio = (e) => {
+  const manejarEnvio = async (e) => {
     e.preventDefault();
 
     const nombre = datos.nombre.trim();
@@ -174,7 +174,7 @@ export default function DetalleEvento() {
       return;
     }
 
-    const resultado = inscribir({
+    const resultado = await inscribir({
       eventoId: evento.id,
       nombre,
       tipoDocumento,

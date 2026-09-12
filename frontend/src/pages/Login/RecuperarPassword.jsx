@@ -12,7 +12,7 @@ export default function RecuperarPassword() {
   const [enviado, setEnviado] = useState(null);
   const navegar = useNavigate();
 
-  const manejarEnvio = (e) => {
+  const manejarEnvio = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -22,7 +22,7 @@ export default function RecuperarPassword() {
       return;
     }
 
-    const resultado = solicitarRecuperacion(correo);
+    const resultado = await solicitarRecuperacion(correo);
     if (!resultado.exito) {
       setError(resultado.error);
       return;

@@ -46,7 +46,22 @@ public class Evento {
 	private String estado; // borrador | publicado | cancelado
 
 	@Column(nullable = false)
-	private String tipo; // abierto | semillero
+	private String tipo; // abierto | charla | observacion | semillero
+
+	private Boolean esMasivo;
+
+	private Integer capacidad;
+
+	private String motivoCancelacion; // clima | personal
+
+	@Column(length = 1000)
+	private String ubicacionMapa;
+
+	private Long creadoPorId;
+
+	private String creadoPorNombre;
+
+	private String creadoPorRol;
 
 	private Integer inscritos;
 
@@ -56,6 +71,12 @@ public class Evento {
 
 	@PrePersist
 	void prePersist() {
+		if (esMasivo == null) {
+			esMasivo = false;
+		}
+		if (capacidad == null && !Boolean.TRUE.equals(esMasivo)) {
+			capacidad = 50;
+		}
 		if (inscritos == null) {
 			inscritos = 0;
 		}

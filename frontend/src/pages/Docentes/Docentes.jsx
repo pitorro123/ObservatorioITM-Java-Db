@@ -116,13 +116,13 @@ export default function Docentes() {
     setFormularioAbierto(true);
   };
 
-  const manejarGuardar = (datos) => {
+  const manejarGuardar = async (datos) => {
     if (docenteEditando) {
-      const resultado = editarDocente(docenteEditando.id, datos);
+      const resultado = await editarDocente(docenteEditando.id, datos);
       if (!resultado.exito) return resultado;
       setNotificacion("Cuenta de docente actualizada correctamente.");
     } else {
-      const resultado = crearDocente(datos);
+      const resultado = await crearDocente(datos);
       if (!resultado.exito) return resultado;
       setNotificacion("Cuenta de docente creada correctamente.");
       setCorreoEnviado(resultado);
@@ -132,11 +132,11 @@ export default function Docentes() {
     return { exito: true };
   };
 
-  const manejarCambiarEstado = () => {
+  const manejarCambiarEstado = async () => {
     if (docenteCambiarEstado) {
       const nuevoEstado =
         docenteCambiarEstado.estado === "Desactivado" ? "Activo" : "Desactivado";
-      cambiarEstadoDocente(docenteCambiarEstado.id, nuevoEstado);
+      await cambiarEstadoDocente(docenteCambiarEstado.id, nuevoEstado);
       if (nuevoEstado === "Desactivado") {
         setNotificacion(
           `Cuenta de ${docenteCambiarEstado.nombre} desactivada. Sus eventos y registros se mantienen intactos.`

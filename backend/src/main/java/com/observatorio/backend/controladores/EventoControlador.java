@@ -62,8 +62,9 @@ public class EventoControlador {
 	}
 
 	@PutMapping("/{id}/cancelar")
-	public EventoResponse cancelar(@PathVariable Long id) {
-		return servicio.cancelar(id);
+	public EventoResponse cancelar(@PathVariable Long id, @RequestBody(required = false) Map<String, String> body) {
+		String motivo = body != null ? body.get("motivo") : "clima";
+		return servicio.cancelar(id, motivo);
 	}
 
 	@DeleteMapping("/{id}")

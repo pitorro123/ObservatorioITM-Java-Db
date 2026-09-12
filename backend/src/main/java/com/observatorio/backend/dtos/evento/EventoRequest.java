@@ -8,5 +8,12 @@ public record EventoRequest(
 		String lugar,
 		String imagen,
 		String estado,
-		String tipo) {
+		String tipo,
+		Boolean esMasivo,
+		Integer capacidad,
+		String ubicacionMapa,
+		Long creadoPorId,
+		String creadoPorNombre,
+		String creadoPorRol,
+		String motivoCancelacion) {
 }

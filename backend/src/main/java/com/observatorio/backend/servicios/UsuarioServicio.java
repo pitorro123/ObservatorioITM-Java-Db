@@ -101,6 +101,16 @@ public class UsuarioServicio {
 		repositorio.deleteById(id);
 	}
 
+	public UsuarioResponse cambiarEstadoDocente(Long id, String nuevoEstado) {
+		Usuario usuario = repositorio.findById(id)
+				.orElseThrow(() -> new ApiException(404, "El docente no existe."));
+
+		if (nuevoEstado != null && !nuevoEstado.isBlank()) {
+			usuario.setEstado(nuevoEstado.trim());
+		}
+		return aRespuesta(repositorio.save(usuario));
+	}
+
 	public UsuarioResponse actualizarPerfil(Usuario usuario, PerfilRequest request) {
 		if (request.nombre() != null && !request.nombre().isBlank()) {
 			usuario.setNombre(request.nombre().trim());

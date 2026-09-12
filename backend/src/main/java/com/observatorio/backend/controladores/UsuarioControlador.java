@@ -56,6 +56,18 @@ public class UsuarioControlador {
 		return Map.of("exito", true);
 	}
 
+	@org.springframework.web.bind.annotation.PatchMapping("/docentes/{id}/estado")
+	public UsuarioResponse cambiarEstadoDocentePatch(@PathVariable Long id, @RequestBody Map<String, String> body) {
+		seguridad.exigirAdministrador();
+		return servicio.cambiarEstadoDocente(id, body.get("estado"));
+	}
+
+	@PutMapping("/docentes/{id}/estado")
+	public UsuarioResponse cambiarEstadoDocentePut(@PathVariable Long id, @RequestBody Map<String, String> body) {
+		seguridad.exigirAdministrador();
+		return servicio.cambiarEstadoDocente(id, body.get("estado"));
+	}
+
 	@PutMapping("/perfil")
 	public UsuarioResponse actualizarPerfil(@RequestBody PerfilRequest request) {
 		return servicio.actualizarPerfil(seguridad.usuarioActual(), request);
