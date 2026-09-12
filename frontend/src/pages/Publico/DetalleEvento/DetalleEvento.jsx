@@ -211,9 +211,13 @@ export default function DetalleEvento() {
           {evento.imagen && (
             <div className={estilos.imagenWrap}>
               <img
-                src={evento.imagen}
+                src={evento.imagen || "/images/Imagen.png"}
                 alt={evento.titulo}
                 className={estilos.imagen}
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = "/images/Imagen.png";
+                }}
               />
             </div>
           )}

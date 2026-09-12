@@ -337,9 +337,13 @@ export default function Eventos() {
               {evento.imagen && (
                 <div className={estilos.cardImageWrap}>
                   <img
-                    src={evento.imagen}
+                    src={evento.imagen || "/images/Imagen.png"}
                     alt={evento.titulo}
                     className={estilos.cardImage}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = "/images/Imagen.png";
+                    }}
                   />
                   {/* Badges de estado y tipo sobre la imagen */}
                   <div className={estilos.cardBadges}>

@@ -30,10 +30,14 @@ export default function TarjetaEvento({
     <article className={estilos.tarjeta}>
       <div className={estilos.contenedorImagen}>
         <img
-          src={evento.imagen}
+          src={evento.imagen || "/images/Imagen.png"}
           alt={evento.titulo}
           className={estilos.imagen}
           loading="lazy"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = "/images/Imagen.png";
+          }}
         />
         <span className={`${estilos.insignia} ${clasesEstado[evento.estado] || ""}`}>
           <span className={estilos.puntoEstado} aria-hidden="true" />

@@ -35,9 +35,13 @@ export default function FeaturedEvent() {
       {evento.imagen && (
         <div className={styles.imageWrap}>
           <img
-            src={evento.imagen}
+            src={evento.imagen || "/images/Imagen.png"}
             alt={evento.titulo}
             className={styles.image}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = "/images/Imagen.png";
+            }}
           />
         </div>
       )}
