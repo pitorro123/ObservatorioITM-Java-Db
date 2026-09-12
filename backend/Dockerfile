@@ -7,8 +7,9 @@ RUN mvn clean package -DskipTests
 
 # Etapa 2: Imagen ligera para ejecucion
 FROM eclipse-temurin:17-jre-alpine
+RUN apk add --no-cache fontconfig freetype ttf-dejavu
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
 ENV PORT=8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Djava.awt.headless=true", "-jar", "app.jar"]

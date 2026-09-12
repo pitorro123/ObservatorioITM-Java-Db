@@ -21,7 +21,8 @@ public class ControladorExcepciones {
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Map<String, String>> manejarGeneral(Exception ex) {
+		String detalle = ex.getMessage() != null ? ex.getMessage() : ex.getClass().getName();
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-				.body(Map.of("mensaje", "Ocurrió un error inesperado en el servidor."));
+				.body(Map.of("mensaje", "Error del servidor: " + detalle));
 	}
 }
