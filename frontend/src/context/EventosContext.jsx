@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { eventosIniciales } from "../data/eventos.js";
 import {
   leerAlmacenamiento,
   escribirAlmacenamiento,
@@ -21,40 +20,6 @@ import { obtenerToken } from "../api/cliente.js";
 
 const EventosContext = createContext(null);
 
-function generarCodigo4Digitos(eventoId, inscripcionesExistentes = []) {
-  // Códigos ya asignados en todo el observatorio (todos los eventos)
-  const codigosGlobales = new Set(
-    inscripcionesExistentes
-      .filter((i) => i.codigo)
-      .map((i) => String(i.codigo).trim())
-  );
-
-  // Códigos ya asignados a este evento específico
-  const codigosDelEvento = new Set(
-    inscripcionesExistentes
-      .filter((i) => i.eventoId === Number(eventoId) && i.codigo)
-      .map((i) => String(i.codigo).trim())
-  );
-
-  // 1. Prioridad: Código 100% único a nivel global (no se repite en ningún evento)
-  for (let intentos = 0; intentos < 10000; intentos++) {
-    const num = Math.floor(1000 + Math.random() * 9000).toString();
-    if (!codigosGlobales.has(num)) {
-      return num;
-    }
-  }
-
-  // 2. Respaldo estricto: Si se llenaran los 9.000 códigos globales, asegurar que NO se repita en este evento
-  for (let intentos = 0; intentos < 10000; intentos++) {
-    const num = Math.floor(1000 + Math.random() * 9000).toString();
-    if (!codigosDelEvento.has(num)) {
-      return num;
-    }
-  }
-
-  return Math.floor(1000 + Math.random() * 9000).toString();
-}
-
 function normalizarEventos(lista) {
   if (!Array.isArray(lista)) return [];
   const tiposValidos = ["abierto", "charla", "observacion"];
@@ -63,13 +28,9 @@ function normalizarEventos(lista) {
     if (!tiposValidos.includes(tipo)) {
       tipo = "abierto";
     }
-    const semilla = eventosIniciales.find((item) => item.id === ev.id);
-    const esMasivo = ev.id === 2 ? true : Boolean(ev.esMasivo ?? semilla?.esMasivo);
-    const creadoPorId =
-      ev.creadoPorId || (Number(ev.id) % 2 === 0 ? 3 : 2);
-    const creadoPorNombre =
-      ev.creadoPorNombre ||
-      (creadoPorId === 3 ? "Laura Gómez" : "Juan Camilo");
+    const esMasivo = Boolean(ev.esMasivo);
+    const creadoPorId = ev.creadoPorId || 1;
+    const creadoPorNombre = ev.creadoPorNombre || "Administrador";
     const creadoPorRol = ev.creadoPorRol || "Docente";
 
     return {
@@ -94,12 +55,13 @@ function normalizarEventos(lista) {
 
 export function EventosProvider({ children }) {
   const [eventos, setEventos] = useState(() => {
-    const almacenados = leerAlmacenamiento("itm_eventos", eventosIniciales);
+    const almacenados = leerAlmacenamiento("itm_eventos", []);
     return normalizarEventos(almacenados);
   });
   const [inscripciones, setInscripciones] = useState(() =>
     leerAlmacenamiento("itm_inscripciones", [])
   );
+  const [cargando, setCargando] = useState(true);
 
   const cargarEventos = async () => {
     try {
@@ -107,11 +69,13 @@ export function EventosProvider({ children }) {
       const datos = token
         ? await listarEventosApi()
         : await listarEventosPublicadosApi();
-      if (Array.isArray(datos) && datos.length > 0) {
+      if (Array.isArray(datos)) {
         setEventos(normalizarEventos(datos));
       }
-    } catch {
-      // Backend offline o sin conexión: mantener datos de almacenamiento
+    } catch (error) {
+      console.error("Error al cargar eventos de la base de datos:", error);
+    } finally {
+      setCargando(false);
     }
   };
 
@@ -125,7 +89,7 @@ export function EventosProvider({ children }) {
         }
       }
     } catch {
-      // Ignorar error si no está autorizado
+      // Endpoint protegido
     }
   };
 
@@ -148,44 +112,8 @@ export function EventosProvider({ children }) {
       const normalizado = normalizarEventos([nuevo])[0];
       setEventos((prev) => [...prev, normalizado]);
       return normalizado;
-    } catch {
-      const nuevoId =
-        eventos.reduce((max, evento) => Math.max(max, evento.id), 0) + 1;
-      const esMasivo = Boolean(datos.esMasivo);
-      const capacidad = esMasivo
-        ? null
-        : Number(datos.capacidad) > 0
-          ? Number(datos.capacidad)
-          : 50;
-      const ubicacionMapa =
-        (datos.ubicacionMapa || "").trim() ||
-        datos.lugar.trim() ||
-        "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia";
-
-      const tiposValidos = ["abierto", "charla", "observacion"];
-      const tipo = tiposValidos.includes(datos.tipo) ? datos.tipo : "abierto";
-
-      const local = {
-        id: nuevoId,
-        titulo: datos.titulo.trim(),
-        descripcion: datos.descripcion.trim(),
-        fecha: datos.fecha,
-        hora: datos.hora,
-        lugar: datos.lugar.trim(),
-        esMasivo,
-        capacidad,
-        ubicacionMapa,
-        imagen: datos.imagen || "/images/Imagen.png",
-        estado: datos.estado || "borrador",
-        tipo,
-        creadoPorId: datos.creadoPorId || 1,
-        creadoPorNombre: datos.creadoPorNombre || "Administrador",
-        creadoPorRol: datos.creadoPorRol || "Docente",
-        inscritos: 0,
-        asistentes: 0,
-      };
-      setEventos((prev) => [...prev, local]);
-      return local;
+    } catch (error) {
+      throw error;
     }
   };
 
@@ -197,76 +125,50 @@ export function EventosProvider({ children }) {
         prev.map((evento) => (evento.id === id ? { ...evento, ...normalizado } : evento))
       );
       return normalizado;
-    } catch {
-      setEventos((prev) =>
-        prev.map((evento) => {
-          if (evento.id !== id) return evento;
-          const actualizados = { ...evento, ...cambios };
-          if (cambios.esMasivo !== undefined) {
-            actualizados.esMasivo = Boolean(cambios.esMasivo);
-            if (actualizados.esMasivo) {
-              actualizados.capacidad = null;
-            }
-          }
-          if (!actualizados.esMasivo && cambios.capacidad !== undefined) {
-            actualizados.capacidad =
-              Number(cambios.capacidad) > 0 ? Number(cambios.capacidad) : 50;
-          }
-          if (cambios.ubicacionMapa !== undefined) {
-            actualizados.ubicacionMapa =
-              (cambios.ubicacionMapa || "").trim() || actualizados.lugar;
-          }
-          if (cambios.tipo !== undefined) {
-            const tiposValidos = ["abierto", "charla", "observacion"];
-            actualizados.tipo = tiposValidos.includes(cambios.tipo)
-              ? cambios.tipo
-              : "abierto";
-          }
-          return actualizados;
-        })
-      );
+    } catch (error) {
+      throw error;
     }
   };
 
   const eliminarEvento = async (id) => {
     try {
       await eliminarEventoApi(id);
-    } catch {
-      // Ignorar error red
+      setEventos((prev) => prev.filter((evento) => evento.id !== id));
+    } catch (error) {
+      throw error;
     }
-    setEventos((prev) => prev.filter((evento) => evento.id !== id));
   };
 
   const publicarEvento = async (id) => {
     try {
       await publicarEventoApi(id);
-    } catch {
-      // Fallback
+      setEventos((prev) =>
+        prev.map((evento) =>
+          evento.id === id ? { ...evento, estado: "publicado" } : evento
+        )
+      );
+    } catch (error) {
+      throw error;
     }
-    setEventos((prev) =>
-      prev.map((evento) =>
-        evento.id === id ? { ...evento, estado: "publicado" } : evento
-      )
-    );
   };
 
   const cancelarEvento = async (id, motivo = "clima") => {
     try {
       await cancelarEventoApi(id, motivo);
-    } catch {
-      // Fallback
+      setEventos((prev) =>
+        prev.map((evento) =>
+          evento.id === id
+            ? {
+                ...evento,
+                estado: "cancelado",
+                motivoCancelacion: motivo,
+              }
+            : evento
+        )
+      );
+    } catch (error) {
+      throw error;
     }
-    setEventos((prev) =>
-      prev.map((evento) =>
-        evento.id === id
-          ? {
-              ...evento,
-              estado: "cancelado",
-              motivoCancelacion: motivo,
-            }
-          : evento
-      )
-    );
   };
 
   const eventosPublicados = useMemo(
@@ -313,18 +215,6 @@ export function EventosProvider({ children }) {
     relacionUniversidad = "Externo",
     programaAcademico = "",
   }) => {
-    const eventoActual = eventos.find((e) => e.id === Number(eventoId));
-    if (eventoActual && !eventoActual.esMasivo) {
-      const capacidad = Number(eventoActual.capacidad) > 0 ? Number(eventoActual.capacidad) : 50;
-      const inscritos = Number(eventoActual.inscritos) || 0;
-      if (inscritos >= capacidad) {
-        return {
-          exito: false,
-          error: "Lo sentimos, los cupos para este evento ya se han agotado.",
-        };
-      }
-    }
-
     try {
       const inscripcion = await inscribirApi({
         eventoId: Number(eventoId),
@@ -348,58 +238,10 @@ export function EventosProvider({ children }) {
 
       return { exito: true, inscripcion };
     } catch (error) {
-      if (error && (error.mensaje || error.message)) {
-        return {
-          exito: false,
-          error: error.mensaje || error.message,
-        };
-      }
-
-      // Fallback local si backend no responde
-      const docLimpio = (numeroDocumento || "").trim().toLowerCase();
-      const yaInscrito = inscripciones.some(
-        (i) =>
-          i.eventoId === Number(eventoId) &&
-          (i.correo.toLowerCase() === correo.trim().toLowerCase() ||
-            (docLimpio && i.numeroDocumento && i.numeroDocumento.toLowerCase() === docLimpio))
-      );
-      if (yaInscrito) {
-        return {
-          exito: false,
-          error: "Ya existe una inscripción registrada con ese correo o número de documento.",
-        };
-      }
-
-      const codigo = eventoActual?.esMasivo
-        ? null
-        : generarCodigo4Digitos(eventoId, inscripciones);
-
-      const inscripcion = {
-        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-        codigo,
-        eventoId: Number(eventoId),
-        nombre: nombre.trim(),
-        tipoDocumento: tipoDocumento || "CC",
-        numeroDocumento: (numeroDocumento || "").trim(),
-        correo: correo.trim(),
-        telefono: telefono.trim(),
-        relacionUniversidad: relacionUniversidad || "Otro",
-        programaAcademico: (programaAcademico || "").trim(),
-        asistencia: "Pendiente",
-        fechaInscripcion: new Date().toISOString(),
-        esMasivo: Boolean(eventoActual?.esMasivo),
+      return {
+        exito: false,
+        error: error?.mensaje || error?.message || "Error al registrar la inscripción.",
       };
-
-      setInscripciones((prev) => [...prev, inscripcion]);
-      setEventos((prev) =>
-        prev.map((evento) =>
-          evento.id === Number(eventoId)
-            ? { ...evento, inscritos: (evento.inscritos || 0) + 1 }
-            : evento
-        )
-      );
-
-      return { exito: true, inscripcion };
     }
   };
 
@@ -424,48 +266,6 @@ export function EventosProvider({ children }) {
           otroEvento: otroEv,
         };
       }
-
-      // Fallback local
-      const query = limpio.toLowerCase();
-      const local = inscripciones.find(
-        (i) =>
-          (eventoId ? i.eventoId === Number(eventoId) : true) &&
-          ((i.codigo && i.codigo.toLowerCase() === query) ||
-            (i.correo && i.correo.toLowerCase() === query) ||
-            (i.numeroDocumento && i.numeroDocumento.toLowerCase() === query) ||
-            (i.id && String(i.id).toLowerCase() === query))
-      );
-
-      if (local) {
-        if (local.asistencia === "Asistió") {
-          return {
-            exito: false,
-            error: "Este registro ya fue validado anteriormente.",
-            inscripcion: local,
-          };
-        }
-        return { exito: true, inscripcion: local };
-      }
-
-      if (eventoId) {
-        const enOtro = inscripciones.find(
-          (i) =>
-            ((i.codigo && i.codigo.toLowerCase() === query) ||
-              (i.correo && i.correo.toLowerCase() === query) ||
-              (i.numeroDocumento && i.numeroDocumento.toLowerCase() === query) ||
-              (i.id && String(i.id).toLowerCase() === query))
-        );
-        if (enOtro) {
-          const ev = eventos.find((e) => e.id === enOtro.eventoId);
-          return {
-            exito: false,
-            error: `El participante está inscrito en otro evento ("${ev?.titulo || "Otro evento"}"), no en el evento seleccionado.`,
-            inscripcion: enOtro,
-            otroEvento: ev,
-          };
-        }
-      }
-
       return { exito: false, error: mensaje };
     }
   };
@@ -498,41 +298,6 @@ export function EventosProvider({ children }) {
 
       return { exito: true, inscripcion };
     } catch (error) {
-      // Fallback local
-      const query = limpio.toLowerCase();
-      const local = inscripciones.find(
-        (i) =>
-          (eventoId ? i.eventoId === Number(eventoId) : true) &&
-          ((i.codigo && i.codigo.toLowerCase() === query) ||
-            (i.correo && i.correo.toLowerCase() === query) ||
-            (i.numeroDocumento && i.numeroDocumento.toLowerCase() === query) ||
-            (i.id && String(i.id).toLowerCase() === query))
-      );
-
-      if (local) {
-        if (local.asistencia === "Asistió") {
-          return { exito: false, error: "Este registro ya fue validado anteriormente." };
-        }
-
-        setInscripciones((prev) =>
-          prev.map((i) => {
-            const coincide =
-              (local.id && i.id === local.id) ||
-              (local.codigo && i.codigo === local.codigo);
-            return coincide ? { ...i, asistencia: "Asistió" } : i;
-          })
-        );
-        setEventos((prev) =>
-          prev.map((evento) =>
-            evento.id === local.eventoId
-              ? { ...evento, asistentes: (evento.asistentes || 0) + 1 }
-              : evento
-          )
-        );
-
-        return { exito: true, inscripcion: { ...local, asistencia: "Asistió" } };
-      }
-
       return {
         exito: false,
         error: error?.mensaje || error?.message || "No se pudo confirmar la asistencia.",
@@ -546,6 +311,7 @@ export function EventosProvider({ children }) {
   const value = {
     eventos,
     eventosPublicados,
+    cargando,
     obtenerEvento,
     crearEvento,
     editarEvento,

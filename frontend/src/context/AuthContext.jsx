@@ -20,48 +20,12 @@ import { obtenerToken, guardarToken, limpiarToken } from "../api/cliente.js";
 
 const AuthContext = createContext(null);
 
-const usuariosIniciales = [
-  {
-    id: 1,
-    nombre: "Administrador",
-    correo: "admin@itm.edu.co",
-    rol: "Administrador",
-    password: "admin123",
-    estado: "Activo",
-    token: null,
-  },
-  {
-    id: 2,
-    nombre: "Juan Camilo",
-    correo: "juan.camilo@itm.edu.co",
-    rol: "Docente",
-    password: "docente123",
-    estado: "Activo",
-    token: null,
-  },
-  {
-    id: 3,
-    nombre: "Laura Gómez",
-    correo: "laura.gomez@itm.edu.co",
-    rol: "Docente",
-    password: "docente123",
-    estado: "Activo",
-    token: null,
-  },
-];
-
 export function AuthProvider({ children }) {
-  const [usuarios, setUsuarios] = useState(() =>
-    leerAlmacenamiento("itm_usuarios", usuariosIniciales)
-  );
   const [usuarioActual, setUsuarioActual] = useState(() =>
     leerAlmacenamiento("itm_usuario_actual", null)
   );
   const [docentes, setDocentes] = useState([]);
-
-  useEffect(() => {
-    escribirAlmacenamiento("itm_usuarios", usuarios);
-  }, [usuarios]);
+  const [cargandoAuth, setCargandoAuth] = useState(true);
 
   const cargarDocentes = async () => {
     try {
@@ -70,8 +34,7 @@ export function AuthProvider({ children }) {
         setDocentes(lista);
       }
     } catch {
-      // Si el backend no responde, cargar desde usuarios locales
-      setDocentes(usuarios.filter((u) => u.rol === "Docente"));
+      setDocentes([]);
     }
   };
 
@@ -87,16 +50,19 @@ export function AuthProvider({ children }) {
           }
         })
         .catch(() => {
-          // Token expirado o backend reiniciado
           limpiarToken();
           setUsuarioActual(null);
           escribirAlmacenamiento("itm_usuario_actual", null);
+        })
+        .finally(() => {
+          setCargandoAuth(false);
         });
     } else {
       const guardado = leerAlmacenamiento("itm_usuario_actual", null);
       if (guardado) {
         setUsuarioActual(guardado);
       }
+      setCargandoAuth(false);
     }
   }, []);
 
@@ -127,15 +93,6 @@ export function AuthProvider({ children }) {
       }
       return { exito: true, usuario };
     } catch (error) {
-      // Fallback a almacenamiento local si backend está desconectado
-      const local = usuarios.find(
-        (u) => u.correo.toLowerCase() === correoLimpio
-      );
-      if (local && local.password === password && local.estado === "Activo") {
-        setUsuarioActual(local);
-        escribirAlmacenamiento("itm_usuario_actual", local);
-        return { exito: true, usuario: local };
-      }
       return {
         exito: false,
         error: error?.mensaje || error?.message || "Correo o contraseña incorrectos.",
@@ -147,7 +104,7 @@ export function AuthProvider({ children }) {
     try {
       await cerrarSesion();
     } catch {
-      // Omitir error de desconexión
+      // Ignorar
     }
     limpiarToken();
     setUsuarioActual(null);
@@ -165,19 +122,10 @@ export function AuthProvider({ children }) {
       escribirAlmacenamiento("itm_usuario_actual", usuario);
       return { exito: true, usuario };
     } catch (error) {
-      // Fallback local
-      const cambios = {};
-      if (nombre) cambios.nombre = nombre.trim();
-      if (correo) cambios.correo = correo.trim();
-      if (nuevaPassword) cambios.password = nuevaPassword;
-
-      setUsuarios((prev) =>
-        prev.map((u) => (u.id === usuarioActual?.id ? { ...u, ...cambios } : u))
-      );
-      const usuarioActualizado = { ...usuarioActual, ...cambios };
-      setUsuarioActual(usuarioActualizado);
-      escribirAlmacenamiento("itm_usuario_actual", usuarioActualizado);
-      return { exito: true, usuario: usuarioActualizado };
+      return {
+        exito: false,
+        error: error?.mensaje || error?.message || "No se pudo actualizar el perfil.",
+      };
     }
   };
 
@@ -188,21 +136,9 @@ export function AuthProvider({ children }) {
       const enlace = res.enlaceActivacion || `${window.location.origin}/login`;
       return { exito: true, docente: res, enlace };
     } catch (error) {
-      // Fallback local
-      const nuevoDocente = {
-        id: Date.now(),
-        nombre: nombre.trim(),
-        correo: correo.trim(),
-        rol: "Docente",
-        password: "docente123",
-        estado: "Activo",
-      };
-      setDocentes((prev) => [...prev, nuevoDocente]);
-      setUsuarios((prev) => [...prev, nuevoDocente]);
       return {
-        exito: true,
-        docente: nuevoDocente,
-        enlace: `${window.location.origin}/login`,
+        exito: false,
+        error: error?.mensaje || error?.message || "No se pudo crear el docente.",
       };
     }
   };
@@ -210,30 +146,26 @@ export function AuthProvider({ children }) {
   const editarDocente = async (id, cambios) => {
     try {
       const res = await editarDocenteApi(id, cambios);
-      setDocentes((prev) =>
-        prev.map((d) => (d.id === id ? { ...d, ...res } : d))
-      );
+      await cargarDocentes();
       return { exito: true, docente: res };
     } catch (error) {
-      setDocentes((prev) =>
-        prev.map((d) => (d.id === id ? { ...d, ...cambios } : d))
-      );
-      return { exito: true };
+      return {
+        exito: false,
+        error: error?.mensaje || error?.message || "No se pudo editar el docente.",
+      };
     }
   };
 
   const cambiarEstadoDocente = async (id, nuevoEstado) => {
     try {
       await cambiarEstadoDocenteApi(id, nuevoEstado);
-      setDocentes((prev) =>
-        prev.map((d) => (d.id === id ? { ...d, estado: nuevoEstado } : d))
-      );
+      await cargarDocentes();
       return { exito: true };
     } catch (error) {
-      setDocentes((prev) =>
-        prev.map((d) => (d.id === id ? { ...d, estado: nuevoEstado } : d))
-      );
-      return { exito: true };
+      return {
+        exito: false,
+        error: error?.mensaje || error?.message || "No se pudo cambiar el estado del docente.",
+      };
     }
   };
 
@@ -243,8 +175,10 @@ export function AuthProvider({ children }) {
       setDocentes((prev) => prev.filter((d) => d.id !== id));
       return { exito: true };
     } catch (error) {
-      setDocentes((prev) => prev.filter((d) => d.id !== id));
-      return { exito: true };
+      return {
+        exito: false,
+        error: error?.mensaje || error?.message || "No se pudo eliminar el docente.",
+      };
     }
   };
 
@@ -280,8 +214,8 @@ export function AuthProvider({ children }) {
   );
 
   const value = {
-    usuarios,
     usuarioActual,
+    cargandoAuth,
     estaAutenticado,
     esAdmin,
     esDocente,

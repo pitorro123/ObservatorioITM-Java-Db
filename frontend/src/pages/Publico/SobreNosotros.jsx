@@ -1,10 +1,22 @@
+import { useEffect, useState } from "react";
 import { Building2, Target, Eye, Mail } from "lucide-react";
 import { contenidoObservatorio, equipoDocente } from "../../data/observatorio.js";
+import { obtenerObservatorio } from "../../api/servicios.js";
 import telescopioImg from "../../assets/images/observatorio/icons/telescopio.png";
 import estilos from "./SobreNosotros.module.css";
 
 export default function SobreNosotros() {
-  const observatorio = contenidoObservatorio;
+  const [observatorio, setObservatorio] = useState(contenidoObservatorio);
+
+  useEffect(() => {
+    obtenerObservatorio()
+      .then((datos) => {
+        if (datos && datos.titulo) {
+          setObservatorio(datos);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <>

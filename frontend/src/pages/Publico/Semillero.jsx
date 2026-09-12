@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   GraduationCap,
   Telescope,
@@ -7,6 +8,7 @@ import {
 } from "lucide-react";
 import Button from "../../components/common/Button/Button.jsx";
 import { contenidoSemillero } from "../../data/observatorio.js";
+import { obtenerSemillero } from "../../api/servicios.js";
 import nebulosaImg from "../../assets/images/observatorio/semillero/astronomia-nebulosa.jpg";
 import viaLacteaImg from "../../assets/images/observatorio/semillero/via-lactea-estrellas.jpg";
 import estilos from "./Semillero.module.css";
@@ -36,7 +38,17 @@ const ENLACE_WHATSAPP =
   "https://chat.whatsapp.com/EkD8YCVivoCKufp250O8b2?s=cl&p=a&mlu=4&ilr=4";
 
 export default function Semillero() {
-  const semillero = contenidoSemillero;
+  const [semillero, setSemillero] = useState(contenidoSemillero);
+
+  useEffect(() => {
+    obtenerSemillero()
+      .then((datos) => {
+        if (datos && datos.titulo) {
+          setSemillero(datos);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <>
