@@ -66,7 +66,7 @@ public class UsuarioServicio {
 		repositorio.save(docente);
 
 		String enlace = baseUrl + "/cambiar-password?token=" + token;
-		correo.enviarHtml(docente.getCorreo(), "Activa tu cuenta de docente - Observatorio ITM",
+		correo.enviarHtmlAsync(docente.getCorreo(), "Activa tu cuenta de docente - Observatorio ITM",
 				correo.plantillas().correoActivacionDocente(nombre, enlace, passwordTemporal));
 
 		return new CrearDocenteResponse(docente.getId(), docente.getNombre(), docente.getCorreo(),

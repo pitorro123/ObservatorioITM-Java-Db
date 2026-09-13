@@ -66,7 +66,7 @@ public class AuthServicio {
 		repositorio.save(usuario);
 
 		String enlace = baseUrl + "/cambiar-password?token=" + token;
-		correo.enviarHtml(usuario.getCorreo(), "Restablece tu contraseña - Observatorio ITM",
+		correo.enviarHtmlAsync(usuario.getCorreo(), "Restablece tu contraseña - Observatorio ITM",
 				correo.plantillas().correoRecuperacion(usuario.getNombre(), enlace));
 	}
 

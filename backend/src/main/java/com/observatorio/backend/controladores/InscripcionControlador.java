@@ -103,16 +103,13 @@ public class InscripcionControlador {
 		}
 		resp.put("diagnostico_red", conexiones);
 
-		// Intento con sender actual
+		resp.put("brevo_configurado", correo.getBrevoApiKey() != null && !correo.getBrevoApiKey().isBlank());
+		resp.put("resend_configurado", correo.getResendApiKey() != null && !correo.getResendApiKey().isBlank());
+
+		// Intento con servicio unificado
 		try {
-			var msg = correo.getMailSender().createMimeMessage();
-			var helper = new org.springframework.mail.javamail.MimeMessageHelper(msg, true, "UTF-8");
-			helper.setFrom(remitente);
-			helper.setTo(para);
-			helper.setSubject("Diagnostico Observatorio");
-			helper.setText("<p>Prueba directa</p>", true);
-			correo.getMailSender().send(msg);
-			resp.put("enviado", true);
+			boolean ok = correo.enviarHtml(para, "Diagnostico Observatorio", "<p>Prueba directa del servicio de correo</p>");
+			resp.put("enviado", ok);
 		} catch (Exception e) {
 			resp.put("enviado", false);
 			resp.put("error", e.getClass().getName() + ": " + e.getMessage());

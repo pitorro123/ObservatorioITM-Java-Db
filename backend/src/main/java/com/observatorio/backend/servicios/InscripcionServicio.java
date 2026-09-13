@@ -122,7 +122,7 @@ public class InscripcionServicio {
 
 		if (!esMasivo && codigo != null) {
 			String qrBase64 = qr.generarQrBase64(codigo, 300);
-			correo.enviarHtml(inscripcion.getCorreo(), "¡Inscripción confirmada! - Observatorio ITM",
+			correo.enviarHtmlAsync(inscripcion.getCorreo(), "¡Inscripción confirmada! - Observatorio ITM",
 					correo.plantillas().correoConfirmacionInscripcion(
 							inscripcion.getNombre(), evento.getTitulo(),
 							evento.getFecha().format(FECHA_ES), evento.getHora(), evento.getLugar(),
@@ -247,7 +247,7 @@ public class InscripcionServicio {
 
 		if (inscripcion.getCodigo() != null) {
 			String qrBase64 = qr.generarQrBase64(inscripcion.getCodigo(), 300);
-			correo.enviarHtml(docente.getCorreo(), "Código de control del participante - Observatorio ITM",
+			correo.enviarHtmlAsync(docente.getCorreo(), "Código de control del participante - Observatorio ITM",
 					correo.plantillas().correoQrDocente(docente.getNombre(), evento.getTitulo(),
 							inscripcion.getNombre(), inscripcion.getCodigo(), qrBase64));
 		}
