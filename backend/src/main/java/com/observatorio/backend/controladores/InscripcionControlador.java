@@ -27,7 +27,6 @@ public class InscripcionControlador {
 	private final SeguridadServicio seguridad;
 	private final com.observatorio.backend.servicios.CorreoServicio correo;
 
-	public InscripcionControlador(InscripcionServicio servicio, SeguridadServicio seguridad) {
 	public InscripcionControlador(InscripcionServicio servicio, SeguridadServicio seguridad,
 			com.observatorio.backend.servicios.CorreoServicio correo) {
 		this.servicio = servicio;

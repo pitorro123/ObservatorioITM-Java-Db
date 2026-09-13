@@ -31,7 +31,6 @@ public class CorreoServicio {
 		return plantillas;
 	}
 
-	public void enviarHtml(String para, String asunto, String cuerpoHtml) {
 	public String getRemitente() {
 		return remitente;
 	}
@@ -43,7 +42,6 @@ public class CorreoServicio {
 	public boolean enviarHtml(String para, String asunto, String cuerpoHtml) {
 		if (remitente == null || remitente.isBlank()) {
 			log.warn("SMTP no configurado (MAIL_USERNAME no definido). Omitiendo envio de correo a {}", para);
-			return;
 			return false;
 		}
 		try {
@@ -57,7 +55,6 @@ public class CorreoServicio {
 			log.info("Correo enviado exitosamente a {}", para);
 			return true;
 		} catch (Exception e) {
-			log.error("No se pudo enviar el correo a {}: {}", para, e.getMessage());
 			log.error("No se pudo enviar el correo a {}: {}", para, e.getMessage(), e);
 			return false;
 		}
