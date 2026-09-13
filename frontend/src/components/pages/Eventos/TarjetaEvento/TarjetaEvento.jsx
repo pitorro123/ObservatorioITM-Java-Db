@@ -1,6 +1,7 @@
 import { Trash2, Pencil, Send, XCircle, Users, GraduationCap, Lock } from "lucide-react";
 import { formatearFechaCorta, formatearHora } from "../../../../utils/formato.js";
 import { useAuth } from "../../../../context/AuthContext.jsx";
+import { IMAGENES } from "../../../../data/imagenes.js";
 import estilos from "./TarjetaEvento.module.css";
 
 const clasesEstado = {
@@ -30,13 +31,13 @@ export default function TarjetaEvento({
     <article className={estilos.tarjeta}>
       <div className={estilos.contenedorImagen}>
         <img
-          src={evento.imagen || "/images/Imagen.png"}
+          src={evento.imagen || IMAGENES.GENERAL.DEFAULT_EVENTO}
           alt={evento.titulo}
           className={estilos.imagen}
           loading="lazy"
           onError={(e) => {
             e.currentTarget.onerror = null;
-            e.currentTarget.src = "/images/Imagen.png";
+            e.currentTarget.src = IMAGENES.GENERAL.DEFAULT_EVENTO;
           }}
         />
         <span className={`${estilos.insignia} ${clasesEstado[evento.estado] || ""}`}>

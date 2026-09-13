@@ -1,16 +1,11 @@
-import fondoPortada from "../assets/images/observatorio/hero/fondo-portada.png";
-import telescopioIcon from "../assets/images/observatorio/icons/telescopio-observaciones.png";
-import talleresIcon from "../assets/images/observatorio/icons/talleres-charlas.png";
-import comunidadIcon from "../assets/images/observatorio/icons/comunidad-cientifica.png";
-import andresTorresImg from "../assets/images/observatorio/profesores/andres-torres.jpg";
-import luisOcampoImg from "../assets/images/observatorio/profesores/luis-ocampo.jpg";
+import { IMAGENES } from "./imagenes.js";
 
 export const contenidoPortada = {
   tituloLinea1: "Explora el universo desde",
   tituloLinea2: "el Observatorio Astronómico del ITM",
   descripcion:
     "Participa en observaciones, conferencias, talleres y actividades astronómicas abiertas para la comunidad.",
-  imagen: fondoPortada,
+  imagen: IMAGENES.PORTADA_HERO.FONDO_PORTADA,
   botonPrimario: { etiqueta: "Ver Calendario", ruta: "/eventos" },
   botonSecundario: { etiqueta: "Ver Semillero", ruta: "/semillero" },
 };
@@ -38,7 +33,7 @@ export const porQueAsistir = {
     {
       id: 1,
       icono: "Telescope",
-      imagen: telescopioIcon,
+      imagen: IMAGENES.LOGOS_ICONOS.TELESCOPIO_OBSERVACIONES,
       titulo: "Observaciones Astronómicas",
       descripcion:
         "Aprende utilizando telescopios y equipos especializados completamente gratis.",
@@ -46,7 +41,7 @@ export const porQueAsistir = {
     {
       id: 2,
       icono: "Presentation",
-      imagen: talleresIcon,
+      imagen: IMAGENES.LOGOS_ICONOS.TALLERES,
       titulo: "Charlas y Talleres",
       descripcion:
         "Participa en actividades dirigidas por docentes e investigadores.",
@@ -54,7 +49,7 @@ export const porQueAsistir = {
     {
       id: 3,
       icono: "Users",
-      imagen: comunidadIcon,
+      imagen: IMAGENES.LOGOS_ICONOS.COMUNIDAD,
       titulo: "Comunidad Científica",
       descripcion:
         "Conecta con estudiantes interesados en la astronomía y comparte experiencias únicas.",
@@ -136,7 +131,7 @@ export const equipoDocente = [
       "Mecánica celeste",
     ],
     correo: "andrestorres@itm.edu.co",
-    imagen: andresTorresImg,
+    imagen: IMAGENES.PROFESORES.ANDRES_TORRES,
     badge: "Coordinación & Divulgación",
   },
   {
@@ -152,7 +147,7 @@ export const equipoDocente = [
       "Óptica astronómica",
     ],
     correo: "luisocampo@itm.edu.co",
-    imagen: luisOcampoImg,
+    imagen: IMAGENES.PROFESORES.LUIS_OCAMPO,
     badge: "Instrumentación & Docencia",
   },
 ];

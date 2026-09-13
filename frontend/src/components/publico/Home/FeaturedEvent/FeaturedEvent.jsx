@@ -5,6 +5,7 @@ import ModalEventoCancelado from "../../../common/ModalEventoCancelado/ModalEven
 import { useEventosContext } from "../../../../context/EventosContext.jsx";
 import { useClima } from "../../../../hooks/useClima.js";
 import { formatearFecha, formatearHora } from "../../../../utils/formato.js";
+import { IMAGENES } from "../../../../data/imagenes.js";
 import styles from "./FeaturedEvent.module.css";
 
 const hoyEnTexto = () => new Date().toISOString().slice(0, 10);
@@ -35,12 +36,12 @@ export default function FeaturedEvent() {
       {evento.imagen && (
         <div className={styles.imageWrap}>
           <img
-            src={evento.imagen || "/images/Imagen.png"}
+            src={evento.imagen || IMAGENES.GENERAL.DEFAULT_EVENTO}
             alt={evento.titulo}
             className={styles.image}
             onError={(e) => {
               e.currentTarget.onerror = null;
-              e.currentTarget.src = "/images/Imagen.png";
+              e.currentTarget.src = IMAGENES.GENERAL.DEFAULT_EVENTO;
             }}
           />
         </div>

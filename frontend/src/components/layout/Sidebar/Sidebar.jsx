@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { ENLACES_NAVEGACION } from "../../../constants/navegacion.js";
 import { useAuth } from "../../../context/AuthContext.jsx";
+import { IMAGENES } from "../../../data/imagenes.js";
 import estilos from "./Sidebar.module.css";
 
 const mapaIconos = {
@@ -72,7 +73,7 @@ export default function Sidebar() {
           <Menu className={estilos.iconoMenu} aria-hidden="true" />
         </button>
         <img
-          src="/images/LogoItm.png"
+          src={IMAGENES.LOGOS_ICONOS.LOGO_ITM}
           alt="Logo ITM Institución Universitaria"
           className={estilos.logoMovil}
         />
@@ -142,7 +143,7 @@ export default function Sidebar() {
       >
         <div className={estilos.encabezadoLogo}>
           <img
-            src="/images/LogoItm.png"
+            src={IMAGENES.LOGOS_ICONOS.LOGO_ITM}
             alt="Logo ITM Institución Universitaria"
             className={estilos.logo}
           />

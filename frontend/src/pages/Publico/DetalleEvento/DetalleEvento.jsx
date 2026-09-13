@@ -23,6 +23,7 @@ import {
   RELACIONES_ITM,
   PROGRAMAS_ITM,
 } from "../../../data/programasItm.js";
+import { IMAGENES } from "../../../data/imagenes.js";
 import estilos from "./DetalleEvento.module.css";
 
 function construirUrlMapa(direccion) {
@@ -223,12 +224,12 @@ export default function DetalleEvento() {
           {evento.imagen && (
             <div className={estilos.imagenWrap}>
               <img
-                src={evento.imagen || "/images/Imagen.png"}
+                src={evento.imagen || IMAGENES.GENERAL.DEFAULT_EVENTO}
                 alt={evento.titulo}
                 className={estilos.imagen}
                 onError={(e) => {
                   e.currentTarget.onerror = null;
-                  e.currentTarget.src = "/images/Imagen.png";
+                  e.currentTarget.src = IMAGENES.GENERAL.DEFAULT_EVENTO;
                 }}
               />
             </div>

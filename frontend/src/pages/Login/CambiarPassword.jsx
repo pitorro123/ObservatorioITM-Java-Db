@@ -3,8 +3,10 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { KeyRound, CheckCircle2, AlertCircle, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { useAuth } from "../../context/AuthContext.jsx";
 import Navbar from "../../components/layout/Navbar/Navbar.jsx";
-import logo from "../../assets/images/observatorio/logo/logo-footer.png";
+import { IMAGENES } from "../../data/imagenes.js";
 import estilos from "./CambiarPassword.module.css";
+
+const logo = IMAGENES.LOGOS_ICONOS.LOGO_FOOTER;
 
 export default function CambiarPassword() {
   const [parametros] = useSearchParams();

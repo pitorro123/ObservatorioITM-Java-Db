@@ -1,30 +1,27 @@
-import nocturna from "../assets/images/observatorio/gallery/observacion-nocturna.png";
-import estrellado from "../assets/images/observatorio/gallery/cielo-estrellado.png";
-import visitantes from "../assets/images/observatorio/gallery/visitantes-observatorio.png";
-import actividad from "../assets/images/observatorio/gallery/actividad-astronomica.png";
+import { IMAGENES } from "./imagenes.js";
 
 export const imagenesGaleria = [
   {
     id: 1,
-    ruta: nocturna,
+    ruta: IMAGENES.GALERIA.OBSERVACION_NOCTURNA,
     titulo: "Observación nocturna",
     descripcion: "Observación nocturna en el observatorio",
   },
   {
     id: 2,
-    ruta: estrellado,
+    ruta: IMAGENES.GALERIA.CIELO_ESTRELLADO,
     titulo: "Cielo estrellado",
     descripcion: "Cielo estrellado sobre el observatorio",
   },
   {
     id: 3,
-    ruta: visitantes,
+    ruta: IMAGENES.GALERIA.VISITANTES,
     titulo: "Visitantes",
     descripcion: "Visitantes del observatorio astronómico",
   },
   {
     id: 4,
-    ruta: actividad,
+    ruta: IMAGENES.GALERIA.ACTIVIDAD_ASTRONOMICA,
     titulo: "Actividad astronómica",
     descripcion: "Actividad astronómica con la comunidad",
   },

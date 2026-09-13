@@ -1,7 +1,4 @@
-import tintoImg from "../assets/images/observatorio/events/tinto-estrellas.png";
-import meteorosImg from "../assets/images/observatorio/events/noche-meteoros.jpg";
-import astrofotografiaImg from "../assets/images/observatorio/events/astrofotografia.jpg";
-import maratonMegImg from "../assets/images/observatorio/events/maraton-messier.jpg";
+import { IMAGENES } from "./imagenes.js";
 
 export const eventosIniciales = [
   {
@@ -12,9 +9,10 @@ export const eventosIniciales = [
     fecha: "2026-09-03",
     hora: "16:00",
     lugar: "Observatorio Astronómico ITM - Sede Fraternidad",
-    ubicacionMapa: "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
+    ubicacionMapa:
+      "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
     capacidad: 30,
-    imagen: tintoImg,
+    imagen: IMAGENES.EVENTOS.TINTO_ESTRELLAS,
     estado: "publicado",
     tipo: "observacion",
     inscritos: 12,
@@ -28,10 +26,11 @@ export const eventosIniciales = [
     fecha: "2026-09-18",
     hora: "19:00",
     lugar: "Observatorio Astronómico ITM - Sede Fraternidad",
-    ubicacionMapa: "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
+    ubicacionMapa:
+      "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
     esMasivo: true,
     capacidad: null,
-    imagen: meteorosImg,
+    imagen: IMAGENES.EVENTOS.NOCHE_METEOROS,
     estado: "publicado",
     tipo: "observacion",
     inscritos: 47,
@@ -45,9 +44,10 @@ export const eventosIniciales = [
     fecha: "2026-09-26",
     hora: "17:00",
     lugar: "Observatorio Astronómico ITM - Sede Fraternidad",
-    ubicacionMapa: "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
+    ubicacionMapa:
+      "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
     capacidad: 25,
-    imagen: astrofotografiaImg,
+    imagen: IMAGENES.EVENTOS.ASTROFOTOGRAFIA,
     estado: "publicado",
     tipo: "charla",
     inscritos: 14,
@@ -61,9 +61,10 @@ export const eventosIniciales = [
     fecha: "2026-10-08",
     hora: "15:00",
     lugar: "Observatorio Astronómico ITM - Sede Fraternidad",
-    ubicacionMapa: "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
+    ubicacionMapa:
+      "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
     capacidad: 40,
-    imagen: "/images/Imagen (1).png",
+    imagen: IMAGENES.EVENTOS.ECLIPSE,
     estado: "publicado",
     tipo: "charla",
     inscritos: 5,
@@ -77,9 +78,10 @@ export const eventosIniciales = [
     fecha: "2026-10-15",
     hora: "20:00",
     lugar: "Observatorio Astronómico ITM - Sede Fraternidad",
-    ubicacionMapa: "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
+    ubicacionMapa:
+      "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
     capacidad: 45,
-    imagen: "/images/Imagen (2).png",
+    imagen: IMAGENES.EVENTOS.LLUVIA_ESTRELLAS,
     estado: "borrador",
     tipo: "observacion",
     inscritos: 0,
@@ -93,9 +95,10 @@ export const eventosIniciales = [
     fecha: "2026-11-05",
     hora: "18:00",
     lugar: "Observatorio Astronómico ITM - Sede Fraternidad",
-    ubicacionMapa: "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
+    ubicacionMapa:
+      "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
     capacidad: 35,
-    imagen: "/images/Imagen (3).png",
+    imagen: IMAGENES.EVENTOS.OBSERVACION_LUNAR,
     estado: "borrador",
     tipo: "observacion",
     inscritos: 0,
@@ -109,9 +112,10 @@ export const eventosIniciales = [
     fecha: "2026-11-20",
     hora: "19:30",
     lugar: "Observatorio Astronómico ITM - Sede Fraternidad",
-    ubicacionMapa: "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
+    ubicacionMapa:
+      "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
     capacidad: 35,
-    imagen: "/images/Imagen (4).png",
+    imagen: IMAGENES.EVENTOS.SATELITES,
     estado: "publicado",
     tipo: "charla",
     inscritos: 35,
@@ -125,9 +129,10 @@ export const eventosIniciales = [
     fecha: "2026-12-03",
     hora: "16:30",
     lugar: "Observatorio Astronómico ITM - Sede Fraternidad",
-    ubicacionMapa: "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
+    ubicacionMapa:
+      "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
     capacidad: 20,
-    imagen: "/images/Imagen (5).png",
+    imagen: IMAGENES.EVENTOS.ESPECTROSCOPIA,
     estado: "cancelado",
     tipo: "charla",
     inscritos: 0,
@@ -141,9 +146,10 @@ export const eventosIniciales = [
     fecha: "2026-12-12",
     hora: "19:00",
     lugar: "Observatorio Astronómico ITM - Sede Fraternidad",
-    ubicacionMapa: "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
+    ubicacionMapa:
+      "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
     capacidad: 30,
-    imagen: "/images/Imagen (6).png",
+    imagen: IMAGENES.EVENTOS.CIUDAD_ALTURAS,
     estado: "borrador",
     tipo: "abierto",
     inscritos: 0,
@@ -157,9 +163,10 @@ export const eventosIniciales = [
     fecha: "2027-01-08",
     hora: "20:30",
     lugar: "Observatorio Astronómico ITM - Sede Fraternidad",
-    ubicacionMapa: "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
+    ubicacionMapa:
+      "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
     capacidad: 40,
-    imagen: "/images/Imagen (7).png",
+    imagen: IMAGENES.EVENTOS.SATURNO,
     estado: "publicado",
     tipo: "observacion",
     inscritos: 18,
@@ -173,9 +180,10 @@ export const eventosIniciales = [
     fecha: "2027-01-20",
     hora: "17:00",
     lugar: "Auditorio ITM - Sede Fraternidad",
-    ubicacionMapa: "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
+    ubicacionMapa:
+      "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
     capacidad: 80,
-    imagen: "/images/Imagen.png",
+    imagen: IMAGENES.EVENTOS.VIDA_MAS_ALLA,
     estado: "borrador",
     tipo: "charla",
     inscritos: 0,
@@ -189,9 +197,10 @@ export const eventosIniciales = [
     fecha: "2027-01-30",
     hora: "21:00",
     lugar: "Observatorio Astronómico ITM - Sede Fraternidad",
-    ubicacionMapa: "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
+    ubicacionMapa:
+      "Institución Universitaria ITM · Campus Fraternidad, Cl. 54a #30-01, Villa Hermosa, Medellín, Antioquia",
     capacidad: 30,
-    imagen: maratonMegImg,
+    imagen: IMAGENES.EVENTOS.MARATON_MESSIER,
     estado: "publicado",
     tipo: "observacion",
     inscritos: 22,

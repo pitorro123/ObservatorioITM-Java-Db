@@ -1,8 +1,10 @@
 import { Mail, Phone, MapPin, Youtube, Facebook, Instagram } from "lucide-react";
 import { informacionContacto } from "../../../data/observatorio.js";
 import { redesSociales } from "../../../data/navegacion-publica.js";
-import logoFooter from "../../../assets/images/observatorio/logo/logo-footer.png";
+import { IMAGENES } from "../../../data/imagenes.js";
 import styles from "./Footer.module.css";
+
+const logoFooter = IMAGENES.LOGOS_ICONOS.LOGO_FOOTER;
 
 const socialIcons = {
   Youtube: Youtube,

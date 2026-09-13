@@ -14,6 +14,7 @@ import BuscadorSelect from "../../../components/common/BuscadorSelect/BuscadorSe
 import ModalEventoCancelado from "../../../components/common/ModalEventoCancelado/ModalEventoCancelado.jsx";
 import { useEventosContext } from "../../../context/EventosContext.jsx";
 import { formatearFecha, formatearHora } from "../../../utils/formato.js";
+import { IMAGENES } from "../../../data/imagenes.js";
 import estilos from "./Eventos.module.css";
 
 /* ── Carrusel Continuo de Eventos (Movimiento de Izquierda a Derecha) ── */
@@ -337,12 +338,12 @@ export default function Eventos() {
               {evento.imagen && (
                 <div className={estilos.cardImageWrap}>
                   <img
-                    src={evento.imagen || "/images/Imagen.png"}
+                    src={evento.imagen || IMAGENES.GENERAL.DEFAULT_EVENTO}
                     alt={evento.titulo}
                     className={estilos.cardImage}
                     onError={(e) => {
                       e.currentTarget.onerror = null;
-                      e.currentTarget.src = "/images/Imagen.png";
+                      e.currentTarget.src = IMAGENES.GENERAL.DEFAULT_EVENTO;
                     }}
                   />
                   {/* Badges de estado y tipo sobre la imagen */}

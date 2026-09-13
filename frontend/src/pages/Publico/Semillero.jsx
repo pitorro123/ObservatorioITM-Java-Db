@@ -9,8 +9,7 @@ import {
 import Button from "../../components/common/Button/Button.jsx";
 import { contenidoSemillero } from "../../data/observatorio.js";
 import { obtenerSemillero } from "../../api/servicios.js";
-import nebulosaImg from "../../assets/images/observatorio/semillero/astronomia-nebulosa.jpg";
-import viaLacteaImg from "../../assets/images/observatorio/semillero/via-lactea-estrellas.jpg";
+import { IMAGENES } from "../../data/imagenes.js";
 import estilos from "./Semillero.module.css";
 
 const pilares = [
@@ -72,7 +71,7 @@ export default function Semillero() {
           <div className={estilos.galeriaHero}>
             <div className={estilos.imagenWrap}>
               <img
-                src={nebulosaImg}
+                src={IMAGENES.SEMILLERO.NEBULOSA}
                 alt="Nebulosa cósmica del espacio profundo"
                 className={estilos.imagenSemillero}
                 loading="lazy"
@@ -81,7 +80,7 @@ export default function Semillero() {
             </div>
             <div className={estilos.imagenWrap}>
               <img
-                src={viaLacteaImg}
+                src={IMAGENES.SEMILLERO.VIA_LACTEA}
                 alt="Cielo nocturno y estrellas de la Vía Láctea"
                 className={estilos.imagenSemillero}
                 loading="lazy"
