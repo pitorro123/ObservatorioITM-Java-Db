@@ -73,10 +73,37 @@ public class InscripcionControlador {
 	}
 
 	@GetMapping("/diagnostico-correo")
-	public Map<String, Object> diagnosticoCorreo(@RequestParam(defaultValue = "yessik.lave08@gmail.com") String para) {
+	public Map<String, Object> diagnosticoCorreo(@RequestParam(defaultValue = "mimg25348@gmail.com") String para) {
 		Map<String, Object> resp = new java.util.HashMap<>();
 		String remitente = correo.getRemitente();
 		resp.put("remitente", remitente != null && !remitente.isBlank() ? remitente : "NO_DEFINIDO");
+
+		Map<String, String> conexiones = new java.util.LinkedHashMap<>();
+		String[] hostsYPuertos = {
+			"smtp.gmail.com:465",
+			"smtp.gmail.com:587",
+			"smtp.gmail.com:25",
+			"smtp.sendgrid.net:465",
+			"smtp.sendgrid.net:587",
+			"smtp.sendgrid.net:2525",
+			"api.resend.com:443",
+			"api.brevo.com:443"
+		};
+
+		for (String target : hostsYPuertos) {
+			String[] parts = target.split(":");
+			String host = parts[0];
+			int port = Integer.parseInt(parts[1]);
+			try (java.net.Socket s = new java.net.Socket()) {
+				s.connect(new java.net.InetSocketAddress(host, port), 3000);
+				conexiones.put(target, "OK (Conectado)");
+			} catch (Exception e) {
+				conexiones.put(target, "FALLO: " + e.getMessage());
+			}
+		}
+		resp.put("diagnostico_red", conexiones);
+
+		// Intento con sender actual
 		try {
 			var msg = correo.getMailSender().createMimeMessage();
 			var helper = new org.springframework.mail.javamail.MimeMessageHelper(msg, true, "UTF-8");
