@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -33,11 +35,23 @@ public class Usuario {
 	@Column(nullable = false)
 	private String password;
 
-	@Column(nullable = false)
-	private String rol; // Administrador | Docente
+	@Column(length = 500)
+	private String imagenUrl;
+
+	@ManyToOne
+	@JoinColumn(name = "rol_id")
+	private Rol rolEntidad;
+
+	// Compatibilidad legacy de base de datos
+	@Column(name = "rol")
+	private String rol;
 
 	@Column(nullable = false)
 	private String estado; // Activo | Pendiente
+
+	@ManyToOne
+	@JoinColumn(name = "creado_por_id")
+	private Usuario creadoPor;
 
 	private String passwordTemporal;
 
@@ -54,5 +68,16 @@ public class Usuario {
 		if (fechaCreacion == null) {
 			fechaCreacion = Instant.now();
 		}
+	}
+
+	public String getRol() {
+		if (rolEntidad != null && rolEntidad.getNombre() != null) {
+			return rolEntidad.getNombre();
+		}
+		return rol != null ? rol : "Docente";
+	}
+
+	public void setRol(String rolNombre) {
+		this.rol = rolNombre;
 	}
 }

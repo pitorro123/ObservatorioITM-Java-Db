@@ -333,6 +333,18 @@ export default function ValidarAsistencia() {
                   <MapPin className={estilos.iconoMeta} aria-hidden="true" />
                   {eventoVisible.lugar}
                 </li>
+                {inscripcionVisible.fechaHoraAsistencia && (
+                  <li>
+                    <Clock className={estilos.iconoMeta} aria-hidden="true" />
+                    <span>
+                      <strong>Hora de validación:</strong>{" "}
+                      {new Date(inscripcionVisible.fechaHoraAsistencia).toLocaleTimeString([], {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                  </li>
+                )}
               </ul>
 
               <button

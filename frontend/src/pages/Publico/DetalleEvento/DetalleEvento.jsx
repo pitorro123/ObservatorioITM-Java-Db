@@ -33,7 +33,7 @@ function construirUrlMapa(direccion) {
 
 export default function DetalleEvento() {
   const { id } = useParams();
-  const { obtenerEvento, inscribir } = useEventosContext();
+  const { obtenerEvento, inscribir, programasAcademicos } = useEventosContext();
   const evento = obtenerEvento(id);
 
   const esMasivo = Boolean(evento?.esMasivo);
@@ -174,15 +174,27 @@ export default function DetalleEvento() {
       return;
     }
 
+    const palabras = nombre.split(/\s+/).filter(Boolean);
+    const nombres = palabras.length > 1 ? palabras.slice(0, -1).join(" ") : palabras[0];
+    const apellidos = palabras.length > 1 ? palabras[palabras.length - 1] : palabras[0];
+
+    const progObj = (programasAcademicos || []).find(
+      (p) => p.nombre?.toLowerCase() === programaAcademico.toLowerCase()
+    );
+    const programaId = progObj ? progObj.id : null;
+
     const resultado = await inscribir({
       eventoId: evento.id,
       nombre,
+      nombres,
+      apellidos,
       tipoDocumento,
       numeroDocumento,
       correo,
       telefono,
       relacionUniversidad,
       programaAcademico,
+      programaId,
     });
     if (!resultado.exito) {
       setError(resultado.error);
@@ -534,7 +546,10 @@ export default function DetalleEvento() {
                       required
                     >
                       <option value="">-- Selecciona tu programa académico --</option>
-                      {PROGRAMAS_ITM.map((prog) => (
+                      {(programasAcademicos && programasAcademicos.length > 0
+                        ? programasAcademicos.map((p) => p.nombre)
+                        : PROGRAMAS_ITM
+                      ).map((prog) => (
                         <option key={prog} value={prog}>
                           {prog}
                         </option>

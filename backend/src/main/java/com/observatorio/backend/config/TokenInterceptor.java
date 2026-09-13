@@ -40,6 +40,9 @@ public class TokenInterceptor implements HandlerInterceptor {
 		if (ruta.equals("/api/feedback") && "POST".equals(metodo)) {
 			return true;
 		}
+		if (ruta.equals("/api/programas") && "GET".equals(metodo)) {
+			return true;
+		}
 		if ((ruta.equals("/api/contenido/semillero") || ruta.equals("/api/contenido/observatorio"))
 				&& "GET".equals(metodo)) {
 			return true;

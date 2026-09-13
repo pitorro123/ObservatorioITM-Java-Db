@@ -8,6 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -37,8 +39,18 @@ public class Evento {
 	@Column(nullable = false)
 	private String hora;
 
+	private String horaInicio;
+
+	private String horaFin;
+
 	@Column(nullable = false)
 	private String lugar;
+
+	private String direccion;
+
+	private Double latitud;
+
+	private Double longitud;
 
 	private String imagen;
 
@@ -63,6 +75,10 @@ public class Evento {
 
 	private String creadoPorRol;
 
+	@ManyToOne
+	@JoinColumn(name = "creado_por_usuario_id")
+	private Usuario creadoPorUsuario;
+
 	private Integer inscritos;
 
 	private Integer asistentes;
@@ -82,6 +98,12 @@ public class Evento {
 		}
 		if (asistentes == null) {
 			asistentes = 0;
+		}
+		if (horaInicio == null && hora != null) {
+			horaInicio = hora;
+		}
+		if (direccion == null && lugar != null) {
+			direccion = lugar;
 		}
 		if (fechaCreacion == null) {
 			fechaCreacion = Instant.now();

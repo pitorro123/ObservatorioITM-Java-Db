@@ -15,6 +15,7 @@ import {
   listarTodasInscripciones as listarTodasInscripcionesApi,
   validarInscripcion as validarInscripcionApi,
   marcarAsistencia as marcarAsistenciaApi,
+  listarProgramasAcademicos as listarProgramasAcademicosApi,
 } from "../api/servicios.js";
 import { obtenerToken } from "../api/cliente.js";
 
@@ -61,7 +62,19 @@ export function EventosProvider({ children }) {
   const [inscripciones, setInscripciones] = useState(() =>
     leerAlmacenamiento("itm_inscripciones", [])
   );
+  const [programasAcademicos, setProgramasAcademicos] = useState([]);
   const [cargando, setCargando] = useState(true);
+
+  const cargarProgramas = async () => {
+    try {
+      const datos = await listarProgramasAcademicosApi();
+      if (Array.isArray(datos) && datos.length > 0) {
+        setProgramasAcademicos(datos);
+      }
+    } catch {
+      // Ignorar si el endpoint falla, usará fallback
+    }
+  };
 
   const cargarEventos = async () => {
     try {
@@ -96,6 +109,7 @@ export function EventosProvider({ children }) {
   useEffect(() => {
     cargarEventos();
     cargarInscripciones();
+    cargarProgramas();
   }, []);
 
   useEffect(() => {
@@ -208,23 +222,29 @@ export function EventosProvider({ children }) {
   const inscribir = async ({
     eventoId,
     nombre,
+    nombres,
+    apellidos,
     tipoDocumento = "CC",
     numeroDocumento = "",
     correo,
     telefono,
     relacionUniversidad = "Externo",
     programaAcademico = "",
+    programaId = null,
   }) => {
     try {
       const inscripcion = await inscribirApi({
         eventoId: Number(eventoId),
         nombre: (nombre || "").trim(),
+        nombres: (nombres || "").trim(),
+        apellidos: (apellidos || "").trim(),
         tipoDocumento,
         numeroDocumento: (numeroDocumento || "").trim(),
         correo: (correo || "").trim(),
         telefono: (telefono || "").trim(),
         relacionUniversidad,
         programaAcademico: (programaAcademico || "").trim(),
+        programaId: programaId ? Number(programaId) : null,
       });
 
       setInscripciones((prev) => [...prev, inscripcion]);
@@ -325,6 +345,8 @@ export function EventosProvider({ children }) {
     obtenerInscripcion,
     marcarAsistencia,
     inscripcionesPorEvento,
+    programasAcademicos,
+    cargarProgramas,
     cargarEventos,
     cargarInscripciones,
   };

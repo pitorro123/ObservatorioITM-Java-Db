@@ -28,6 +28,9 @@ export const cancelarEvento = (id, motivoCancelacion = "clima") =>
   apiPut(`/eventos/${id}/cancelar`, { motivo: motivoCancelacion, motivoCancelacion });
 export const eliminarEvento = (id) => apiDelete(`/eventos/${id}`);
 
+// Programas Académicos (Catálogo normalizado 3FN)
+export const listarProgramasAcademicos = () => apiGet("/programas");
+
 // Inscripciones
 export const inscribir = (cuerpo) => apiPost("/inscripciones", cuerpo);
 export const listarTodasInscripciones = () => apiGet("/inscripciones");

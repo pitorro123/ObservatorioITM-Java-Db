@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.observatorio.backend.modelos.Inscripcion;
 
@@ -15,17 +17,29 @@ public interface IInscripcionRepositorio extends JpaRepository<Inscripcion, Long
 
 	List<Inscripcion> findByEventoIdOrderByFechaInscripcionAsc(Long eventoId);
 
-	boolean existsByEventoIdAndCorreoIgnoreCase(Long eventoId, String correo);
+	@Query("SELECT COUNT(i) > 0 FROM Inscripcion i WHERE i.eventoId = :eventoId AND " +
+			"(LOWER(i.correo) = LOWER(:correo) OR (i.participante IS NOT NULL AND LOWER(i.participante.correo) = LOWER(:correo)))")
+	boolean existsByEventoIdAndCorreoIgnoreCase(@Param("eventoId") Long eventoId, @Param("correo") String correo);
 
-	boolean existsByEventoIdAndNumeroDocumentoIgnoreCase(Long eventoId, String numeroDocumento);
+	@Query("SELECT COUNT(i) > 0 FROM Inscripcion i WHERE i.eventoId = :eventoId AND " +
+			"(LOWER(i.numeroDocumento) = LOWER(:doc) OR (i.participante IS NOT NULL AND LOWER(i.participante.numeroDocumento) = LOWER(:doc)))")
+	boolean existsByEventoIdAndNumeroDocumentoIgnoreCase(@Param("eventoId") Long eventoId, @Param("doc") String numeroDocumento);
 
 	Optional<Inscripcion> findFirstByEventoIdAndCodigoIgnoreCase(Long eventoId, String codigo);
 
-	Optional<Inscripcion> findFirstByEventoIdAndNumeroDocumentoIgnoreCase(Long eventoId, String numeroDocumento);
+	@Query("SELECT i FROM Inscripcion i WHERE i.eventoId = :eventoId AND " +
+			"(LOWER(i.numeroDocumento) = LOWER(:doc) OR (i.participante IS NOT NULL AND LOWER(i.participante.numeroDocumento) = LOWER(:doc)))")
+	Optional<Inscripcion> findFirstByEventoIdAndNumeroDocumentoIgnoreCase(@Param("eventoId") Long eventoId, @Param("doc") String numeroDocumento);
 
-	Optional<Inscripcion> findFirstByEventoIdAndCorreoIgnoreCase(Long eventoId, String correo);
+	@Query("SELECT i FROM Inscripcion i WHERE i.eventoId = :eventoId AND " +
+			"(LOWER(i.correo) = LOWER(:correo) OR (i.participante IS NOT NULL AND LOWER(i.participante.correo) = LOWER(:correo)))")
+	Optional<Inscripcion> findFirstByEventoIdAndCorreoIgnoreCase(@Param("eventoId") Long eventoId, @Param("correo") String correo);
 
-	Optional<Inscripcion> findFirstByNumeroDocumentoIgnoreCase(String numeroDocumento);
+	@Query("SELECT i FROM Inscripcion i WHERE " +
+			"LOWER(i.numeroDocumento) = LOWER(:doc) OR (i.participante IS NOT NULL AND LOWER(i.participante.numeroDocumento) = LOWER(:doc))")
+	Optional<Inscripcion> findFirstByNumeroDocumentoIgnoreCase(@Param("doc") String numeroDocumento);
 
-	Optional<Inscripcion> findFirstByCorreoIgnoreCase(String correo);
+	@Query("SELECT i FROM Inscripcion i WHERE " +
+			"LOWER(i.correo) = LOWER(:correo) OR (i.participante IS NOT NULL AND LOWER(i.participante.correo) = LOWER(:correo))")
+	Optional<Inscripcion> findFirstByCorreoIgnoreCase(@Param("correo") String correo);
 }
