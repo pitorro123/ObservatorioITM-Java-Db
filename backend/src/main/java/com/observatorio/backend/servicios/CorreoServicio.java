@@ -32,9 +32,19 @@ public class CorreoServicio {
 	}
 
 	public void enviarHtml(String para, String asunto, String cuerpoHtml) {
+	public String getRemitente() {
+		return remitente;
+	}
+
+	public JavaMailSender getMailSender() {
+		return mailSender;
+	}
+
+	public boolean enviarHtml(String para, String asunto, String cuerpoHtml) {
 		if (remitente == null || remitente.isBlank()) {
 			log.warn("SMTP no configurado (MAIL_USERNAME no definido). Omitiendo envio de correo a {}", para);
 			return;
+			return false;
 		}
 		try {
 			MimeMessage mensaje = mailSender.createMimeMessage();
@@ -44,8 +54,12 @@ public class CorreoServicio {
 			helper.setSubject(asunto);
 			helper.setText(cuerpoHtml, true);
 			mailSender.send(mensaje);
+			log.info("Correo enviado exitosamente a {}", para);
+			return true;
 		} catch (Exception e) {
 			log.error("No se pudo enviar el correo a {}: {}", para, e.getMessage());
+			log.error("No se pudo enviar el correo a {}: {}", para, e.getMessage(), e);
+			return false;
 		}
 	}
 }

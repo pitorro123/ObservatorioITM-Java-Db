@@ -25,10 +25,14 @@ public class InscripcionControlador {
 
 	private final InscripcionServicio servicio;
 	private final SeguridadServicio seguridad;
+	private final com.observatorio.backend.servicios.CorreoServicio correo;
 
 	public InscripcionControlador(InscripcionServicio servicio, SeguridadServicio seguridad) {
+	public InscripcionControlador(InscripcionServicio servicio, SeguridadServicio seguridad,
+			com.observatorio.backend.servicios.CorreoServicio correo) {
 		this.servicio = servicio;
 		this.seguridad = seguridad;
+		this.correo = correo;
 	}
 
 	// Endpoint público: el público general se inscribe
@@ -67,5 +71,21 @@ public class InscripcionControlador {
 	public Map<String, Object> enviarQrDocente(@PathVariable String codigo) {
 		servicio.enviarQrDocente(codigo, seguridad.usuarioActual());
 		return Map.of("exito", true);
+	}
+
+	@GetMapping("/diagnostico-correo")
+	public Map<String, Object> diagnosticoCorreo(@RequestParam(defaultValue = "yessik.lave08@gmail.com") String para) {
+		Map<String, Object> resp = new java.util.HashMap<>();
+		String remitente = correo.getRemitente();
+		resp.put("remitente", remitente != null && !remitente.isBlank() ? remitente : "NO_DEFINIDO");
+		try {
+			boolean enviado = correo.enviarHtml(para, "¡Inscripción confirmada! - Observatorio ITM",
+					"<p>Hola, este es un correo de prueba del Observatorio Astronómico ITM.</p>");
+			resp.put("enviado", enviado);
+		} catch (Exception e) {
+			resp.put("enviado", false);
+			resp.put("error", e.getClass().getName() + ": " + e.getMessage());
+		}
+		return resp;
 	}
 }
