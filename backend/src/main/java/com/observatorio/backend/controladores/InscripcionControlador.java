@@ -78,12 +78,20 @@ public class InscripcionControlador {
 		String remitente = correo.getRemitente();
 		resp.put("remitente", remitente != null && !remitente.isBlank() ? remitente : "NO_DEFINIDO");
 		try {
-			boolean enviado = correo.enviarHtml(para, "¡Inscripción confirmada! - Observatorio ITM",
-					"<p>Hola, este es un correo de prueba del Observatorio Astronómico ITM.</p>");
-			resp.put("enviado", enviado);
+			var msg = correo.getMailSender().createMimeMessage();
+			var helper = new org.springframework.mail.javamail.MimeMessageHelper(msg, true, "UTF-8");
+			helper.setFrom(remitente);
+			helper.setTo(para);
+			helper.setSubject("Diagnostico Observatorio");
+			helper.setText("<p>Prueba directa</p>", true);
+			correo.getMailSender().send(msg);
+			resp.put("enviado", true);
 		} catch (Exception e) {
 			resp.put("enviado", false);
 			resp.put("error", e.getClass().getName() + ": " + e.getMessage());
+			if (e.getCause() != null) {
+				resp.put("causa", e.getCause().getClass().getName() + ": " + e.getCause().getMessage());
+			}
 		}
 		return resp;
 	}
