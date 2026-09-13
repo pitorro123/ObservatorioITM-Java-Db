@@ -147,6 +147,15 @@ public class InscripcionServicio {
 				return enEvento.get();
 			}
 
+			try {
+				Long idNum = Long.parseLong(limpio);
+				var porId = inscripciones.findById(idNum);
+				if (porId.isPresent() && porId.get().getEventoId().equals(eventoId)) {
+					return porId.get();
+				}
+			} catch (NumberFormatException ignored) {
+			}
+
 			// Si no está en este evento, verificar si está registrado en otro evento
 			var enOtro = inscripciones.findByCodigoIgnoreCase(limpio)
 					.or(() -> inscripciones.findFirstByNumeroDocumentoIgnoreCase(limpio))
@@ -161,6 +170,15 @@ public class InscripcionServicio {
 		}
 
 		// 2. Búsqueda global (sin filtro de evento)
+		try {
+			Long idNum = Long.parseLong(limpio);
+			var porId = inscripciones.findById(idNum);
+			if (porId.isPresent()) {
+				return porId.get();
+			}
+		} catch (NumberFormatException ignored) {
+		}
+
 		return inscripciones.findByCodigoIgnoreCase(limpio)
 				.or(() -> inscripciones.findFirstByNumeroDocumentoIgnoreCase(limpio))
 				.or(() -> inscripciones.findFirstByCorreoIgnoreCase(limpio))

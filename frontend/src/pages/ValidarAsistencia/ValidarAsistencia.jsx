@@ -43,6 +43,7 @@ export default function ValidarAsistencia() {
   const [tipoResultado, setTipoResultado] = useState("");
   const [ingresos, setIngresos] = useState([]);
   const [notificacion, setNotificacion] = useState("");
+  const [confirmando, setConfirmando] = useState(false);
 
   const eventoSeleccionado = useMemo(() => {
     return eventos.find((e) => String(e.id) === String(eventoId)) || null;
@@ -59,13 +60,18 @@ export default function ValidarAsistencia() {
 
   const cambiarEvento = (nuevoId) => {
     setEventoId(nuevoId);
-    setSearchParams(nuevoId ? { evento: nuevoId } : {});
     setResultado(null);
     setTipoResultado("");
     setCodigo("");
+    if (nuevoId) {
+      setSearchParams({ evento: nuevoId });
+    } else {
+      setSearchParams({});
+    }
   };
 
-  const validarCodigo = async (texto, idTarget = eventoId) => {
+  const validarCodigo = async (texto, eventoIdForzado = null) => {
+    const idTarget = eventoIdForzado !== null ? eventoIdForzado : eventoId;
     if (!idTarget) {
       setNotificacion("Por favor selecciona un evento primero.");
       return;
@@ -100,23 +106,32 @@ export default function ValidarAsistencia() {
   };
 
   const manejarConfirmar = async () => {
-    if (!resultado || !resultado.inscripcion) return;
+    if (!resultado || !resultado.inscripcion || confirmando) return;
     const clave =
-      resultado.inscripcion.id ||
       resultado.inscripcion.codigo ||
+      resultado.inscripcion.numeroDocumento ||
       resultado.inscripcion.correo ||
-      resultado.inscripcion.numeroDocumento;
+      resultado.inscripcion.id;
 
-    const marcado = await marcarAsistencia(clave, eventoId);
-    if (!marcado.exito) {
-      setNotificacion(marcado.error);
-      setTipoResultado("error");
-      return;
+    setConfirmando(true);
+    try {
+      const marcado = await marcarAsistencia(clave, eventoId);
+      if (!marcado.exito) {
+        setResultado((prev) => ({
+          ...prev,
+          error: marcado.error,
+        }));
+        setNotificacion(marcado.error);
+        setTipoResultado("error");
+        return;
+      }
+
+      setIngresos((prev) => [marcado.inscripcion, ...prev]);
+      setTipoResultado("confirmado");
+      setNotificacion(`Asistencia confirmada para ${marcado.inscripcion.nombre}.`);
+    } finally {
+      setConfirmando(false);
     }
-
-    setIngresos((prev) => [marcado.inscripcion, ...prev]);
-    setTipoResultado("confirmado");
-    setNotificacion(`Asistencia confirmada para ${marcado.inscripcion.nombre}.`);
   };
 
   const inscripcionVisible = resultado?.inscripcion;
@@ -324,9 +339,10 @@ export default function ValidarAsistencia() {
                 type="button"
                 className={estilos.botonConfirmar}
                 onClick={manejarConfirmar}
+                disabled={confirmando}
               >
                 <BadgeCheck className={estilos.iconoBoton} aria-hidden="true" />
-                Confirmar asistencia
+                {confirmando ? "Confirmando asistencia..." : "Confirmar asistencia"}
               </button>
             </div>
           </div>
