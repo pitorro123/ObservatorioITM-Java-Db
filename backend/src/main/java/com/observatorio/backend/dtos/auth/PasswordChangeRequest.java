@@ -1,4 +1,8 @@
 package com.observatorio.backend.dtos.auth;
 
-public record PasswordChangeRequest(String token, String nuevaPassword) {
+import com.fasterxml.jackson.annotation.JsonAlias;
+
+public record PasswordChangeRequest(
+		String token,
+		@JsonAlias({ "password", "nueva_password" }) String nuevaPassword) {
 }

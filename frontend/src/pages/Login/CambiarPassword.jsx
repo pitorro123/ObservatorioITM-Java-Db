@@ -16,11 +16,13 @@ export default function CambiarPassword() {
   const [confirmar, setConfirmar] = useState("");
   const [verPassword, setVerPassword] = useState(false);
   const [error, setError] = useState("");
+  const [cargando, setCargando] = useState(false);
   const [completado, setCompletado] = useState(false);
   const navegar = useNavigate();
 
   const manejarEnvio = async (e) => {
     e.preventDefault();
+    if (cargando) return;
     setError("");
 
     if (password.length < 6) {
@@ -32,13 +34,19 @@ export default function CambiarPassword() {
       return;
     }
 
-    const resultado = await establecerPassword(token, password);
-    if (!resultado.exito) {
-      setError(resultado.error);
-      return;
+    setCargando(true);
+    try {
+      const resultado = await establecerPassword(token, password);
+      if (!resultado.exito) {
+        setError(resultado.error);
+        return;
+      }
+      setCompletado(true);
+    } catch (err) {
+      setError(err?.mensaje || err?.message || "Ocurrió un error al guardar la contraseña.");
+    } finally {
+      setCargando(false);
     }
-
-    setCompletado(true);
   };
 
   return (
@@ -136,9 +144,9 @@ export default function CambiarPassword() {
                     />
                   </div>
 
-                  <button type="submit" className={estilos.boton}>
+                  <button type="submit" className={estilos.boton} disabled={cargando}>
                     <KeyRound className={estilos.iconoBoton} aria-hidden="true" />
-                    Guardar contraseña
+                    {cargando ? "Guardando contraseña..." : "Guardar contraseña"}
                   </button>
                 </form>
               )}

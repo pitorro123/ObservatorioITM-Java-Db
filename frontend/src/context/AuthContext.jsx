@@ -197,7 +197,11 @@ export function AuthProvider({ children }) {
 
   const establecerPassword = async (token, nuevaPassword) => {
     try {
-      const res = await cambiarPasswordApi({ token, password: nuevaPassword });
+      const res = await cambiarPasswordApi({
+        token,
+        nuevaPassword,
+        password: nuevaPassword,
+      });
       return { exito: true, usuario: res };
     } catch (error) {
       return {
