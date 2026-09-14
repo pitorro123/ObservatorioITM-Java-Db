@@ -75,3 +75,4 @@ export const IMAGENES = {
 };
 
 export default IMAGENES;
+

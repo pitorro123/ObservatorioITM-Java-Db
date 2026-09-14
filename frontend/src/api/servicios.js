@@ -45,11 +45,6 @@ export const marcarAsistencia = (termino, eventoId = null) =>
 export const enviarQrDocente = (codigo) =>
   apiPost(`/inscripciones/${encodeURIComponent(codigo)}/enviar-qr-docente`, {});
 
-// Feedback
-export const agregarFeedback = (cuerpo) => apiPost("/feedback", cuerpo);
-export const listarFeedbackEvento = (eventoId) =>
-  apiGet(`/feedback/evento/${eventoId}`);
-
 // Contenido
 export const obtenerSemillero = () => apiGet("/contenido/semillero");
 export const obtenerObservatorio = () => apiGet("/contenido/observatorio");
