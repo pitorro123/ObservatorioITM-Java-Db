@@ -184,9 +184,8 @@ export function AuthProvider({ children }) {
 
   const solicitarRecuperacion = async (correo) => {
     try {
-      const res = await solicitarRecuperacionApi({ correo });
-      const enlace = res?.enlace || `${window.location.origin}/login`;
-      return { exito: true, enlace };
+      await solicitarRecuperacionApi({ correo });
+      return { exito: true };
     } catch (error) {
       return {
         exito: false,
