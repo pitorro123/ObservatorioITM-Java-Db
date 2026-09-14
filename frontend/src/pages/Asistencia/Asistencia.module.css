@@ -262,11 +262,25 @@
   color: #a16207;
 }
 
+.columnaAccion {
+  text-align: right;
+  min-width: 170px;
+  white-space: nowrap;
+}
+
+.celdaAccion {
+  text-align: right;
+  min-width: 170px;
+  white-space: nowrap;
+}
+
 .botonMarcar {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 8px 12px;
+  padding: 8px 14px;
+  min-width: 155px;
   border: none;
   border-radius: var(--radio-md);
   background-color: var(--color-primario);
@@ -275,10 +289,16 @@
   font-weight: var(--peso-semibold);
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color var(--transicion-rapida);
+  flex-shrink: 0;
+  transition: background-color var(--transicion-rapida), opacity var(--transicion-rapida);
 }
 
-.botonMarcar:hover {
+.botonMarcar:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.botonMarcar:hover:not(:disabled) {
   background-color: #4370c0;
 }
 

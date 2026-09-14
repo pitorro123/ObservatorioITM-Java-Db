@@ -11,6 +11,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [verPassword, setVerPassword] = useState(false);
   const [error, setError] = useState("");
+  const [cargando, setCargando] = useState(false);
   const navegar = useNavigate();
   const ubicacion = useLocation();
 
@@ -20,12 +21,21 @@ export default function Login() {
 
   const manejarEnvio = async (e) => {
     e.preventDefault();
-    const resultado = await login(correo, password);
-    if (resultado.exito) {
-      const destino = ubicacion.state?.desde || "/admin/dashboard";
-      navegar(destino, { replace: true });
-    } else {
-      setError(resultado.error);
+    if (cargando) return;
+    setCargando(true);
+    setError("");
+    try {
+      const resultado = await login(correo, password);
+      if (resultado.exito) {
+        const destino = ubicacion.state?.desde || "/admin/dashboard";
+        navegar(destino, { replace: true });
+      } else {
+        setError(resultado.error);
+      }
+    } catch (err) {
+      setError(err?.mensaje || err?.message || "No se pudo conectar con el servidor.");
+    } finally {
+      setCargando(false);
     }
   };
 
@@ -100,9 +110,9 @@ export default function Login() {
             </div>
           </div>
 
-          <button type="submit" className={estilos.botonIngresar}>
+          <button type="submit" className={estilos.botonIngresar} disabled={cargando}>
             <LogIn className={estilos.iconoIngresar} aria-hidden="true" />
-            Ingresar
+            {cargando ? "Iniciando sesión..." : "Ingresar"}
           </button>
 
           <Link to="/recuperar-password" className={estilos.olvido}>

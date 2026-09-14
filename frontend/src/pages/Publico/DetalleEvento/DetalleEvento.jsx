@@ -69,6 +69,7 @@ export default function DetalleEvento() {
   const [inscripcion, setInscripcion] = useState(null);
   const [copiado, setCopiado] = useState(false);
   const [error, setError] = useState("");
+  const [cargando, setCargando] = useState(false);
 
   const inscripcionRef = useRef(null);
 
@@ -184,25 +185,33 @@ export default function DetalleEvento() {
     );
     const programaId = progObj ? progObj.id : null;
 
-    const resultado = await inscribir({
-      eventoId: evento.id,
-      nombre,
-      nombres,
-      apellidos,
-      tipoDocumento,
-      numeroDocumento,
-      correo,
-      telefono,
-      relacionUniversidad,
-      programaAcademico,
-      programaId,
-    });
-    if (!resultado.exito) {
-      setError(resultado.error);
-      return;
+    setCargando(true);
+    setError("");
+    try {
+      const resultado = await inscribir({
+        eventoId: evento.id,
+        nombre,
+        nombres,
+        apellidos,
+        tipoDocumento,
+        numeroDocumento,
+        correo,
+        telefono,
+        relacionUniversidad,
+        programaAcademico,
+        programaId,
+      });
+      if (!resultado.exito) {
+        setError(resultado.error);
+        return;
+      }
+      setInscripcion(resultado.inscripcion);
+      setConfirmada(true);
+    } catch (err) {
+      setError(err?.mensaje || err?.message || "Ocurrió un error al registrar la inscripción.");
+    } finally {
+      setCargando(false);
     }
-    setInscripcion(resultado.inscripcion);
-    setConfirmada(true);
   };
 
   const copiarCodigo = () => {
@@ -562,8 +571,10 @@ export default function DetalleEvento() {
                   </div>
                 )}
 
-                <button type="submit" className={estilos.botonInscribirse}>
-                  {esMasivo ? "Registrarme al evento" : "Inscribirme"}
+                <button type="submit" className={estilos.botonInscribirse} disabled={cargando}>
+                  {cargando
+                    ? (esMasivo ? "Registrando datos..." : "Reservando cupo...")
+                    : (esMasivo ? "Registrarme al evento" : "Inscribirme")}
                 </button>
               </form>
             )}

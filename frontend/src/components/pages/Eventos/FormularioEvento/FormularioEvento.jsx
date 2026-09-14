@@ -45,11 +45,13 @@ export default function FormularioEvento({ abierto, evento, onCerrar, onGuardar 
   const { usuarioActual, esAdmin, docentes } = useAuth();
   const [formulario, setFormulario] = useState(formularioVacio);
   const [error, setError] = useState("");
+  const [cargando, setCargando] = useState(false);
   const esEdicion = Boolean(evento);
 
   useEffect(() => {
     if (!abierto) return;
     setError("");
+    setCargando(false);
     if (evento) {
       const tiposValidos = ["abierto", "charla", "observacion"];
       const tipoValido = tiposValidos.includes(evento.tipo)
@@ -98,6 +100,10 @@ export default function FormularioEvento({ abierto, evento, onCerrar, onGuardar 
   const manejarImagen = (eventoInput) => {
     const archivo = eventoInput.target.files?.[0];
     if (!archivo) return;
+    if (archivo.size > 5 * 1024 * 1024) {
+      setError("La imagen es muy pesada. Por favor selecciona una de menos de 5 MB.");
+      return;
+    }
     const lector = new FileReader();
     lector.onload = () => {
       setFormulario((prev) => ({ ...prev, imagen: lector.result }));
@@ -105,8 +111,9 @@ export default function FormularioEvento({ abierto, evento, onCerrar, onGuardar 
     lector.readAsDataURL(archivo);
   };
 
-  const manejarEnvio = (eventoForm) => {
+  const manejarEnvio = async (eventoForm) => {
     eventoForm.preventDefault();
+    if (cargando) return;
 
     const titulo = formulario.titulo.trim();
     const descripcion = formulario.descripcion.trim();
@@ -161,7 +168,15 @@ export default function FormularioEvento({ abierto, evento, onCerrar, onGuardar 
       estado: formulario.publicarDirectamente ? "publicado" : "borrador",
     };
 
-    onGuardar(datos);
+    setCargando(true);
+    setError("");
+    try {
+      await onGuardar(datos);
+    } catch (err) {
+      setError(err?.mensaje || err?.message || "No se pudo guardar el evento. Verifica los datos.");
+    } finally {
+      setCargando(false);
+    }
   };
 
   return (
@@ -459,11 +474,13 @@ export default function FormularioEvento({ abierto, evento, onCerrar, onGuardar 
           </div>
 
           <div className={estilos.acciones}>
-            <button type="button" className={estilos.botonCancelar} onClick={onCerrar}>
+            <button type="button" className={estilos.botonCancelar} onClick={onCerrar} disabled={cargando}>
               Cancelar
             </button>
-            <button type="submit" className={estilos.botonGuardar}>
-              {esEdicion ? "Guardar cambios" : "Crear evento"}
+            <button type="submit" className={estilos.botonGuardar} disabled={cargando}>
+              {cargando
+                ? (esEdicion ? "Guardando..." : "Creando evento...")
+                : (esEdicion ? "Guardar cambios" : "Crear evento")}
             </button>
           </div>
         </form>

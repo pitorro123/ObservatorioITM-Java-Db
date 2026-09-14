@@ -52,6 +52,7 @@ public class Evento {
 
 	private Double longitud;
 
+	@Column(columnDefinition = "LONGTEXT")
 	private String imagen;
 
 	@Column(nullable = false)

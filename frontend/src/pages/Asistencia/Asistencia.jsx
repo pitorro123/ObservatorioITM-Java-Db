@@ -30,6 +30,7 @@ export default function Asistencia() {
     eventosConInscritos[0]?.id ?? eventos[0]?.id ?? ""
   );
   const [notificacion, setNotificacion] = useState("");
+  const [marcandoId, setMarcandoId] = useState(null);
 
   const evento = eventos.find((e) => e.id === Number(eventoId));
   const inscripciones = eventoId ? inscripcionesPorEvento(eventoId) : [];
@@ -38,18 +39,23 @@ export default function Asistencia() {
     (i) => i.asistencia === "Asistió"
   ).length;
 
-  const manejarMarcar = (codigo) => {
-    const verificar = obtenerInscripcion(codigo);
-    if (!verificar.exito && verificar.error.includes("ya fue")) {
-      setNotificacion("Este código ya fue validado anteriormente.");
-      return;
+  const manejarMarcar = async (identificador) => {
+    if (!identificador || marcandoId) return;
+    setMarcandoId(identificador);
+    try {
+      const resultado = await marcarAsistencia(identificador, eventoId);
+      if (resultado.exito) {
+        setNotificacion(
+          `Asistencia registrada para ${resultado.inscripcion?.nombre || "el participante"}.`
+        );
+      } else {
+        setNotificacion(resultado.error || "No se pudo registrar la asistencia.");
+      }
+    } catch (err) {
+      setNotificacion(err?.mensaje || err?.message || "Error al marcar la asistencia.");
+    } finally {
+      setMarcandoId(null);
     }
-    const resultado = marcarAsistencia(codigo);
-    setNotificacion(
-      resultado.exito
-        ? `Asistencia registrada para ${resultado.inscripcion.nombre}.`
-        : resultado.error
-    );
   };
 
   return (
@@ -122,14 +128,19 @@ export default function Asistencia() {
                   <th>Contacto</th>
                   <th>Código de registro</th>
                   <th>Asistencia</th>
-                  <th></th>
+                  <th className={estilos.columnaAccion}>Acción</th>
                 </tr>
               </thead>
               <tbody>
                 {inscripciones.map((inscripcion) => {
                   const asistio = inscripcion.asistencia === "Asistió";
                   const idUnico = inscripcion.id || inscripcion.codigo;
-                  const identificador = inscripcion.codigo || inscripcion.id;
+                  const identificador =
+                    inscripcion.codigo ||
+                    inscripcion.numeroDocumento ||
+                    inscripcion.correo ||
+                    inscripcion.id;
+                  const estaMarcando = marcandoId === identificador;
                   return (
                     <tr key={idUnico}>
                       <td>
@@ -183,15 +194,16 @@ export default function Asistencia() {
                           {asistio ? "Asistió" : "Pendiente"}
                         </span>
                       </td>
-                      <td>
+                      <td className={estilos.celdaAccion}>
                         {!asistio && (
                           <button
                             type="button"
                             className={estilos.botonMarcar}
+                            disabled={estaMarcando}
                             onClick={() => manejarMarcar(identificador)}
                           >
                             <Check className={estilos.iconoBoton} aria-hidden="true" />
-                            Marcar asistencia
+                            {estaMarcando ? "Marcando..." : "Marcar asistencia"}
                           </button>
                         )}
                         {asistio && (

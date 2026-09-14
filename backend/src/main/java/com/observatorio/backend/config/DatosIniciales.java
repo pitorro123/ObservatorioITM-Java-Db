@@ -51,6 +51,7 @@ public class DatosIniciales implements ApplicationRunner {
 	private final IAsistenciaRepositorio asistencias;
 	private final PasswordEncoder encoder;
 	private final ObjectMapper objectMapper;
+	private final org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
 	@Value("${app.admin.email:admin@itm.edu.co}")
 	private String adminEmail;
@@ -69,7 +70,8 @@ public class DatosIniciales implements ApplicationRunner {
 			IInscripcionRepositorio inscripciones,
 			IAsistenciaRepositorio asistencias,
 			PasswordEncoder encoder,
-			ObjectMapper objectMapper) {
+			ObjectMapper objectMapper,
+			org.springframework.jdbc.core.JdbcTemplate jdbcTemplate) {
 		this.usuarios = usuarios;
 		this.eventos = eventos;
 		this.contenidos = contenidos;
@@ -81,10 +83,17 @@ public class DatosIniciales implements ApplicationRunner {
 		this.asistencias = asistencias;
 		this.encoder = encoder;
 		this.objectMapper = objectMapper;
+		this.jdbcTemplate = jdbcTemplate;
 	}
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
+		// Ajuste DDL para soportar imágenes en Base64 o URLs extensas
+		try {
+			jdbcTemplate.execute("ALTER TABLE eventos MODIFY COLUMN imagen LONGTEXT");
+		} catch (Exception ignored) {
+		}
+
 		// 1. Sembrar Permisos (3FN)
 		Permiso pCrearEvento = obtenerOCrearPermiso("CREAR_EVENTO");
 		Permiso pEditarEvento = obtenerOCrearPermiso("EDITAR_EVENTO");
