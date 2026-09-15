@@ -1,6 +1,27 @@
-import { useEffect, useState } from "react";
-import { X, ImagePlus, MapPin, Users, GraduationCap } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { QRCodeSVG } from "qrcode.react";
+import {
+  ArrowLeft,
+  QrCode,
+  FileSpreadsheet,
+  Download,
+  Copy,
+  Check,
+  Maximize2,
+  ImagePlus,
+  MapPin,
+  Users,
+  GraduationCap,
+  Calendar,
+  Clock,
+  Sparkles,
+  Lock,
+  ExternalLink,
+} from "lucide-react";
 import { useAuth } from "../../../../context/AuthContext.jsx";
+import { listarInscripcionesEvento } from "../../../../api/servicios.js";
+import { exportarExcelFG031 } from "../../../../utils/exportarExcelFG031.js";
+import ModalQrAsistencia from "../../../common/ModalQrAsistencia/ModalQrAsistencia.jsx";
 import estilos from "./FormularioEvento.module.css";
 
 const formularioVacio = {
@@ -41,11 +62,22 @@ const LUGARES_SUGERIDOS = [
   },
 ];
 
-export default function FormularioEvento({ abierto, evento, onCerrar, onGuardar }) {
+export default function FormularioEvento({
+  abierto,
+  evento,
+  puedeEditar = true,
+  onCerrar,
+  onGuardar,
+}) {
   const { usuarioActual, esAdmin, docentes } = useAuth();
   const [formulario, setFormulario] = useState(formularioVacio);
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
+  const [descargandoExcel, setDescargandoExcel] = useState(false);
+  const [copiado, setCopiado] = useState(false);
+  const [mostrarModalProyeccion, setMostrarModalProyeccion] = useState(false);
+  const qrRef = useRef(null);
+
   const esEdicion = Boolean(evento);
 
   useEffect(() => {
@@ -61,11 +93,11 @@ export default function FormularioEvento({ abierto, evento, onCerrar, onGuardar 
       const esMasivo = Boolean(evento.esMasivo);
 
       setFormulario({
-        titulo: evento.titulo,
-        descripcion: evento.descripcion,
-        fecha: evento.fecha,
-        hora: evento.hora,
-        lugar: evento.lugar,
+        titulo: evento.titulo || "",
+        descripcion: evento.descripcion || "",
+        fecha: evento.fecha || "",
+        hora: evento.hora || "",
+        lugar: evento.lugar || "",
         esMasivo,
         capacidad: esMasivo ? "" : (evento.capacidad !== undefined ? evento.capacidad : 50),
         ubicacionMapa: evento.ubicacionMapa || "",
@@ -88,7 +120,17 @@ export default function FormularioEvento({ abierto, evento, onCerrar, onGuardar 
 
   if (!abierto) return null;
 
+  // URL a la que dirige el código QR para registrar la asistencia
+  const origen =
+    typeof window !== "undefined"
+      ? window.location.origin
+      : "https://observatorio-itm-java-db-p1bi.vercel.app";
+  const urlAsistencia = evento?.id
+    ? `${origen}/eventos/${evento.id}?modo=asistencia`
+    : "";
+
   const cambiarCampo = (clave) => (eventoInput) => {
+    if (!puedeEditar) return;
     const valor =
       clave === "publicarDirectamente" || clave === "esMasivo"
         ? eventoInput.target.checked
@@ -98,6 +140,7 @@ export default function FormularioEvento({ abierto, evento, onCerrar, onGuardar 
   };
 
   const manejarImagen = (eventoInput) => {
+    if (!puedeEditar) return;
     const archivo = eventoInput.target.files?.[0];
     if (!archivo) return;
     if (archivo.size > 5 * 1024 * 1024) {
@@ -111,9 +154,68 @@ export default function FormularioEvento({ abierto, evento, onCerrar, onGuardar 
     lector.readAsDataURL(archivo);
   };
 
+  const copiarEnlace = async () => {
+    if (!urlAsistencia) return;
+    try {
+      await navigator.clipboard.writeText(urlAsistencia);
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 2000);
+    } catch {
+      // Fallback
+    }
+  };
+
+  const descargarQrPng = () => {
+    const svg = qrRef.current?.querySelector("svg");
+    if (!svg) return;
+
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+
+    const size = 600;
+    canvas.width = size;
+    canvas.height = size;
+
+    img.onload = () => {
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, size, size);
+      ctx.drawImage(img, 0, 0, size, size);
+
+      const pngFile = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      const tituloLimpio = (formulario.titulo || evento?.titulo || "evento")
+        .toLowerCase()
+        .replace(/[^a-z0-9]/gi, "_")
+        .substring(0, 25);
+      link.download = `QR_Asistencia_${tituloLimpio}_${evento?.id || "nuevo"}.png`;
+      link.href = pngFile;
+      link.click();
+    };
+
+    img.src =
+      "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgData)));
+  };
+
+  const manejarDescargarExcel = async () => {
+    if (!evento?.id || descargandoExcel) return;
+    setDescargandoExcel(true);
+    try {
+      const res = await listarInscripcionesEvento(evento.id);
+      const lista = Array.isArray(res) ? res : res?.data || [];
+      exportarExcelFG031(evento, lista);
+    } catch (err) {
+      console.error("Error al exportar FG 031:", err);
+      setError("No se pudo generar el listado de asistencia en este momento.");
+    } finally {
+      setDescargandoExcel(false);
+    }
+  };
+
   const manejarEnvio = async (eventoForm) => {
     eventoForm.preventDefault();
-    if (cargando) return;
+    if (cargando || !puedeEditar) return;
 
     const titulo = formulario.titulo.trim();
     const descripcion = formulario.descripcion.trim();
@@ -163,7 +265,8 @@ export default function FormularioEvento({ abierto, evento, onCerrar, onGuardar 
       imagen: formulario.imagen,
       tipo: formulario.tipo,
       creadoPorId: formulario.creadoPorId || usuarioActual?.id,
-      creadoPorNombre: formulario.creadoPorNombre || usuarioActual?.nombre || "Docente ITM",
+      creadoPorNombre:
+        formulario.creadoPorNombre || usuarioActual?.nombre || "Docente ITM",
       creadoPorRol: formulario.creadoPorRol || usuarioActual?.rol || "Docente",
       estado: formulario.publicarDirectamente ? "publicado" : "borrador",
     };
@@ -173,318 +276,548 @@ export default function FormularioEvento({ abierto, evento, onCerrar, onGuardar 
     try {
       await onGuardar(datos);
     } catch (err) {
-      setError(err?.mensaje || err?.message || "No se pudo guardar el evento. Verifica los datos.");
+      setError(
+        err?.mensaje || err?.message || "No se pudo guardar el evento. Verifica los datos."
+      );
     } finally {
       setCargando(false);
     }
   };
 
   return (
-    <div className={estilos.overlay} role="dialog" aria-modal="true">
-      <div className={estilos.modal}>
-        <div className={estilos.cabecera}>
-          <h2 className={estilos.titulo}>
-            {esEdicion ? "Editar evento" : "Crear evento"}
-          </h2>
+    <section className={estilos.contenedorGestion} aria-label="Gestión de Evento">
+      {/* Barra superior de navegación y título */}
+      <div className={estilos.barraSuperior}>
+        <div className={estilos.infoSuperior}>
           <button
             type="button"
-            className={estilos.botonCerrar}
+            className={estilos.botonVolver}
             onClick={onCerrar}
-            aria-label="Cerrar formulario"
+            aria-label="Volver al listado de eventos"
           >
-            <X className={estilos.iconoCerrar} aria-hidden="true" />
+            <ArrowLeft className={estilos.iconoVolver} aria-hidden="true" />
+            <span>Volver a Eventos</span>
           </button>
+          <div className={estilos.titulos}>
+            <h2 className={estilos.tituloPrincipal}>
+              {esEdicion
+                ? `Gestionar Evento: ${formulario.titulo || evento?.titulo || ""}`
+                : "Crear nuevo evento"}
+            </h2>
+            <p className={estilos.subtituloPrincipal}>
+              {esEdicion
+                ? "Modifica los datos del evento, comparte su código QR de asistencia en sitio y descarga la planilla oficial FG 031."
+                : "Diligencia la información para programar y publicar una nueva actividad en el Observatorio ITM."}
+            </p>
+          </div>
         </div>
 
-        <form className={estilos.formulario} onSubmit={manejarEnvio} noValidate>
-          {error && (
-            <p className={estilos.error} role="alert">
-              {error}
-            </p>
-          )}
-
-          <div className={estilos.campo}>
-            <label className={estilos.etiqueta} htmlFor="ev-titulo">
-              Nombre
-            </label>
-            <input
-              id="ev-titulo"
-              type="text"
-              required
-              value={formulario.titulo}
-              onChange={cambiarCampo("titulo")}
-              className={estilos.input}
-              placeholder="Ej: Tinto bajo las estrellas"
-            />
-          </div>
-
-          <div className={estilos.campo}>
-            <label className={estilos.etiqueta} htmlFor="ev-descripcion">
-              Descripción
-            </label>
-            <textarea
-              id="ev-descripcion"
-              required
-              rows={3}
-              value={formulario.descripcion}
-              onChange={cambiarCampo("descripcion")}
-              className={estilos.textarea}
-              placeholder="Describe la actividad del evento"
-            />
-          </div>
-
-          <div className={estilos.fila}>
-            <div className={estilos.campo}>
-              <label className={estilos.etiqueta} htmlFor="ev-fecha">
-                Fecha
-              </label>
-              <input
-                id="ev-fecha"
-                type="date"
-                required
-                value={formulario.fecha}
-                onChange={cambiarCampo("fecha")}
-                className={estilos.input}
-              />
-            </div>
-
-            <div className={estilos.campo}>
-              <label className={estilos.etiqueta} htmlFor="ev-hora">
-                Hora
-              </label>
-              <input
-                id="ev-hora"
-                type="time"
-                required
-                value={formulario.hora}
-                onChange={cambiarCampo("hora")}
-                className={estilos.input}
-              />
-            </div>
-          </div>
-
-          <div className={estilos.campo}>
-            <label className={estilos.etiqueta} htmlFor="ev-lugar">
-              Lugar / Espacio
-            </label>
-            <input
-              id="ev-lugar"
-              type="text"
-              required
-              value={formulario.lugar}
-              onChange={cambiarCampo("lugar")}
-              className={estilos.input}
-              placeholder="Ej: Observatorio Astronómico ITM - Sede Fraternidad"
-            />
-            <div className={estilos.sugerenciasLugar}>
-              <span className={estilos.sugerenciasTexto}>Accesos rápidos:</span>
-              <div className={estilos.sugerenciasBotones}>
-                {LUGARES_SUGERIDOS.map((sug) => (
-                  <button
-                    key={sug.lugar}
-                    type="button"
-                    className={estilos.botonSugerencia}
-                    onClick={() => {
-                      setFormulario((prev) => ({
-                        ...prev,
-                        lugar: sug.lugar,
-                        ubicacionMapa: prev.ubicacionMapa ? prev.ubicacionMapa : sug.direccion,
-                      }));
-                    }}
-                  >
-                    {sug.nombreBoton}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className={estilos.campo}>
-            <label className={estilos.etiqueta} htmlFor="ev-ubicacionMapa">
-              <MapPin className={estilos.iconoCampo} aria-hidden="true" />
-              Ubicación para el mapa (dirección exacta)
-            </label>
-            <input
-              id="ev-ubicacionMapa"
-              type="text"
-              value={formulario.ubicacionMapa}
-              onChange={cambiarCampo("ubicacionMapa")}
-              className={estilos.input}
-              placeholder="Ej: Cl. 54a #30-01, Villa Hermosa, Medellín o Campus Fraternidad"
-            />
-            <div className={estilos.sugerenciasLugar}>
-              <span className={estilos.sugerenciasTexto}>Accesos rápidos:</span>
-              <div className={estilos.sugerenciasBotones}>
-                {LUGARES_SUGERIDOS.map((sug) => (
-                  <button
-                    key={`mapa-${sug.lugar}`}
-                    type="button"
-                    className={estilos.botonSugerencia}
-                    onClick={() => {
-                      setFormulario((prev) => ({
-                        ...prev,
-                        ubicacionMapa: sug.direccion,
-                      }));
-                    }}
-                  >
-                    {sug.nombreBoton}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className={estilos.cajaMasivo}>
-            <label className={estilos.labelMasivo}>
-              <input
-                type="checkbox"
-                checked={formulario.esMasivo}
-                onChange={cambiarCampo("esMasivo")}
-                className={estilos.checkbox}
-              />
-              <span className={estilos.textoMasivo}>Evento masivo</span>
-            </label>
-            <p className={estilos.ayudaMasivo}>
-              Desactiva la capacidad de participantes (cupos ilimitados) y no genera códigos de acceso.
-            </p>
-          </div>
-
-          <div className={estilos.campo}>
-            <label
-              className={`${estilos.etiqueta} ${formulario.esMasivo ? estilos.etiquetaDeshabilitada : ""}`}
-              htmlFor="ev-capacidad"
+        {esEdicion && (
+          <div className={estilos.badgesCabecera}>
+            <span
+              className={`${estilos.insigniaEstado} ${
+                evento.estado === "publicado"
+                  ? estilos.estadoPublicado
+                  : evento.estado === "cancelado"
+                    ? estilos.estadoCancelado
+                    : estilos.estadoBorrador
+              }`}
             >
-              <Users className={estilos.iconoCampo} aria-hidden="true" />
-              Capacidad de participantes
-            </label>
-            <input
-              id="ev-capacidad"
-              type="number"
-              min="1"
-              max="5000"
-              disabled={formulario.esMasivo}
-              required={!formulario.esMasivo}
-              value={formulario.esMasivo ? "" : formulario.capacidad}
-              onChange={cambiarCampo("capacidad")}
-              className={`${estilos.input} ${formulario.esMasivo ? estilos.inputDeshabilitado : ""}`}
-              placeholder={formulario.esMasivo ? "Ilimitada (Evento masivo)" : "Ej: 50"}
-            />
-            <span className={estilos.ayudaCampo}>
-              {formulario.esMasivo
-                ? "Capacidad ilimitada para evento masivo."
-                : "Cupos totales disponibles para inscripción."}
+              {evento.estado === "publicado"
+                ? "Publicado en Portal"
+                : evento.estado === "cancelado"
+                  ? "Cancelado"
+                  : "Borrador"}
             </span>
+            {formulario.esMasivo && (
+              <span className={estilos.insigniaMasivo}>
+                Aforo Libre (Evento Masivo)
+              </span>
+            )}
           </div>
+        )}
+      </div>
 
-          <div className={estilos.fila}>
-            <div className={estilos.campo}>
-              <label className={estilos.etiqueta} htmlFor="ev-tipo">
-                Tipo de evento
-              </label>
-              <select
-                id="ev-tipo"
-                value={formulario.tipo}
-                onChange={cambiarCampo("tipo")}
-                className={`${estilos.input} ${estilos.select}`}
-              >
-                <option value="abierto">Abierto al público</option>
-                <option value="charla">Charla</option>
-                <option value="observacion">Observación</option>
-              </select>
+      {/* Cuadrícula de 2 columnas: Formulario a la izquierda, QR y Asistencia a la derecha */}
+      <div className={estilos.gridGestion}>
+        {/* COLUMNA IZQUIERDA: Formulario */}
+        <div className={estilos.columnaFormulario}>
+          <div className={estilos.tarjetaFormulario}>
+            <div className={estilos.cabeceraTarjeta}>
+              <h3 className={estilos.tituloSeccion}>
+                {esEdicion ? "Detalles de la Actividad" : "Información del Evento"}
+              </h3>
+              {!puedeEditar && (
+                <span className={estilos.badgeSoloLectura}>
+                  <Lock size={14} aria-hidden="true" />
+                  Modo solo lectura
+                </span>
+              )}
             </div>
 
-            <div className={estilos.campo}>
-              <label className={estilos.etiqueta} htmlFor="ev-docente">
-                <GraduationCap className={estilos.iconoCampo} aria-hidden="true" />
-                Docente responsable
-              </label>
-              {esAdmin ? (
-                <select
-                  id="ev-docente"
-                  value={formulario.creadoPorId || usuarioActual?.id}
-                  onChange={(e) => {
-                    const id = Number(e.target.value);
-                    const doc =
-                      docentes.find((d) => d.id === id) ||
-                      (id === usuarioActual?.id ? usuarioActual : null);
-                    setFormulario((prev) => ({
-                      ...prev,
-                      creadoPorId: id,
-                      creadoPorNombre: doc ? doc.nombre : "Docente ITM",
-                      creadoPorRol: doc ? doc.rol : "Docente",
-                    }));
-                  }}
-                  className={`${estilos.input} ${estilos.select}`}
-                >
-                  {docentes.map((doc) => (
-                    <option key={doc.id} value={doc.id}>
-                      {doc.nombre} ({doc.correo})
-                    </option>
-                  ))}
-                  <option value={usuarioActual?.id}>
-                    {usuarioActual?.nombre} (Administrador)
-                  </option>
-                </select>
-              ) : (
-                <div className={estilos.docenteAsignadoFila}>
-                  <GraduationCap className={estilos.iconoDocenteAsignado} aria-hidden="true" />
-                  <span>{formulario.creadoPorNombre || usuarioActual?.nombre || "Docente ITM"}</span>
+            <form className={estilos.formulario} onSubmit={manejarEnvio} noValidate>
+              {error && (
+                <div className={estilos.alertaError} role="alert">
+                  {error}
                 </div>
               )}
-            </div>
-          </div>
 
-          <div className={estilos.campo}>
-            <label className={estilos.etiqueta}>Imagen</label>
-            <div className={estilos.grupoImagen}>
-              {formulario.imagen && (
-                <img
-                  src={formulario.imagen}
-                  alt="Vista previa del evento"
-                  className={estilos.vistaPrevia}
-                />
-              )}
-              <label className={estilos.botonImagen}>
-                <ImagePlus className={estilos.iconoImagen} aria-hidden="true" />
-                <span>{formulario.imagen ? "Cambiar imagen" : "Subir imagen"}</span>
+              <div className={estilos.campo}>
+                <label className={estilos.etiqueta} htmlFor="ev-titulo">
+                  Nombre del evento *
+                </label>
                 <input
-                  type="file"
-                  accept="image/*"
-                  onChange={manejarImagen}
-                  className={estilos.inputArchivo}
+                  id="ev-titulo"
+                  type="text"
+                  required
+                  disabled={!puedeEditar}
+                  value={formulario.titulo}
+                  onChange={cambiarCampo("titulo")}
+                  className={estilos.input}
+                  placeholder="Ej: Observación Astronómica con Telescopio"
                 />
-              </label>
+              </div>
+
+              <div className={estilos.campo}>
+                <label className={estilos.etiqueta} htmlFor="ev-descripcion">
+                  Descripción de la actividad * (Mínimo 10 caracteres)
+                </label>
+                <textarea
+                  id="ev-descripcion"
+                  required
+                  rows={4}
+                  disabled={!puedeEditar}
+                  value={formulario.descripcion}
+                  onChange={cambiarCampo("descripcion")}
+                  className={estilos.textarea}
+                  placeholder="Describe los detalles, objetivos y actividades del evento para los participantes."
+                />
+              </div>
+
+              <div className={estilos.fila}>
+                <div className={estilos.campo}>
+                  <label className={estilos.etiqueta} htmlFor="ev-fecha">
+                    <Calendar className={estilos.iconoCampo} aria-hidden="true" />
+                    Fecha *
+                  </label>
+                  <input
+                    id="ev-fecha"
+                    type="date"
+                    required
+                    disabled={!puedeEditar}
+                    value={formulario.fecha}
+                    onChange={cambiarCampo("fecha")}
+                    className={estilos.input}
+                  />
+                </div>
+
+                <div className={estilos.campo}>
+                  <label className={estilos.etiqueta} htmlFor="ev-hora">
+                    <Clock className={estilos.iconoCampo} aria-hidden="true" />
+                    Hora *
+                  </label>
+                  <input
+                    id="ev-hora"
+                    type="time"
+                    required
+                    disabled={!puedeEditar}
+                    value={formulario.hora}
+                    onChange={cambiarCampo("hora")}
+                    className={estilos.input}
+                  />
+                </div>
+              </div>
+
+              <div className={estilos.campo}>
+                <label className={estilos.etiqueta} htmlFor="ev-lugar">
+                  <MapPin className={estilos.iconoCampo} aria-hidden="true" />
+                  Lugar / Espacio *
+                </label>
+                <input
+                  id="ev-lugar"
+                  type="text"
+                  required
+                  disabled={!puedeEditar}
+                  value={formulario.lugar}
+                  onChange={cambiarCampo("lugar")}
+                  className={estilos.input}
+                  placeholder="Ej: Observatorio ITM - Sede Fraternidad"
+                />
+                {puedeEditar && (
+                  <div className={estilos.accesosRapidos}>
+                    <span className={estilos.accesosRapidosEtiqueta}>
+                      Sugerencias:
+                    </span>
+                    {LUGARES_SUGERIDOS.map((sug) => (
+                      <button
+                        key={sug.nombreBoton}
+                        type="button"
+                        className={estilos.botonSugerencia}
+                        onClick={() => {
+                          setFormulario((prev) => ({
+                            ...prev,
+                            lugar: sug.lugar,
+                            ubicacionMapa: sug.direccion,
+                          }));
+                          if (error) setError("");
+                        }}
+                      >
+                        {sug.nombreBoton}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className={estilos.campo}>
+                <label className={estilos.etiqueta} htmlFor="ev-ubicacion-mapa">
+                  Dirección exacta para el mapa
+                </label>
+                <input
+                  id="ev-ubicacion-mapa"
+                  type="text"
+                  disabled={!puedeEditar}
+                  value={formulario.ubicacionMapa}
+                  onChange={cambiarCampo("ubicacionMapa")}
+                  className={estilos.input}
+                  placeholder="Dirección completa para Google Maps / OpenStreetMap"
+                />
+              </div>
+
+              <div className={estilos.fila}>
+                <div className={estilos.campo}>
+                  <label className={estilos.cajaMasivo}>
+                    <input
+                      type="checkbox"
+                      disabled={!puedeEditar}
+                      checked={formulario.esMasivo}
+                      onChange={cambiarCampo("esMasivo")}
+                      className={estilos.checkbox}
+                    />
+                    <div className={estilos.textoMasivo}>
+                      <strong>Evento masivo (Aforo libre)</strong>
+                      <span>Cupos ilimitados. Habilita asistencia por código QR en sitio.</span>
+                    </div>
+                  </label>
+                </div>
+
+                <div className={estilos.campo}>
+                  <label className={estilos.etiqueta} htmlFor="ev-capacidad">
+                    <Users className={estilos.iconoCampo} aria-hidden="true" />
+                    Capacidad de participantes
+                  </label>
+                  <input
+                    id="ev-capacidad"
+                    type="number"
+                    min="1"
+                    disabled={!puedeEditar || formulario.esMasivo}
+                    value={formulario.esMasivo ? "" : formulario.capacidad}
+                    onChange={cambiarCampo("capacidad")}
+                    className={`${estilos.input} ${
+                      formulario.esMasivo ? estilos.inputDeshabilitado : ""
+                    }`}
+                    placeholder={formulario.esMasivo ? "Ilimitada" : "50"}
+                  />
+                </div>
+              </div>
+
+              <div className={estilos.fila}>
+                <div className={estilos.campo}>
+                  <label className={estilos.etiqueta} htmlFor="ev-tipo">
+                    Tipo de evento
+                  </label>
+                  <select
+                    id="ev-tipo"
+                    disabled={!puedeEditar}
+                    value={formulario.tipo}
+                    onChange={cambiarCampo("tipo")}
+                    className={`${estilos.input} ${estilos.select}`}
+                  >
+                    <option value="abierto">Abierto / General</option>
+                    <option value="charla">Charla Académica</option>
+                    <option value="observacion">Observación con Telescopio</option>
+                  </select>
+                </div>
+
+                <div className={estilos.campo}>
+                  <label className={estilos.etiqueta} htmlFor="ev-docente">
+                    <GraduationCap className={estilos.iconoCampo} aria-hidden="true" />
+                    Docente responsable
+                  </label>
+                  {esAdmin ? (
+                    <select
+                      id="ev-docente"
+                      disabled={!puedeEditar}
+                      value={formulario.creadoPorId || usuarioActual?.id}
+                      onChange={(e) => {
+                        const id = Number(e.target.value);
+                        const doc =
+                          docentes.find((d) => d.id === id) ||
+                          (id === usuarioActual?.id ? usuarioActual : null);
+                        setFormulario((prev) => ({
+                          ...prev,
+                          creadoPorId: id,
+                          creadoPorNombre: doc ? doc.nombre : "Docente ITM",
+                          creadoPorRol: doc ? doc.rol : "Docente",
+                        }));
+                      }}
+                      className={`${estilos.input} ${estilos.select}`}
+                    >
+                      {docentes.map((doc) => (
+                        <option key={doc.id} value={doc.id}>
+                          {doc.nombre} ({doc.correo})
+                        </option>
+                      ))}
+                      <option value={usuarioActual?.id}>
+                        {usuarioActual?.nombre} (Administrador)
+                      </option>
+                    </select>
+                  ) : (
+                    <div className={estilos.docenteAsignadoFila}>
+                      <GraduationCap className={estilos.iconoDocenteAsignado} aria-hidden="true" />
+                      <span>{formulario.creadoPorNombre || usuarioActual?.nombre || "Docente ITM"}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className={estilos.campo}>
+                <label className={estilos.etiqueta}>Imagen del evento</label>
+                <div className={estilos.grupoImagen}>
+                  {formulario.imagen && (
+                    <img
+                      src={formulario.imagen}
+                      alt="Vista previa del evento"
+                      className={estilos.vistaPrevia}
+                    />
+                  )}
+                  {puedeEditar && (
+                    <label className={estilos.botonImagen}>
+                      <ImagePlus className={estilos.iconoImagen} aria-hidden="true" />
+                      <span>{formulario.imagen ? "Cambiar imagen" : "Subir imagen"}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={manejarImagen}
+                        className={estilos.inputArchivo}
+                      />
+                    </label>
+                  )}
+                </div>
+              </div>
+
+              <div className={estilos.campoPublicar}>
+                <label className={estilos.cajaPublicar}>
+                  <input
+                    type="checkbox"
+                    disabled={!puedeEditar}
+                    checked={formulario.publicarDirectamente}
+                    onChange={cambiarCampo("publicarDirectamente")}
+                    className={estilos.checkbox}
+                  />
+                  <span>Publicar directamente en el portal web</span>
+                </label>
+                <p className={estilos.ayudaPublicar}>
+                  Si no se marca, el evento se guardará como <strong>borrador</strong> privado.
+                </p>
+              </div>
+
+              <div className={estilos.accionesFormulario}>
+                <button
+                  type="button"
+                  className={estilos.botonCancelar}
+                  onClick={onCerrar}
+                  disabled={cargando}
+                >
+                  Volver / Cancelar
+                </button>
+                {puedeEditar && (
+                  <button
+                    type="submit"
+                    className={estilos.botonGuardar}
+                    disabled={cargando}
+                  >
+                    {cargando
+                      ? esEdicion
+                        ? "Guardando cambios..."
+                        : "Creando evento..."
+                      : esEdicion
+                        ? "Guardar cambios"
+                        : "Crear evento"}
+                  </button>
+                )}
+              </div>
+            </form>
+          </div>
+        </div>
+
+        {/* COLUMNA DERECHA: QR del evento (arriba) y Descarga FG 031 (abajo) */}
+        <aside className={estilos.columnaLateral}>
+          {/* TARJETA 1: CÓDIGO QR DE ASISTENCIA EN SITIO */}
+          <div className={estilos.tarjetaLateral}>
+            <div className={estilos.cabeceraLateral}>
+              <div className={estilos.iconoContenedorQr}>
+                <QrCode className={estilos.iconoLateral} aria-hidden="true" />
+              </div>
+              <div>
+                <h3 className={estilos.tituloLateral}>Código QR del Evento</h3>
+                <span className={estilos.badgeLateral}>Toma de Asistencia en Sitio</span>
+              </div>
             </div>
+
+            {esEdicion ? (
+              <div className={estilos.cuerpoQr}>
+                <p className={estilos.descripcionLateral}>
+                  Proyecta este código en el aula o auditorio para que los estudiantes
+                  escaneen y registren su asistencia inmediatamente.
+                </p>
+
+                <div className={estilos.marcoQr} ref={qrRef}>
+                  <QRCodeSVG
+                    value={urlAsistencia}
+                    size={210}
+                    level="H"
+                    includeMargin={true}
+                  />
+                </div>
+
+                <div className={estilos.cajaEnlace}>
+                  <input
+                    type="text"
+                    readOnly
+                    value={urlAsistencia}
+                    className={estilos.inputEnlace}
+                    aria-label="Enlace directo al formulario de asistencia"
+                  />
+                  <button
+                    type="button"
+                    onClick={copiarEnlace}
+                    className={estilos.botonCopiar}
+                    title="Copiar enlace"
+                  >
+                    {copiado ? <Check size={16} color="#16a34a" /> : <Copy size={16} />}
+                    <span>{copiado ? "¡Copiado!" : "Copiar"}</span>
+                  </button>
+                </div>
+
+                <div className={estilos.botonesQr}>
+                  <button
+                    type="button"
+                    onClick={descargarQrPng}
+                    className={estilos.botonDescargarQr}
+                  >
+                    <Download size={16} aria-hidden="true" />
+                    <span>Descargar QR (PNG)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMostrarModalProyeccion(true)}
+                    className={estilos.botonProyectar}
+                  >
+                    <Maximize2 size={16} aria-hidden="true" />
+                    <span>Proyectar Pantalla Completa</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className={estilos.placeholderLateral}>
+                <div className={estilos.iconoPlaceholder}>
+                  <QrCode size={40} aria-hidden="true" />
+                </div>
+                <h4>Código QR Automático</h4>
+                <p>
+                  Una vez crees y guardes el evento, aquí aparecerá automáticamente su
+                  código QR oficial para proyectar a los asistentes.
+                </p>
+              </div>
+            )}
           </div>
 
-          <div className={estilos.campoPublicar}>
-            <label className={estilos.cajaPublicar}>
-              <input
-                type="checkbox"
-                checked={formulario.publicarDirectamente}
-                onChange={cambiarCampo("publicarDirectamente")}
-                className={estilos.checkbox}
-              />
-              <span>Publicar directamente (visible en el portal)</span>
-            </label>
-            <p className={estilos.ayuda}>
-              Si no marcamos esta opción, el evento se guardará como{" "}
-              <strong>borrador</strong>.
-            </p>
-          </div>
+          {/* TARJETA 2: DESCARGA DE ASISTENCIA OFICIAL ITM (FG 031) */}
+          <div className={estilos.tarjetaLateral}>
+            <div className={estilos.cabeceraLateral}>
+              <div className={estilos.iconoContenedorExcel}>
+                <FileSpreadsheet className={estilos.iconoLateral} aria-hidden="true" />
+              </div>
+              <div>
+                <h3 className={estilos.tituloLateral}>Listado de Asistencia</h3>
+                <span className={estilos.badgeFormatoOficial}>Formato Oficial FG 031</span>
+              </div>
+            </div>
 
-          <div className={estilos.acciones}>
-            <button type="button" className={estilos.botonCancelar} onClick={onCerrar} disabled={cargando}>
-              Cancelar
-            </button>
-            <button type="submit" className={estilos.botonGuardar} disabled={cargando}>
-              {cargando
-                ? (esEdicion ? "Guardando..." : "Creando evento...")
-                : (esEdicion ? "Guardar cambios" : "Crear evento")}
-            </button>
+            {esEdicion ? (
+              <div className={estilos.cuerpoAsistencia}>
+                <p className={estilos.descripcionLateral}>
+                  Descarga la planilla oficial del ITM en formato Excel con todos los
+                  asistentes e inscritos confirmados, lista para radicar en coordinación docente.
+                </p>
+
+                {/* Métricas rápidas del evento */}
+                <div className={estilos.metricasAsistencia}>
+                  <div className={estilos.metricaItem}>
+                    <span className={estilos.metricaValor}>
+                      {evento.asistentes || 0}
+                    </span>
+                    <span className={estilos.metricaEtiqueta}>Asistieron</span>
+                  </div>
+                  <div className={estilos.metricaDivisor} />
+                  <div className={estilos.metricaItem}>
+                    <span className={estilos.metricaValor}>
+                      {evento.esMasivo
+                        ? "Ilimitado"
+                        : evento.inscritos || 0}
+                    </span>
+                    <span className={estilos.metricaEtiqueta}>
+                      {evento.esMasivo ? "Aforo libre" : "Inscritos"}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={manejarDescargarExcel}
+                  disabled={descargandoExcel}
+                  className={estilos.botonDescargarExcel}
+                >
+                  <FileSpreadsheet size={18} aria-hidden="true" />
+                  <span>
+                    {descargandoExcel
+                      ? "Generando archivo Excel..."
+                      : "Descargar Asistencia FG 031 (Excel)"}
+                  </span>
+                </button>
+
+                <div className={estilos.notaOficial}>
+                  <Sparkles size={14} className={estilos.iconoChispa} aria-hidden="true" />
+                  <span>
+                    Cumple con el estándar de Calidad ITM (Código FG 031 · Versión 03).
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className={estilos.placeholderLateral}>
+                <div className={estilos.iconoPlaceholder}>
+                  <FileSpreadsheet size={40} aria-hidden="true" />
+                </div>
+                <h4>Planilla FG 031 en Excel</h4>
+                <p>
+                  Podrás descargar el archivo Excel con todos los asistentes registrados
+                  tan pronto los estudiantes completen el formulario del evento.
+                </p>
+              </div>
+            )}
           </div>
-        </form>
+        </aside>
       </div>
-    </div>
+
+      {/* Modal de Proyección en Pantalla Completa (cuando le den a proyectar) */}
+      {evento && (
+        <ModalQrAsistencia
+          abierto={mostrarModalProyeccion}
+          onCerrar={() => setMostrarModalProyeccion(false)}
+          evento={evento}
+        />
+      )}
+    </section>
   );
 }

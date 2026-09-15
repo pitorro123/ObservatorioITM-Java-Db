@@ -65,7 +65,19 @@ export default function TarjetaEvento({
   };
 
   return (
-    <article className={estilos.tarjeta}>
+    <article
+      className={estilos.tarjeta}
+      onClick={() => onEditar?.(evento)}
+      role="button"
+      tabIndex={0}
+      title="Clic para gestionar evento, ver QR y descargar asistencia FG 031"
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onEditar?.(evento);
+        }
+      }}
+    >
       <div className={estilos.contenedorImagen}>
         <img
           src={evento.imagen || IMAGENES.GENERAL.DEFAULT_EVENTO}
@@ -164,7 +176,10 @@ export default function TarjetaEvento({
               <button
                 type="button"
                 className={`${estilos.botonAccion} ${estilos.botonPublicar}`}
-                onClick={() => onPublicar?.(evento)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPublicar?.(evento);
+                }}
               >
                 <Send className={estilos.iconoAccion} aria-hidden="true" />
                 Publicar
@@ -175,7 +190,10 @@ export default function TarjetaEvento({
             <button
               type="button"
               className={`${estilos.botonIcono} ${estilos.botonEditar}`}
-              onClick={() => onEditar?.(evento)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEditar?.(evento);
+              }}
               aria-label="Editar evento"
             >
               <Pencil className={estilos.iconoAccion} aria-hidden="true" />
@@ -186,7 +204,10 @@ export default function TarjetaEvento({
               <button
                 type="button"
                 className={`${estilos.botonIcono} ${estilos.botonCancelar}`}
-                onClick={() => onCancelar?.(evento)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onCancelar?.(evento);
+                }}
                 aria-label="Cancelar evento"
               >
                 <XCircle className={estilos.iconoAccion} aria-hidden="true" />
@@ -197,7 +218,10 @@ export default function TarjetaEvento({
             <button
               type="button"
               className={`${estilos.botonIcono} ${estilos.botonEliminar}`}
-              onClick={() => onEliminar?.(evento)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEliminar?.(evento);
+              }}
               aria-label="Eliminar evento"
             >
               <Trash2 className={estilos.iconoAccion} aria-hidden="true" />

@@ -66,10 +66,6 @@ export default function Eventos() {
   };
 
   const abrirEditar = (evento) => {
-    if (!puedeGestionar(evento)) {
-      setNotificacion("Solo el docente creador o un administrador puede editar este evento.");
-      return;
-    }
     setEventoEditando(evento);
     setFormularioAbierto(true);
   };
@@ -133,9 +129,26 @@ export default function Eventos() {
   return (
     <div className={estilos.pagina}>
       <div className={estilos.seccionSuperior}>
-        <Header rutaBreadcrumb={["Dashboard", "Eventos"]} titulo="Eventos" />
+        <Header
+          rutaBreadcrumb={
+            formularioAbierto
+              ? [
+                  "Dashboard",
+                  "Eventos",
+                  eventoEditando ? "Gestionar Evento" : "Crear Evento",
+                ]
+              : ["Dashboard", "Eventos"]
+          }
+          titulo={
+            formularioAbierto
+              ? eventoEditando
+                ? "Gestión del Evento"
+                : "Crear Evento"
+              : "Eventos"
+          }
+        />
 
-        {esDesfavorable && (
+        {esDesfavorable && !formularioAbierto && (
           <div className={estilos.avisoClimaDocente} role="alert">
             <CloudRain className={estilos.avisoClimaIcono} aria-hidden="true" />
             <div className={estilos.avisoClimaTexto}>
@@ -145,61 +158,68 @@ export default function Eventos() {
           </div>
         )}
 
-        <BarraFiltros
-          conteos={conteosPorEstado}
-          pestañaActiva={pestañaActiva}
-          onCambiarPestaña={cambiarPestaña}
-          valorBusqueda={valorBusqueda}
-          onCambiarBusqueda={cambiarBusqueda}
-          filtroMes={filtroMes}
-          onCambiarFiltroMes={cambiarFiltroMes}
-          filtroAutor={filtroAutor}
-          onCambiarFiltroAutor={cambiarFiltroAutor}
-        />
+        {!formularioAbierto && (
+          <BarraFiltros
+            conteos={conteosPorEstado}
+            pestañaActiva={pestañaActiva}
+            onCambiarPestaña={cambiarPestaña}
+            valorBusqueda={valorBusqueda}
+            onCambiarBusqueda={cambiarBusqueda}
+            filtroMes={filtroMes}
+            onCambiarFiltroMes={cambiarFiltroMes}
+            filtroAutor={filtroAutor}
+            onCambiarFiltroAutor={cambiarFiltroAutor}
+          />
+        )}
       </div>
 
-      <div className={estilos.contenedorTarjetas}>
-        <GridEventos
-          eventos={eventosPagina}
-          onEditar={abrirEditar}
-          onEliminar={setEventoEliminar}
-          onPublicar={manejarPublicar}
-          onCancelar={setEventoCancelar}
+      {formularioAbierto ? (
+        <FormularioEvento
+          abierto={true}
+          evento={eventoEditando}
+          puedeEditar={eventoEditando ? puedeGestionar(eventoEditando) : true}
+          onCerrar={() => {
+            setFormularioAbierto(false);
+            setEventoEditando(null);
+          }}
+          onGuardar={manejarGuardar}
         />
-        <Paginacion
-          paginaActual={paginaActual}
-          totalPaginas={totalPaginas}
-          onCambiarPagina={setPaginaActual}
-        />
-      </div>
+      ) : (
+        <>
+          <div className={estilos.contenedorTarjetas}>
+            <GridEventos
+              eventos={eventosPagina}
+              onEditar={abrirEditar}
+              onEliminar={setEventoEliminar}
+              onPublicar={manejarPublicar}
+              onCancelar={setEventoCancelar}
+            />
+            <Paginacion
+              paginaActual={paginaActual}
+              totalPaginas={totalPaginas}
+              onCambiarPagina={setPaginaActual}
+            />
+          </div>
 
-      <button
-        type="button"
-        className={estilos.botonFlotante}
-        aria-label="Crear evento"
-        onClick={abrirCrear}
-        onMouseEnter={mostrarTooltip}
-        onMouseLeave={ocultarTooltip}
-        onFocus={mostrarTooltip}
-        onBlur={ocultarTooltip}
-      >
-        <Plus className={estilos.iconoPlus} aria-hidden="true" />
-        <span
-          className={`${estilos.tooltip} ${tooltipOculto ? estilos.tooltipOculto : ""}`}
-        >
-          Agregar un nuevo evento
-        </span>
-      </button>
-
-      <FormularioEvento
-        abierto={formularioAbierto}
-        evento={eventoEditando}
-        onCerrar={() => {
-          setFormularioAbierto(false);
-          setEventoEditando(null);
-        }}
-        onGuardar={manejarGuardar}
-      />
+          <button
+            type="button"
+            className={estilos.botonFlotante}
+            aria-label="Crear evento"
+            onClick={abrirCrear}
+            onMouseEnter={mostrarTooltip}
+            onMouseLeave={ocultarTooltip}
+            onFocus={mostrarTooltip}
+            onBlur={ocultarTooltip}
+          >
+            <Plus className={estilos.iconoPlus} aria-hidden="true" />
+            <span
+              className={`${estilos.tooltip} ${tooltipOculto ? estilos.tooltipOculto : ""}`}
+            >
+              Agregar un nuevo evento
+            </span>
+          </button>
+        </>
+      )}
 
       <ConfirmacionModal
         abierto={Boolean(eventoEliminar)}

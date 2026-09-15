@@ -90,6 +90,10 @@ public class DatosIniciales implements ApplicationRunner {
 	public void run(ApplicationArguments args) throws Exception {
 		// Ajuste DDL para soportar imágenes en Base64 o URLs extensas
 		try {
+			jdbcTemplate.execute("ALTER TABLE eventos ALTER COLUMN imagen TYPE TEXT");
+		} catch (Exception ignored) {
+		}
+		try {
 			jdbcTemplate.execute("ALTER TABLE eventos MODIFY COLUMN imagen LONGTEXT");
 		} catch (Exception ignored) {
 		}
