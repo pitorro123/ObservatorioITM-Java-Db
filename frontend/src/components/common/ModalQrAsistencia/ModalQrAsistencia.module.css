@@ -235,20 +235,23 @@
 .botonPrimario {
   background-color: #0284c7;
   color: #ffffff;
+  border: 1px solid #0284c7;
 }
 
 .botonPrimario:hover {
   background-color: #0369a1;
+  border-color: #0369a1;
 }
 
 .botonSecundario {
-  background-color: #f1f5f9;
-  color: #1e293b;
-  border-color: #cbd5e1;
+  background-color: #0284c7;
+  color: #ffffff;
+  border: 1px solid #0284c7;
 }
 
 .botonSecundario:hover {
-  background-color: #e2e8f0;
+  background-color: #0369a1;
+  border-color: #0369a1;
 }
 
 .modalProyeccion .botonSecundario {
@@ -263,12 +266,14 @@
 
 .botonProyectar {
   grid-column: 1 / -1;
-  background: linear-gradient(135deg, #4f46e5 0%, #0284c7 100%);
+  background-color: #0284c7;
   color: #ffffff;
+  border: 1px solid #0284c7;
 }
 
 .botonProyectar:hover {
-  filter: brightness(1.1);
+  background-color: #0369a1;
+  border-color: #0369a1;
 }
 
 .modalProyeccion .botonProyectar {
