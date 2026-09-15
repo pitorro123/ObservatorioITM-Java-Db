@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { useParams, Navigate, Link } from "react-router-dom";
 import { useParams, Navigate, Link, useSearchParams } from "react-router-dom";
 import {
   CalendarDays,
@@ -462,11 +461,6 @@ export default function DetalleEvento() {
                 </Link>
               </div>
             ) : (
-              <form className={estilos.formulario} onSubmit={manejarEnvio} noValidate>
-                {error && (
-                  <p className={estilos.errorForm} role="alert">
-                    {error}
-                  </p>
               <>
                 {esMasivo && esModoAsistencia && (
                   <div className={estilos.bannerModoAsistencia}>
@@ -622,13 +616,10 @@ export default function DetalleEvento() {
 
                 <button type="submit" className={estilos.botonInscribirse} disabled={cargando}>
                   {cargando
-                    ? (esMasivo ? "Registrando datos..." : "Reservando cupo...")
-                    : (esMasivo ? "Registrarme al evento" : "Inscribirme")}
                     ? (esMasivo ? "Registrando asistencia..." : "Reservando cupo...")
                     : (esMasivo ? "Confirmar mi asistencia" : "Inscribirme")}
                 </button>
               </form>
-            )}
             </>
           )}
           </>

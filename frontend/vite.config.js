@@ -8,4 +8,16 @@ export default defineConfig({
       localsConvention: "camelCase",
     },
   },
+  build: {
+    chunkSizeWarningLimit: 1200,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom", "react-router-dom"],
+          xlsx: ["xlsx"],
+          qr: ["qrcode.react"],
+        },
+      },
+    },
+  },
 });
