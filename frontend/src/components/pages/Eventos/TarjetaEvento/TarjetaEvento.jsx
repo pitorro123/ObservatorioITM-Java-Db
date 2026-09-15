@@ -162,11 +162,11 @@ export default function TarjetaEvento({
           className={`${estilos.botonIcono} ${estilos.botonExcel}`}
           onClick={manejarDescargarExcel}
           disabled={descargandoExcel}
-          aria-label="Descargar listado de asistencia FG 031"
+          aria-label="Descargar Asistencia (Excel)"
         >
           <FileSpreadsheet className={estilos.iconoAccion} aria-hidden="true" />
           <span className={estilos.tooltip}>
-            {descargandoExcel ? "Generando Excel..." : "Descargar lista FG 031"}
+            {descargandoExcel ? "Generando Excel..." : "Descargar Asistencia (Excel)"}
           </span>
         </button>
 

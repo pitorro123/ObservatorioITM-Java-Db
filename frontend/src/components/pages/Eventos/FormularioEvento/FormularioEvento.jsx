@@ -783,7 +783,7 @@ export default function FormularioEvento({
                   <span>
                     {descargandoExcel
                       ? "Generando archivo Excel..."
-                      : "Descargar Asistencia FG 031 (Excel)"}
+                      : "Descargar Asistencia (Excel)"}
                   </span>
                 </button>
 
