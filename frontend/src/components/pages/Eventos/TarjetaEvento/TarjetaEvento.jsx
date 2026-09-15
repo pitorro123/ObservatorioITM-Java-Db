@@ -1,7 +1,21 @@
-import { Trash2, Pencil, Send, XCircle, Users, GraduationCap, Lock } from "lucide-react";
+import { useState } from "react";
+import {
+  Trash2,
+  Pencil,
+  Send,
+  XCircle,
+  Users,
+  GraduationCap,
+  Lock,
+  QrCode,
+  FileSpreadsheet,
+} from "lucide-react";
 import { formatearFechaCorta, formatearHora } from "../../../../utils/formato.js";
 import { useAuth } from "../../../../context/AuthContext.jsx";
 import { IMAGENES } from "../../../../data/imagenes.js";
+import { listarInscripcionesEvento } from "../../../../api/servicios.js";
+import { exportarExcelFG031 } from "../../../../utils/exportarExcelFG031.js";
+import ModalQrAsistencia from "../../../common/ModalQrAsistencia/ModalQrAsistencia.jsx";
 import estilos from "./TarjetaEvento.module.css";
 
 const clasesEstado = {
@@ -26,6 +40,29 @@ export default function TarjetaEvento({
   const { usuarioActual, esAdmin } = useAuth();
   const esAutor = usuarioActual ? Number(usuarioActual.id) === Number(evento.creadoPorId) : false;
   const puedeGestionar = esAdmin || esAutor;
+
+  const [mostrarQr, setMostrarQr] = useState(false);
+  const [descargandoExcel, setDescargandoExcel] = useState(false);
+
+  const manejarDescargarExcel = async (e) => {
+    e.stopPropagation();
+    if (descargandoExcel) return;
+    setDescargandoExcel(true);
+    try {
+      const res = await listarInscripcionesEvento(evento.id);
+      const lista = Array.isArray(res) ? res : res?.data || [];
+      exportarExcelFG031(evento, lista);
+    } catch (err) {
+      console.error("Error al exportar FG 031:", err);
+    } finally {
+      setDescargandoExcel(false);
+    }
+  };
+
+  const manejarAbrirQr = (e) => {
+    e.stopPropagation();
+    setMostrarQr(true);
+  };
 
   return (
     <article className={estilos.tarjeta}>
@@ -96,6 +133,31 @@ export default function TarjetaEvento({
       </div>
 
       <div className={estilos.acciones}>
+        {evento.esMasivo && (
+          <button
+            type="button"
+            className={`${estilos.botonIcono} ${estilos.botonQr}`}
+            onClick={manejarAbrirQr}
+            aria-label="Ver y proyectar código QR de asistencia"
+          >
+            <QrCode className={estilos.iconoAccion} aria-hidden="true" />
+            <span className={estilos.tooltip}>QR Asistencia en sitio</span>
+          </button>
+        )}
+
+        <button
+          type="button"
+          className={`${estilos.botonIcono} ${estilos.botonExcel}`}
+          onClick={manejarDescargarExcel}
+          disabled={descargandoExcel}
+          aria-label="Descargar listado de asistencia FG 031"
+        >
+          <FileSpreadsheet className={estilos.iconoAccion} aria-hidden="true" />
+          <span className={estilos.tooltip}>
+            {descargandoExcel ? "Generando Excel..." : "Descargar lista FG 031"}
+          </span>
+        </button>
+
         {puedeGestionar ? (
           <>
             {evento.estado === "borrador" && (
@@ -152,6 +214,12 @@ export default function TarjetaEvento({
           </div>
         )}
       </div>
+
+      <ModalQrAsistencia
+        abierto={mostrarQr}
+        onCerrar={() => setMostrarQr(false)}
+        evento={evento}
+      />
     </article>
   );
 }

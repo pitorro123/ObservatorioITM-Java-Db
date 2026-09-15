@@ -118,6 +118,55 @@ class InscripcionServicioTest {
 	}
 
 	@Test
+	@DisplayName("inscribir() en evento masivo marca asistencia automáticamente y guarda registro en Asistencia")
+	void inscribir_eventoMasivo_marcaAsistenciaAutomaticamente() {
+		Evento evento = new Evento();
+		evento.setId(20L);
+		evento.setTitulo("Festival de Astronomía Masivo");
+		evento.setEstado("publicado");
+		evento.setEsMasivo(true);
+		evento.setFecha(LocalDate.now());
+		evento.setHora("14:00");
+		evento.setLugar("Campus Fraternidad");
+		evento.setInscritos(0);
+		evento.setAsistentes(0);
+
+		InscripcionRequest request = new InscripcionRequest(
+				20L,
+				"Carlos Restrepo",
+				"Carlos",
+				"Restrepo",
+				"CC",
+				"71223344",
+				"carlos@itm.edu.co",
+				"3115554433",
+				"Estudiante",
+				"Ingeniería Electrónica",
+				null);
+
+		when(eventos.findById(20L)).thenReturn(Optional.of(evento));
+		when(inscripciones.existsByEventoIdAndCorreoIgnoreCase(20L, "carlos@itm.edu.co")).thenReturn(false);
+		when(inscripciones.existsByEventoIdAndNumeroDocumentoIgnoreCase(20L, "71223344")).thenReturn(false);
+		when(participantes.findFirstByNumeroDocumentoIgnoreCase("71223344")).thenReturn(Optional.empty());
+		when(participantes.save(any(Participante.class))).thenAnswer(i -> i.getArgument(0));
+		when(inscripciones.save(any(Inscripcion.class))).thenAnswer(i -> {
+			Inscripcion ins = i.getArgument(0);
+			ins.setId(88L);
+			return ins;
+		});
+		when(asistencias.save(any(Asistencia.class))).thenAnswer(i -> i.getArgument(0));
+
+		InscripcionResponse response = inscripcionServicio.inscribir(request);
+
+		assertNotNull(response);
+		assertEquals(88L, response.id());
+		assertEquals("Asistió", response.asistencia());
+		assertEquals(true, response.esMasivo());
+		assertEquals(1, evento.getAsistentes());
+		verify(asistencias).save(any(Asistencia.class));
+	}
+
+	@Test
 	@DisplayName("inscribir() lanza 409 si el participante ya está registrado en el evento")
 	void inscribir_yaInscrito_lanza409() {
 		Evento evento = new Evento();

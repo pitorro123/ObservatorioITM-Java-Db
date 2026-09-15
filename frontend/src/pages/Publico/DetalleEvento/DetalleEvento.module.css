@@ -906,3 +906,104 @@
 .enlaceVolver:hover {
   text-decoration: underline;
 }
+
+/* ── Aviso Evento Masivo en Sitio ── */
+.cajaAvisoMasivo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 24px;
+  border-radius: var(--radius-xl);
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  width: 100%;
+}
+
+.iconoMasivoWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-xl);
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+.iconoMasivo {
+  width: 26px;
+  height: 26px;
+}
+
+.badgeAforoLibre {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pildora);
+  background-color: #dcfce7;
+  color: #15803d;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.tituloMasivoAviso {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #14532d;
+  margin: 0;
+}
+
+.textoMasivoAviso {
+  font-size: 0.875rem;
+  color: #166534;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.cajaPasosAsistencia {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  background-color: #ffffff;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius-lg);
+  width: 100%;
+}
+
+.pasoTitulo {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #14532d;
+  margin: 0;
+}
+
+.listaPasos {
+  margin: 0;
+  padding-left: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: #1f2937;
+  line-height: 1.5;
+}
+
+.bannerModoAsistencia {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius-lg);
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  width: 100%;
+}

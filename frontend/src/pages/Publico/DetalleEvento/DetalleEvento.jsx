@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, Navigate, Link } from "react-router-dom";
+import { useParams, Navigate, Link, useSearchParams } from "react-router-dom";
 import {
   CalendarDays,
   Clock,
@@ -14,6 +15,7 @@ import {
   Sparkles,
   CloudRain,
   UserX,
+  QrCode,
 } from "lucide-react";
 import ModalEventoCancelado from "../../../components/common/ModalEventoCancelado/ModalEventoCancelado.jsx";
 import { useEventosContext } from "../../../context/EventosContext.jsx";
@@ -34,9 +36,12 @@ function construirUrlMapa(direccion) {
 
 export default function DetalleEvento() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const { obtenerEvento, inscribir, programasAcademicos } = useEventosContext();
   const evento = obtenerEvento(id);
 
+  const esModoAsistencia =
+    searchParams.get("modo") === "asistencia" || searchParams.get("qr") === "1";
   const esMasivo = Boolean(evento?.esMasivo);
   const capacidad = Number(evento?.capacidad) > 0 ? Number(evento.capacidad) : 50;
   const inscritos = Number(evento?.inscritos) || 0;
@@ -328,13 +333,16 @@ export default function DetalleEvento() {
                 <div className={estilos.badgeMasivoExito}>
                   <Sparkles className={estilos.iconoSparkle} aria-hidden="true" />
                   <span>Evento Masivo · Entrada Libre</span>
+                  <span>¡Asistencia Confirmada en Sitio!</span>
                 </div>
                 <p className={estilos.textoMasivoExito}>
                   Hemos registrado tus datos para llevar el control y aforo de participantes del evento.
+                  Tu asistencia a <strong>{evento.titulo}</strong> ha sido registrada y validada oficialmente en el sistema del Observatorio ITM.
                 </p>
                 <div className={estilos.avisoSinCorreo}>
                   <p>
                     Al ser un evento abierto y masivo con entrada libre, <strong>no requieres código de acceso</strong> ni se enviará confirmación a tu correo. ¡Solo acércate y disfruta del evento!
+                    Al ser un evento con registro presencial en sitio, <strong>tu asistencia ya quedó confirmada</strong> sin necesidad de trámites adicionales. ¡Bienvenido y que disfrutes la actividad!
                   </p>
                 </div>
               </div>
@@ -422,6 +430,26 @@ export default function DetalleEvento() {
                   Ver otros eventos disponibles
                 </Link>
               </div>
+            ) : esMasivo && !esModoAsistencia ? (
+              <div className={estilos.cajaAvisoMasivo}>
+                <div className={estilos.iconoMasivoWrap}>
+                  <QrCode className={estilos.iconoMasivo} aria-hidden="true" />
+                </div>
+                <span className={estilos.badgeAforoLibre}>Entrada Libre · Sin inscripción previa</span>
+                <h3 className={estilos.tituloMasivoAviso}>Asistencia por Código QR</h3>
+                <p className={estilos.textoMasivoAviso}>
+                  Este es un evento masivo de entrada libre y aforo abierto en el Observatorio ITM.
+                  <strong> No requiere inscripción previa por la página web.</strong>
+                </p>
+                <div className={estilos.cajaPasosAsistencia}>
+                  <p className={estilos.pasoTitulo}>¿Cómo registrarás tu asistencia el día del evento?</p>
+                  <ol className={estilos.listaPasos}>
+                    <li>Asiste a <strong>{evento.lugar}</strong> el <strong>{formatearFecha(evento.fecha)}</strong> a las <strong>{formatearHora(evento.hora)}</strong>.</li>
+                    <li>En el auditorio o entrada, el docente proyectará un <strong>código QR</strong> en pantalla.</li>
+                    <li>Escanea el código QR con tu celular y completa el breve formulario móvil para que tu asistencia quede confirmada al instante.</li>
+                  </ol>
+                </div>
+              </div>
             ) : estaAgotado ? (
               <div className={estilos.cajaAgotado}>
                 <AlertCircle className={estilos.iconoAgotado} aria-hidden="true" />
@@ -439,7 +467,28 @@ export default function DetalleEvento() {
                   <p className={estilos.errorForm} role="alert">
                     {error}
                   </p>
+              <>
+                {esMasivo && esModoAsistencia && (
+                  <div className={estilos.bannerModoAsistencia}>
+                    <QrCode size={18} aria-hidden="true" />
+                    <span>Escaneo presencial · Toma de asistencia en sitio</span>
+                  </div>
                 )}
+                <h2 className={estilos.inscripcionTitulo}>
+                  {esMasivo ? "Registro de Asistencia en Sitio" : "Inscríbete a este evento"}
+                </h2>
+                <p className={estilos.inscripcionTexto}>
+                  {esMasivo
+                    ? "Diligencia tus datos a continuación para registrar y confirmar tu asistencia en este evento masivo."
+                    : "Completa tus datos para reservar tu cupo. La entrada es gratuita."}
+                </p>
+
+                <form className={estilos.formulario} onSubmit={manejarEnvio} noValidate>
+                  {error && (
+                    <p className={estilos.errorForm} role="alert">
+                      {error}
+                    </p>
+                  )}
 
                 <div className={estilos.campo}>
                   <label className={estilos.etiqueta} htmlFor="nombre">
@@ -575,9 +624,13 @@ export default function DetalleEvento() {
                   {cargando
                     ? (esMasivo ? "Registrando datos..." : "Reservando cupo...")
                     : (esMasivo ? "Registrarme al evento" : "Inscribirme")}
+                    ? (esMasivo ? "Registrando asistencia..." : "Reservando cupo...")
+                    : (esMasivo ? "Confirmar mi asistencia" : "Inscribirme")}
                 </button>
               </form>
             )}
+            </>
+          )}
           </>
         )}
         </div>

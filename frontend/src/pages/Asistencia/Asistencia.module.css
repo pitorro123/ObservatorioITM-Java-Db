@@ -62,10 +62,29 @@
   min-width: 220px;
 }
 
+.tituloFila {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 .nombreEvento {
   font-size: var(--texto-md);
   font-weight: var(--peso-bold);
   color: var(--color-texto-principal);
+}
+
+.badgeMasivo {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: var(--radio-pildora);
+  background-color: #dcfce7;
+  color: #15803d;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid #bbf7d0;
 }
 
 .metaEvento {
@@ -83,9 +102,61 @@
   height: 14px;
 }
 
+.contadoresYAcciones {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-lg);
+  flex-wrap: wrap;
+}
+
 .contadores {
   display: flex;
   gap: var(--espacio-md);
+}
+
+.accionesResumen {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.botonQrResumen {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radio-md);
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.botonQrResumen:hover {
+  background-color: #dbeafe;
+}
+
+.botonExcelResumen {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radio-md);
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.botonExcelResumen:hover {
+  background-color: #dcfce7;
 }
 
 .contador {

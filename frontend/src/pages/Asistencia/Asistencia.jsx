@@ -6,12 +6,16 @@ import {
   MapPin,
   Check,
   Clock,
+  FileSpreadsheet,
+  QrCode,
 } from "lucide-react";
 import Header from "../../components/layout/Header/Header.jsx";
 import BuscadorSelect from "../../components/common/BuscadorSelect/BuscadorSelect.jsx";
 import Notificacion from "../../components/pages/Eventos/Notificacion/Notificacion.jsx";
+import ModalQrAsistencia from "../../components/common/ModalQrAsistencia/ModalQrAsistencia.jsx";
 import { useEventosContext } from "../../context/EventosContext.jsx";
 import { formatearFecha, formatearHora } from "../../utils/formato.js";
+import { exportarExcelFG031 } from "../../utils/exportarExcelFG031.js";
 import estilos from "./Asistencia.module.css";
 
 export default function Asistencia() {
@@ -31,6 +35,7 @@ export default function Asistencia() {
   );
   const [notificacion, setNotificacion] = useState("");
   const [marcandoId, setMarcandoId] = useState(null);
+  const [modalQrAbierto, setModalQrAbierto] = useState(false);
 
   const evento = eventos.find((e) => e.id === Number(eventoId));
   const inscripciones = eventoId ? inscripcionesPorEvento(eventoId) : [];
@@ -38,6 +43,12 @@ export default function Asistencia() {
   const totalAsistentes = inscripciones.filter(
     (i) => i.asistencia === "Asistió"
   ).length;
+
+  const manejarExportarExcel = () => {
+    if (!evento) return;
+    exportarExcelFG031(evento, inscripciones);
+    setNotificacion("Descargando formato FG 031 en Excel...");
+  };
 
   const manejarMarcar = async (identificador) => {
     if (!identificador || marcandoId) return;
@@ -87,23 +98,50 @@ export default function Asistencia() {
         {evento && (
           <div className={estilos.resumenEvento}>
             <div className={estilos.datosEvento}>
-              <p className={estilos.nombreEvento}>{evento.titulo}</p>
+              <div className={estilos.tituloFila}>
+                <p className={estilos.nombreEvento}>{evento.titulo}</p>
+                {evento.esMasivo && (
+                  <span className={estilos.badgeMasivo}>Aforo Libre · Evento Masivo</span>
+                )}
+              </div>
               <p className={estilos.metaEvento}>
                 {formatearFecha(evento.fecha)} · {formatearHora(evento.hora)} ·{" "}
                 <MapPin className={estilos.iconoInline} aria-hidden="true" />
                 {evento.lugar}
               </p>
             </div>
-            <div className={estilos.contadores}>
-              <div className={estilos.contador}>
-                <Users className={estilos.iconoContador} aria-hidden="true" />
-                <span className={estilos.valorContador}>{totalInscritos}</span>
-                <span className={estilos.etiquetaContador}>Inscritos</span>
+            <div className={estilos.contadoresYAcciones}>
+              <div className={estilos.contadores}>
+                <div className={estilos.contador}>
+                  <Users className={estilos.iconoContador} aria-hidden="true" />
+                  <span className={estilos.valorContador}>{totalInscritos}</span>
+                  <span className={estilos.etiquetaContador}>Inscritos</span>
+                </div>
+                <div className={estilos.contador}>
+                  <UserCheck className={estilos.iconoContador} aria-hidden="true" />
+                  <span className={estilos.valorContador}>{totalAsistentes}</span>
+                  <span className={estilos.etiquetaContador}>Asistieron</span>
+                </div>
               </div>
-              <div className={estilos.contador}>
-                <UserCheck className={estilos.iconoContador} aria-hidden="true" />
-                <span className={estilos.valorContador}>{totalAsistentes}</span>
-                <span className={estilos.etiquetaContador}>Asistieron</span>
+              <div className={estilos.accionesResumen}>
+                {evento.esMasivo && (
+                  <button
+                    type="button"
+                    className={estilos.botonQrResumen}
+                    onClick={() => setModalQrAbierto(true)}
+                  >
+                    <QrCode size={16} aria-hidden="true" />
+                    QR Asistencia
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className={estilos.botonExcelResumen}
+                  onClick={manejarExportarExcel}
+                >
+                  <FileSpreadsheet size={16} aria-hidden="true" />
+                  Descargar FG 031 (Excel)
+                </button>
               </div>
             </div>
           </div>
@@ -229,6 +267,12 @@ export default function Asistencia() {
       </div>
 
       <Notificacion mensaje={notificacion} onCerrar={() => setNotificacion("")} />
+
+      <ModalQrAsistencia
+        abierto={modalQrAbierto}
+        onCerrar={() => setModalQrAbierto(false)}
+        evento={evento}
+      />
     </div>
   );
 }

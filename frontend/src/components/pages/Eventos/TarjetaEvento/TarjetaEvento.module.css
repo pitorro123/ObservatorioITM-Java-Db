@@ -321,6 +321,38 @@
   transform: translateX(-50%) translateY(0);
 }
 
+.botonQr {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.botonQr:hover {
+  background-color: #dbeafe;
+}
+
+.botonQr:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.botonExcel {
+  background-color: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.botonExcel:hover {
+  background-color: #dcfce7;
+}
+
+.botonExcel:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
 .tooltip {
   position: absolute;
   bottom: calc(100% + 8px);

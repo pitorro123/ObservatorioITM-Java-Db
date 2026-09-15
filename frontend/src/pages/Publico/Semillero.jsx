@@ -35,6 +35,7 @@ const pilares = [
 
 const ENLACE_WHATSAPP =
   "https://chat.whatsapp.com/EkD8YCVivoCKufp250O8b2?s=cl&p=a&mlu=4&ilr=4";
+  "https://chat.whatsapp.com/EkT0nYHPPsg0xPSzKgYupl?s=qt&p=a&mlu=4&ilr=4";
 
 export default function Semillero() {
   const [semillero, setSemillero] = useState(contenidoSemillero);

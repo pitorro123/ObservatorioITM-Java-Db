@@ -204,6 +204,7 @@ public class InscripcionServicio {
 		inscripcion.setParticipante(participante);
 		inscripcion.setEsMasivo(esMasivo);
 		inscripcion.setAsistencia("Pendiente");
+		inscripcion.setAsistencia(esMasivo ? "Asistió" : "Pendiente");
 
 		// Sincronización en columnas legacy para seguridad y compatibilidad
 		inscripcion.setNombre(participante.getNombreCompleto());
@@ -217,6 +218,13 @@ public class InscripcionServicio {
 		}
 
 		inscripcion = inscripciones.save(inscripcion);
+
+		if (esMasivo) {
+			Asistencia asistencia = new Asistencia(inscripcion);
+			asistencia = asistencias.save(asistencia);
+			inscripcion.setAsistenciaRegistro(asistencia);
+			evento.setAsistentes((evento.getAsistentes() == null ? 0 : evento.getAsistentes()) + 1);
+		}
 
 		evento.setInscritos(inscritos + 1);
 		eventos.save(evento);
