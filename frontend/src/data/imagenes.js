@@ -51,7 +51,10 @@ export const IMAGENES = {
   // 06_Logos_Iconos
   LOGOS_ICONOS: {
     LOGO_ITM: "https://i.ibb.co/21WHqpcy/Logo-Itm.png",
-    LOGO_FOOTER: "https://i.ibb.co/mF1HJ4v7/logo-footer.png",
+    LOGO_FOOTER: "/images/logo/logo_semillero_1.png",
+    LOGO_SEMILLERO_1: "/images/logo/logo_semillero_1.png",
+    LOGO_SEMILLERO_BLANCO: "/images/logo/logo_semillero_trans_blanco.png",
+    LOGO_SEMILLERO_NEGRO: "/images/logo/logo_semillero_trans_negro.png",
     TELESCOPIO: "https://i.ibb.co/dJ1dvbN0/telescopio.png",
     TELESCOPIO_JPG: "https://i.ibb.co/Gfj65Ghv/telescopio.jpg",
     TELESCOPIO_OBSERVACIONES: "https://i.ibb.co/RkKxmLmD/telescopio-observaciones.png",

@@ -40,8 +40,10 @@
 .brandImg {
   height: 64px;
   width: auto;
+  max-width: 200px;
   flex-shrink: 0;
   object-fit: contain;
+  border-radius: 8px;
 }
 
 .brandText {
