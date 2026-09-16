@@ -9,12 +9,12 @@ export default defineConfig({
     },
   },
   build: {
-    chunkSizeWarningLimit: 1200,
+    chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ["react", "react-dom", "react-router-dom"],
-          xlsx: ["xlsx"],
+          exceljs: ["exceljs/dist/exceljs.min.js"],
           qr: ["qrcode.react"],
         },
       },

@@ -1,4 +1,4 @@
-import * as XLSX from "xlsx";
+import ExcelJS from "exceljs/dist/exceljs.min.js";
 import { PLANTILLA_FG031_BASE64 } from "./plantillaFG031Base64.js";
 
 /**
@@ -6,12 +6,16 @@ import { PLANTILLA_FG031_BASE64 } from "./plantillaFG031Base64.js";
  * FG 031 - LISTADO DE ASISTENCIA - VISITAS ESTRATÉGICAS, DE RELACIONAMIENTO O EVENTOS ITM
  * Versión: 03 | Código: FG 031
  *
- * Utiliza la plantilla oficial original del ITM con su logotipo, membrete y estilos oficiales.
+ * Expande dinámicamente las filas cuando hay más de 25 asistentes:
+ * - Aplica números consecutivos continuos (26, 27, 28...).
+ * - Dibuja la cuadrícula completa con bordes idénticos ('thin' en todas las celdas A-L).
+ * - Mantiene los mismos merges (A:C para nombres, F:G para teléfono, H:L para correo).
+ * - Preserva el logo oficial de ITM y encabezados del Sistema Integrado de Gestión.
  *
  * @param {Object} evento - Datos del evento (titulo, docente, fecha, hora, lugar, etc.)
  * @param {Array} asistentes - Lista de inscripciones / participantes registrados
  */
-export function exportarExcelFG031(evento = {}, asistentes = []) {
+export async function exportarExcelFG031(evento = {}, asistentes = []) {
   try {
     // 1. Cargar la plantilla oficial del ITM desde Base64
     const binarioString = atob(PLANTILLA_FG031_BASE64);
@@ -19,8 +23,10 @@ export function exportarExcelFG031(evento = {}, asistentes = []) {
     for (let i = 0; i < binarioString.length; i++) {
       bytes[i] = binarioString.charCodeAt(i);
     }
-    const wb = XLSX.read(bytes, { type: "array", cellStyles: true });
-    const ws = wb.Sheets[wb.SheetNames[0]];
+
+    const wb = new ExcelJS.Workbook();
+    await wb.xlsx.load(bytes.buffer);
+    const ws = wb.worksheets[0];
 
     const nombreActividad = (evento.titulo || "Evento Observatorio ITM").toUpperCase();
     const facilitador =
@@ -34,25 +40,33 @@ export function exportarExcelFG031(evento = {}, asistentes = []) {
     const horaHasta = evento.horaFin || "";
     const lugar = evento.lugar || "Observatorio Astronómico ITM - Sede Fraternidad";
 
-    // 2. Diligenciar datos de la actividad / evento en las celdas de la plantilla
-    ws["A5"] = { t: "s", v: `NOMBRE DE LA ACTIVIDAD / VISITA:  ${nombreActividad}` };
-    ws["A6"] = { t: "s", v: `FACILITADOR:  ${facilitador}` };
-    ws["A7"] = { t: "s", v: `FECHA:  ${fechaEvento}` };
-    ws["A8"] = { t: "s", v: `LUGAR:  ${lugar}` };
-    ws["G8"] = { t: "s", v: `Desde:  ${horaDesde}` };
-    ws["J8"] = { t: "s", v: `Hasta:  ${horaHasta || "Fin de la actividad"}` };
+    // 2. Diligenciar datos de la actividad en las celdas oficiales
+    ws.getCell("A5").value = `NOMBRE DE LA ACTIVIDAD / VISITA:  ${nombreActividad}`;
+    ws.getCell("A6").value = `FACILITADOR:  ${facilitador}`;
+    ws.getCell("A7").value = `FECHA:  ${fechaEvento}`;
+    ws.getCell("A8").value = `LUGAR:  ${lugar}`;
+    ws.getCell("G8").value = `Desde:  ${horaDesde}`;
+    ws.getCell("J8").value = `Hasta:  ${horaHasta || "Fin de la actividad"}`;
+
+    // Estilos institucionales
+    const bordeInstitucional = {
+      top: { style: "thin", color: { argb: "FF000000" } },
+      left: { style: "thin", color: { argb: "FF000000" } },
+      bottom: { style: "thin", color: { argb: "FF000000" } },
+      right: { style: "thin", color: { argb: "FF000000" } },
+    };
+
+    const fuenteCeldas = { name: "Arial", size: 10, family: 2 };
 
     // 3. Mapear asistentes en las filas de la tabla oficial
-    // Fila 11 a 21: slots 1 a 11
-    // Fila 23 a 36: slots 12 a 25
-    const filasSlots = [
-      11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-      23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36
-    ];
+    const listaAsistentes = Array.isArray(asistentes) ? asistentes : [];
+    const total = listaAsistentes.length;
 
-    if (Array.isArray(asistentes) && asistentes.length > 0) {
-      asistentes.forEach((a, idx) => {
-        const fila = idx < filasSlots.length ? filasSlots[idx] : 37 + (idx - filasSlots.length);
+    if (total > 0) {
+      listaAsistentes.forEach((a, idx) => {
+        const consecutivo = idx + 1;
+        const rowNum = 10 + consecutivo; // idx 0 -> fila 11 (1), idx 24 -> fila 35 (25)
+        const row = ws.getRow(rowNum);
 
         const nombreCompleto = (
           a.nombre ||
@@ -74,12 +88,39 @@ export function exportarExcelFG031(evento = {}, asistentes = []) {
         const telefono = a.telefono || "-";
         const correo = a.correo || "-";
 
-        ws[`A${fila}`] = { t: "n", v: idx + 1 };
-        ws[`B${fila}`] = { t: "s", v: nombreCompleto };
-        ws[`D${fila}`] = { t: "s", v: institucion };
-        ws[`E${fila}`] = { t: "s", v: cargoOcupacion };
-        ws[`F${fila}`] = { t: "s", v: telefono };
-        ws[`H${fila}`] = { t: "s", v: correo };
+        // Si supera las 25 filas originales de la plantilla (fila 36 en adelante)
+        if (consecutivo > 25) {
+          row.height = 15;
+
+          // Combinar celdas exactamente igual que en filas 11-35
+          ws.mergeCells(`A${rowNum}:C${rowNum}`);
+          ws.mergeCells(`F${rowNum}:G${rowNum}`);
+          ws.mergeCells(`H${rowNum}:L${rowNum}`);
+
+          // Aplicar bordes, fuente y alineación en todas las columnas de la fila (A a L)
+          for (let col = 1; col <= 12; col++) {
+            const celda = row.getCell(col);
+            celda.border = bordeInstitucional;
+            celda.font = fuenteCeldas;
+            celda.alignment = {
+              vertical: "middle",
+              horizontal:
+                col === 1
+                  ? "left"
+                  : col === 4 || col === 5 || col === 8
+                  ? "left"
+                  : "center",
+              wrapText: true,
+            };
+          }
+        }
+
+        // Asignar los datos del participante
+        ws.getCell(`A${rowNum}`).value = `${consecutivo}.  ${nombreCompleto}`;
+        ws.getCell(`D${rowNum}`).value = institucion;
+        ws.getCell(`E${rowNum}`).value = cargoOcupacion;
+        ws.getCell(`F${rowNum}`).value = telefono;
+        ws.getCell(`H${rowNum}`).value = correo;
       });
     }
 
@@ -90,55 +131,21 @@ export function exportarExcelFG031(evento = {}, asistentes = []) {
       .substring(0, 30);
     const nombreArchivo = `FG_031_Listado_de_asistencia_${tituloLimpio}_${fechaEvento}.xlsx`;
 
-    // 5. Descargar el archivo
-    XLSX.writeFile(wb, nombreArchivo);
-  } catch (error) {
-    console.error("Error al generar Excel oficial FG 031:", error);
-    // Fallback de contingencia si el navegador falla procesando el template binario
-    exportarExcelFG031Fallback(evento, asistentes);
-  }
-}
-
-function exportarExcelFG031Fallback(evento = {}, asistentes = []) {
-  const nombreActividad = (evento.titulo || "Evento Observatorio ITM").toUpperCase();
-  const facilitador =
-    evento.creadoPorNombre ||
-    evento.docenteNombre ||
-    "Equipo Observatorio ITM";
-  const fechaEvento = evento.fecha || new Date().toISOString().split("T")[0];
-  const lugar = evento.lugar || "Observatorio ITM - Sede Fraternidad";
-
-  const rows = [
-    ["INSTITUCIÓN UNIVERSITARIA ITM", "", "", "", "", ""],
-    ["SISTEMA INTEGRADO DE GESTIÓN", "", "", "", "", ""],
-    ["LISTADO DE ASISTENCIA - VISITAS ESTRATÉGICAS, DE RELACIONAMIENTO O EVENTOS ITM", "", "", "", "", ""],
-    ["CÓDIGO: FG 031", "VERSIÓN: 03", "FECHA: 15-04-2024", "", "", ""],
-    [],
-    [`NOMBRE DE LA ACTIVIDAD / VISITA: ${nombreActividad}`],
-    [`FACILITADOR: ${facilitador}`],
-    [`FECHA: ${fechaEvento}`, "", "", `HORARIO: ${evento.hora || ""}`],
-    [`LUGAR: ${lugar}`],
-    [],
-    ["N°", "NOMBRES Y APELLIDOS", "INSTITUCIÓN / EMPRESA", "ÁREA DE INTERÉS / CARGO / OCUPACIÓN", "TELÉFONO FIJO / CELULAR", "CORREO ELECTRÓNICO"],
-  ];
-
-  if (!asistentes || asistentes.length === 0) {
-    rows.push([1, "Sin participantes registrados aún", "-", "-", "-", "-"]);
-  } else {
-    asistentes.forEach((a, i) => {
-      rows.push([
-        i + 1,
-        a.nombre || `${a.nombres || ""} ${a.apellidos || ""}`.trim() || "Anónimo",
-        a.institucion || (a.relacionUniversidad === "Externo" ? "Externo" : "Institución Universitaria ITM"),
-        a.programaAcademico || a.relacionUniversidad || "Estudiante",
-        a.telefono || "-",
-        a.correo || "-",
-      ]);
+    // 5. Descargar en el navegador vía Blob
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
-  }
 
-  const ws = XLSX.utils.aoa_to_sheet(rows);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "FG 031 Asistencia");
-  XLSX.writeFile(wb, `FG_031_Listado_de_asistencia_${fechaEvento}.xlsx`);
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = nombreArchivo;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Error al generar Excel oficial FG 031 con ExcelJS:", error);
+  }
 }
