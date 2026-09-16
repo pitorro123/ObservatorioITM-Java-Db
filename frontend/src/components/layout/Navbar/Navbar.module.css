@@ -16,22 +16,33 @@
   width: 100%;
   max-width: 100%;
   margin: 0;
-  padding: 4px clamp(16px, 3.5vw, 72px);
+  padding: 0 clamp(16px, 3.5vw, 72px);
   box-sizing: border-box;
+  height: 96px;
+}
+
+@media (max-width: 640px) {
+  .topBarInner {
+    height: 72px;
+  }
 }
 
 .logoLink {
   display: flex;
   align-items: center;
-  gap: 12px;
+  height: 100%;
+  padding: 0;
 }
 
 .logoImg {
-  height: 72px;
+  height: 100%;
   width: auto;
-  max-width: 240px;
+  max-width: 320px;
   flex-shrink: 0;
   object-fit: contain;
+  padding: 0 0 5px 0;
+  box-sizing: border-box;
+  display: block;
 }
 
 .enlaceSesion {
