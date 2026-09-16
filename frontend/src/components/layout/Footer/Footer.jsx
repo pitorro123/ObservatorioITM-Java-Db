@@ -19,14 +19,9 @@ export default function Footer() {
         <div className={styles.brand}>
           <img
             src={logoFooter}
-            alt="Logo del Observatorio Astronómico ITM"
+            alt="Logo del Semillero de Astronomía ITM"
             className={styles.brandImg}
           />
-          <span className={styles.brandText}>
-            <span className={styles.brandTextBlock}>Observatorio</span>
-            <span className={styles.brandTextBlock}>Astronómico</span>
-            <span className={styles.brandITM}>ITM</span>
-          </span>
         </div>
 
         <div>

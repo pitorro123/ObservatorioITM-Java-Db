@@ -33,35 +33,15 @@
 /* ── Logo footer ── */
 .brand {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  align-items: center;
 }
 
 .brandImg {
-  height: 64px;
+  height: 80px;
   width: auto;
-  max-width: 200px;
+  max-width: 250px;
   flex-shrink: 0;
   object-fit: contain;
-  border-radius: 8px;
-}
-
-.brandText {
-  line-height: 1.25;
-}
-
-.brandTextBlock {
-  display: block;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.brandITM {
-  display: block;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--obs-itm-blue);
 }
 
 /* ── Contacto ── */
