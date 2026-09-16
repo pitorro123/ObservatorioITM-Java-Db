@@ -81,12 +81,12 @@ function calcularCondiciones(clima) {
     recomendacion:
       "¡Evento confirmado! Disfruta de charlas interactivas y talleres astronómicos en sala.",
     mensajeLanding:
-      "¡Observatorio abierto! Te esperamos en nuestras salas con charlas y talleres astronómicos interactivos.",
+      "¡Observatorio abierto! Charlas y talleres interactivos en sala.",
     mensajeDocente:
       "Aviso meteorológico: Clima no favorable. Directriz ITM: no canceles el evento, trasládalo a aula o auditorio bajo techo.",
-    observatorioEstado: "ABIERTO (ACTIVIDAD EN SALA)",
+    observatorioEstado: "ABIERTO EN SALA",
     observatorioEstadoDesc:
-      "Instalaciones abiertas. Todos los eventos se realizan en salas y auditorios protegidos del clima.",
+      "Instalaciones abiertas. Eventos en salas bajo techo.",
   };
 }
 

@@ -19,7 +19,7 @@ export default function Footer() {
         <div className={styles.brand}>
           <img
             src={logoFooter}
-            alt="Logo del Semillero de Astronomía ITM"
+            alt="Logo ITM Institución Universitaria"
             className={styles.brandImg}
           />
         </div>

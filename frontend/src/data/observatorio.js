@@ -12,9 +12,8 @@ export const contenidoPortada = {
 
 export const estadoObservatorio = {
   titulo: "¿Se puede observar hoy?",
-  descripcion:
-    "Consulta las condiciones del observatorio y descubre si es una buena noche para observar.",
-  linkLabel: "¿Cómo calculamos estas condiciones?",
+  descripcion: "Consulta las condiciones del cielo para observar hoy.",
+  linkLabel: "¿Cómo lo calculamos?",
   estado: {
     etiqueta: "Estado del observatorio",
     valor: "ABIERTO",

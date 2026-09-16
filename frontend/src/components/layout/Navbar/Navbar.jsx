@@ -6,7 +6,7 @@ import MobileMenu from "../MobileMenu/MobileMenu.jsx";
 import { IMAGENES } from "../../../data/imagenes.js";
 import styles from "./Navbar.module.css";
 
-const logo = IMAGENES.LOGOS_ICONOS.LOGO_FOOTER;
+const logoItm = "/images/LogoItm_blanco.png";
 
 export default function Navbar({ simple = false }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -23,7 +23,7 @@ export default function Navbar({ simple = false }) {
               aria-label="Abrir menú de navegación"
               aria-expanded={isMenuOpen}
             >
-              <Menu size={28} aria-hidden="true" />
+              <Menu size={22} aria-hidden="true" />
             </button>
           )}
 
@@ -33,24 +33,13 @@ export default function Navbar({ simple = false }) {
             aria-label="Ir a la página de inicio del Observatorio Astronómico ITM"
           >
             <img
-              src={logo}
-              alt="Logo del Semillero de Astronomía ITM"
-              className={styles.logoImg}
+              src={logoItm}
+              alt="Logo ITM Institución Universitaria"
+              className={styles.logoItm}
             />
           </NavLink>
 
           {!simple && (
-            <Link to="/login" className={styles.enlaceSesion}>
-              <UserRound className={styles.iconoSesion} aria-hidden="true" />
-              <span>Acceder</span>
-            </Link>
-          )}
-        </div>
-      </div>
-
-      {!simple && (
-        <div className={styles.bottomBar}>
-          <div className={styles.bottomBarInner}>
             <nav
               className={styles.navDesktop}
               aria-label="Navegación principal"
@@ -67,9 +56,16 @@ export default function Navbar({ simple = false }) {
                 </NavLink>
               ))}
             </nav>
-          </div>
+          )}
+
+          {!simple && (
+            <Link to="/login" className={styles.enlaceSesion}>
+              <UserRound className={styles.iconoSesion} aria-hidden="true" />
+              <span>Acceder</span>
+            </Link>
+          )}
         </div>
-      )}
+      </div>
 
       <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
     </header>

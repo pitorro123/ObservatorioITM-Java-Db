@@ -32,9 +32,9 @@ export default function ObservatoryStatus() {
             <h2 className={styles.title}>{estadoObservatorio.titulo}</h2>
             <p className={styles.description}>
               {cargando
-                ? "Consultando las condiciones meteorológicas en tiempo real…"
+                ? "Consultando el clima en tiempo real…"
                 : error
-                  ? "No pudimos consultar el clima en este momento."
+                  ? "No se pudo consultar el clima."
                   : estadoObservatorio.descripcion}
             </p>
             <Link to="/clima" className={styles.link}>

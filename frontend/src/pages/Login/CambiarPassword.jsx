@@ -6,7 +6,7 @@ import Navbar from "../../components/layout/Navbar/Navbar.jsx";
 import { IMAGENES } from "../../data/imagenes.js";
 import estilos from "./CambiarPassword.module.css";
 
-const logo = IMAGENES.LOGOS_ICONOS.LOGO_FOOTER;
+const logo = IMAGENES.LOGOS_ICONOS.LOGO_ITM;
 
 export default function CambiarPassword() {
   const [parametros] = useSearchParams();
