@@ -14,7 +14,6 @@ import {
   GraduationCap,
   Calendar,
   Clock,
-  Sparkles,
   Lock,
   ExternalLink,
 } from "lucide-react";
@@ -788,7 +787,6 @@ export default function FormularioEvento({
               </div>
               <div>
                 <h3 className={estilos.tituloLateral}>Listado de Asistencia</h3>
-                <span className={estilos.badgeFormatoOficial}>Formato Oficial FG 031</span>
               </div>
             </div>
 
@@ -833,13 +831,6 @@ export default function FormularioEvento({
                       : "Descargar Asistencia (Excel)"}
                   </span>
                 </button>
-
-                <div className={estilos.notaOficial}>
-                  <Sparkles size={14} className={estilos.iconoChispa} aria-hidden="true" />
-                  <span>
-                    Cumple con el estándar de Calidad ITM (Código FG 031 · Versión 03).
-                  </span>
-                </div>
               </div>
             ) : (
               <div className={estilos.placeholderLateral}>
