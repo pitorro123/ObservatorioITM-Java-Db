@@ -306,7 +306,9 @@ export default function FormularioEvento({
             </h2>
             <p className={estilos.subtituloPrincipal}>
               {esEdicion
-                ? "Modifica los datos del evento, comparte su código QR de asistencia en sitio y descarga la planilla oficial FG 031."
+                ? formulario.esMasivo
+                  ? "Modifica los datos del evento, proyecta su código QR de asistencia en sitio y descarga la planilla oficial FG 031."
+                  : "Modifica los datos del evento, gestiona la asistencia de los inscritos y descarga la planilla oficial FG 031."
                 : "Diligencia la información para programar y publicar una nueva actividad en el Observatorio ITM."}
             </p>
           </div>
@@ -653,85 +655,130 @@ export default function FormularioEvento({
 
         {/* COLUMNA DERECHA: QR del evento (arriba) y Descarga FG 031 (abajo) */}
         <aside className={estilos.columnaLateral}>
-          {/* TARJETA 1: CÓDIGO QR DE ASISTENCIA EN SITIO */}
-          <div className={estilos.tarjetaLateral}>
-            <div className={estilos.cabeceraLateral}>
-              <div className={estilos.iconoContenedorQr}>
-                <QrCode className={estilos.iconoLateral} aria-hidden="true" />
+          {/* TARJETA 1: CÓDIGO QR (SOLO EVENTOS MASIVOS) O CONTROL DE CUPOS (NO MASIVOS) */}
+          {formulario.esMasivo ? (
+            <div className={estilos.tarjetaLateral}>
+              <div className={estilos.cabeceraLateral}>
+                <div className={estilos.iconoContenedorQr}>
+                  <QrCode className={estilos.iconoLateral} aria-hidden="true" />
+                </div>
+                <div>
+                  <h3 className={estilos.tituloLateral}>Código QR del Evento</h3>
+                  <span className={estilos.badgeLateral}>Toma de Asistencia en Sitio</span>
+                </div>
               </div>
-              <div>
-                <h3 className={estilos.tituloLateral}>Código QR del Evento</h3>
-                <span className={estilos.badgeLateral}>Toma de Asistencia en Sitio</span>
+
+              {esEdicion ? (
+                <div className={estilos.cuerpoQr}>
+                  <p className={estilos.descripcionLateral}>
+                    Proyecta este código en el aula o auditorio para que los estudiantes
+                    escaneen y registren su asistencia inmediatamente.
+                  </p>
+
+                  <div className={estilos.marcoQr} ref={qrRef}>
+                    <QRCodeSVG
+                      value={urlAsistencia}
+                      size={210}
+                      level="H"
+                      includeMargin={true}
+                    />
+                  </div>
+
+                  <div className={estilos.cajaEnlace}>
+                    <input
+                      type="text"
+                      readOnly
+                      value={urlAsistencia}
+                      className={estilos.inputEnlace}
+                      aria-label="Enlace directo al formulario de asistencia"
+                    />
+                    <button
+                      type="button"
+                      onClick={copiarEnlace}
+                      className={estilos.botonCopiar}
+                      title="Copiar enlace"
+                    >
+                      {copiado ? <Check size={16} color="#16a34a" /> : <Copy size={16} />}
+                      <span>{copiado ? "¡Copiado!" : "Copiar"}</span>
+                    </button>
+                  </div>
+
+                  <div className={estilos.botonesQr}>
+                    <button
+                      type="button"
+                      onClick={descargarQrPng}
+                      className={estilos.botonDescargarQr}
+                    >
+                      <Download size={16} aria-hidden="true" />
+                      <span>Descargar QR (PNG)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMostrarModalProyeccion(true)}
+                      className={estilos.botonProyectar}
+                    >
+                      <Maximize2 size={16} aria-hidden="true" />
+                      <span>Proyectar Pantalla Completa</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className={estilos.placeholderLateral}>
+                  <div className={estilos.iconoPlaceholder}>
+                    <QrCode size={40} aria-hidden="true" />
+                  </div>
+                  <h4>Código QR Automático</h4>
+                  <p>
+                    Una vez crees y guardes el evento masivo, aquí aparecerá automáticamente su
+                    código QR oficial para proyectar a los asistentes.
+                  </p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className={estilos.tarjetaLateral}>
+              <div className={estilos.cabeceraLateral}>
+                <div className={estilos.iconoContenedorCupos}>
+                  <Users className={estilos.iconoLateral} aria-hidden="true" />
+                </div>
+                <div>
+                  <h3 className={estilos.tituloLateral}>Control de Asistencia</h3>
+                  <span className={estilos.badgeCupos}>
+                    Aforo limitado ({formulario.capacidad || 50} cupos)
+                  </span>
+                </div>
+              </div>
+
+              <div className={estilos.cuerpoCupos}>
+                <p className={estilos.descripcionLateral}>
+                  Este evento cuenta con cupos limitados y no utiliza código QR en sitio. Los participantes deben preinscribirse en la web.
+                </p>
+
+                <div className={estilos.cajaInfoCupos}>
+                  <div className={estilos.itemInfoCupos}>
+                    <span className={estilos.etiquetaInfoCupos}>Modalidad:</span>
+                    <strong>Inscripción previa web</strong>
+                  </div>
+                  <div className={estilos.itemInfoCupos}>
+                    <span className={estilos.etiquetaInfoCupos}>Validación en sitio:</span>
+                    <strong>Código 4 dígitos / Cédula</strong>
+                  </div>
+                  {esEdicion && (
+                    <div className={estilos.itemInfoCupos}>
+                      <span className={estilos.etiquetaInfoCupos}>Inscritos actuales:</span>
+                      <strong>{evento?.inscritos || 0} de {formulario.capacidad || 50}</strong>
+                    </div>
+                  )}
+                </div>
+
+                <div className={estilos.avisoNoQr}>
+                  <p>
+                    💡 El código QR de asistencia en pantalla está habilitado únicamente para <strong>eventos masivos</strong> con aforo libre.
+                  </p>
+                </div>
               </div>
             </div>
-
-            {esEdicion ? (
-              <div className={estilos.cuerpoQr}>
-                <p className={estilos.descripcionLateral}>
-                  Proyecta este código en el aula o auditorio para que los estudiantes
-                  escaneen y registren su asistencia inmediatamente.
-                </p>
-
-                <div className={estilos.marcoQr} ref={qrRef}>
-                  <QRCodeSVG
-                    value={urlAsistencia}
-                    size={210}
-                    level="H"
-                    includeMargin={true}
-                  />
-                </div>
-
-                <div className={estilos.cajaEnlace}>
-                  <input
-                    type="text"
-                    readOnly
-                    value={urlAsistencia}
-                    className={estilos.inputEnlace}
-                    aria-label="Enlace directo al formulario de asistencia"
-                  />
-                  <button
-                    type="button"
-                    onClick={copiarEnlace}
-                    className={estilos.botonCopiar}
-                    title="Copiar enlace"
-                  >
-                    {copiado ? <Check size={16} color="#16a34a" /> : <Copy size={16} />}
-                    <span>{copiado ? "¡Copiado!" : "Copiar"}</span>
-                  </button>
-                </div>
-
-                <div className={estilos.botonesQr}>
-                  <button
-                    type="button"
-                    onClick={descargarQrPng}
-                    className={estilos.botonDescargarQr}
-                  >
-                    <Download size={16} aria-hidden="true" />
-                    <span>Descargar QR (PNG)</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setMostrarModalProyeccion(true)}
-                    className={estilos.botonProyectar}
-                  >
-                    <Maximize2 size={16} aria-hidden="true" />
-                    <span>Proyectar Pantalla Completa</span>
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className={estilos.placeholderLateral}>
-                <div className={estilos.iconoPlaceholder}>
-                  <QrCode size={40} aria-hidden="true" />
-                </div>
-                <h4>Código QR Automático</h4>
-                <p>
-                  Una vez crees y guardes el evento, aquí aparecerá automáticamente su
-                  código QR oficial para proyectar a los asistentes.
-                </p>
-              </div>
-            )}
-          </div>
+          )}
 
           {/* TARJETA 2: DESCARGA DE ASISTENCIA OFICIAL ITM (FG 031) */}
           <div className={estilos.tarjetaLateral}>
@@ -810,8 +857,8 @@ export default function FormularioEvento({
         </aside>
       </div>
 
-      {/* Modal de Proyección en Pantalla Completa (cuando le den a proyectar) */}
-      {evento && (
+      {/* Modal de Proyección en Pantalla Completa (cuando le den a proyectar en eventos masivos) */}
+      {evento && formulario.esMasivo && (
         <ModalQrAsistencia
           abierto={mostrarModalProyeccion}
           onCerrar={() => setMostrarModalProyeccion(false)}

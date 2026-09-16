@@ -70,7 +70,11 @@ export default function TarjetaEvento({
       onClick={() => onEditar?.(evento)}
       role="button"
       tabIndex={0}
-      title="Clic para gestionar evento, ver QR y descargar asistencia FG 031"
+      title={
+        evento.esMasivo
+          ? "Clic para gestionar evento, proyectar QR y descargar asistencia FG 031"
+          : "Clic para gestionar evento y descargar asistencia FG 031"
+      }
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();

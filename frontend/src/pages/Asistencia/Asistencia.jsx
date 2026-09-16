@@ -268,11 +268,13 @@ export default function Asistencia() {
 
       <Notificacion mensaje={notificacion} onCerrar={() => setNotificacion("")} />
 
-      <ModalQrAsistencia
-        abierto={modalQrAbierto}
-        onCerrar={() => setModalQrAbierto(false)}
-        evento={evento}
-      />
+      {evento?.esMasivo && (
+        <ModalQrAsistencia
+          abierto={modalQrAbierto}
+          onCerrar={() => setModalQrAbierto(false)}
+          evento={evento}
+        />
+      )}
     </div>
   );
 }
