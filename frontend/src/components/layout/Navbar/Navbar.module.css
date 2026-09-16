@@ -27,31 +27,11 @@
 }
 
 .logoImg {
-  height: 94px;
   height: 72px;
   width: auto;
   max-width: 240px;
   flex-shrink: 0;
   object-fit: contain;
-}
-
-.logoText {
-  line-height: 1.25;
-  color: white;
-}
-
-.logoTextBlock {
-  display: block;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.logoITM {
-  display: block;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  color: var(--obs-itm-blue);
 }
 
 .enlaceSesion {

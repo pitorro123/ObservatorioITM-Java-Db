@@ -34,15 +34,9 @@ export default function Navbar({ simple = false }) {
           >
             <img
               src={logo}
-              alt="Logo del Observatorio Astronómico ITM"
               alt="Logo del Semillero de Astronomía ITM"
               className={styles.logoImg}
             />
-            <span className={styles.logoText}>
-              <span className={styles.logoTextBlock}>Observatorio</span>
-              <span className={styles.logoTextBlock}>Astronómico</span>
-              <span className={styles.logoITM}>ITM</span>
-            </span>
           </NavLink>
 
           {!simple && (
