@@ -51,7 +51,7 @@ export const IMAGENES = {
   // 06_Logos_Iconos
   LOGOS_ICONOS: {
     LOGO_ITM: "https://i.ibb.co/21WHqpcy/Logo-Itm.png",
-    LOGO_FOOTER: "/images/logo/logo_semillero_1.png",
+    LOGO_FOOTER: "/images/logo/logo_semillero_trans_blanco.png",
     LOGO_SEMILLERO_1: "/images/logo/logo_semillero_1.png",
     LOGO_SEMILLERO_BLANCO: "/images/logo/logo_semillero_trans_blanco.png",
     LOGO_SEMILLERO_NEGRO: "/images/logo/logo_semillero_trans_negro.png",
