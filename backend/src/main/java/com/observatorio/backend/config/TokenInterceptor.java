@@ -22,26 +22,28 @@ public class TokenInterceptor implements HandlerInterceptor {
 
 	/** Rutas y métodos que no necesitan sesión (públicas del sistema). */
 	private boolean esPublico(String ruta, String metodo) {
-		if ("OPTIONS".equals(metodo)) {
+		if ("OPTIONS".equals(metodo) || "HEAD".equals(metodo)) {
 			return true;
 		}
 		if (ruta.startsWith("/api/auth/")) {
 			return true;
 		}
-		if (ruta.equals("/api/eventos/publicados") && "GET".equals(metodo)) {
+		if (ruta.equals("/api/health") || ruta.startsWith("/api/health")) {
 			return true;
 		}
-		if (ruta.matches("/api/eventos/p/\\d+") && "GET".equals(metodo)) {
+		if (ruta.equals("/api/eventos/publicados")) {
+			return true;
+		}
+		if (ruta.matches("/api/eventos/p/\\d+")) {
 			return true;
 		}
 		if (ruta.equals("/api/inscripciones") && "POST".equals(metodo)) {
 			return true;
 		}
-		if (ruta.equals("/api/programas") && "GET".equals(metodo)) {
+		if (ruta.equals("/api/programas")) {
 			return true;
 		}
-		if ((ruta.equals("/api/contenido/semillero") || ruta.equals("/api/contenido/observatorio"))
-				&& "GET".equals(metodo)) {
+		if (ruta.equals("/api/contenido/semillero") || ruta.equals("/api/contenido/observatorio")) {
 			return true;
 		}
 		return false;
