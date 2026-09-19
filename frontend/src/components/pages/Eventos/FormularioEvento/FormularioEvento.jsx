@@ -736,8 +736,8 @@ export default function FormularioEvento({
 
         {/* COLUMNA DERECHA: QR del evento (arriba) y Descarga FG 031 (abajo) */}
         <aside className={estilos.columnaLateral}>
-          {/* TARJETA 1: CÓDIGO QR (SOLO EVENTOS MASIVOS) O CONTROL DE CUPOS (NO MASIVOS) */}
-          {formulario.esMasivo ? (
+          {/* TARJETA 1: CÓDIGO QR (SOLO EVENTOS MASIVOS NO-NASA) O CONTROL DE ASISTENCIA (NO MASIVOS Y NASA) */}
+          {formulario.esMasivo && formulario.tipo !== "nasa" ? (
             <div className={estilos.tarjetaLateral}>
               <div className={estilos.cabeceraLateral}>
                 <div className={estilos.iconoContenedorQr}>
@@ -820,25 +820,33 @@ export default function FormularioEvento({
             <div className={estilos.tarjetaLateral}>
               <div className={estilos.cabeceraLateral}>
                 <div className={estilos.iconoContenedorCupos}>
-                  <Users className={estilos.iconoLateral} aria-hidden="true" />
+                  {formulario.tipo === "nasa" ? (
+                    <Sparkles className={estilos.iconoLateral} aria-hidden="true" />
+                  ) : (
+                    <Users className={estilos.iconoLateral} aria-hidden="true" />
+                  )}
                 </div>
                 <div>
                   <h3 className={estilos.tituloLateral}>Control de Asistencia</h3>
                   <span className={estilos.badgeCupos}>
-                    Aforo limitado ({formulario.capacidad || 50} cupos)
+                    {formulario.tipo === "nasa"
+                      ? "🚀 Evento Especial NASA"
+                      : `Aforo limitado (${formulario.capacidad || 50} cupos)`}
                   </span>
                 </div>
               </div>
 
               <div className={estilos.cuerpoCupos}>
                 <p className={estilos.descripcionLateral}>
-                  Este evento cuenta con cupos limitados y no utiliza código QR en sitio. Los participantes deben preinscribirse en la web.
+                  {formulario.tipo === "nasa"
+                    ? "Para este evento especial, el aforo es masivo con inscripción previa web. La validación presencial se realiza directamente por código o cédula."
+                    : "Este evento cuenta con cupos limitados y no utiliza código QR en sitio. Los participantes deben preinscribirse en la web."}
                 </p>
 
                 <div className={estilos.cajaInfoCupos}>
                   <div className={estilos.itemInfoCupos}>
                     <span className={estilos.etiquetaInfoCupos}>Modalidad:</span>
-                    <strong>Inscripción previa web</strong>
+                    <strong>{formulario.tipo === "nasa" ? "Inscripción previa web (Aforo masivo)" : "Inscripción previa web"}</strong>
                   </div>
                   <div className={estilos.itemInfoCupos}>
                     <span className={estilos.etiquetaInfoCupos}>Validación en sitio:</span>
@@ -847,14 +855,20 @@ export default function FormularioEvento({
                   {esEdicion && (
                     <div className={estilos.itemInfoCupos}>
                       <span className={estilos.etiquetaInfoCupos}>Inscritos actuales:</span>
-                      <strong>{evento?.inscritos || 0} de {formulario.capacidad || 50}</strong>
+                      <strong>
+                        {formulario.tipo === "nasa"
+                          ? `${evento?.inscritos || 0} participantes inscritos`
+                          : `${evento?.inscritos || 0} de ${formulario.capacidad || 50}`}
+                      </strong>
                     </div>
                   )}
                 </div>
 
                 <div className={estilos.avisoNoQr}>
                   <p>
-                    💡 El código QR de asistencia en pantalla está habilitado únicamente para <strong>eventos masivos</strong> con aforo libre.
+                    {formulario.tipo === "nasa"
+                      ? "✨ Validación en sitio: Código 4 dígitos / Cédula. No requiere proyectar código QR en pantalla."
+                      : "💡 El código QR de asistencia en pantalla está habilitado únicamente para eventos masivos con aforo libre."}
                   </p>
                 </div>
               </div>
@@ -931,7 +945,7 @@ export default function FormularioEvento({
       </div>
 
       {/* Modal de Proyección en Pantalla Completa (cuando le den a proyectar en eventos masivos) */}
-      {evento && formulario.esMasivo && (
+      {evento && formulario.esMasivo && formulario.tipo !== "nasa" && (
         <ModalQrAsistencia
           abierto={mostrarModalProyeccion}
           onCerrar={() => setMostrarModalProyeccion(false)}

@@ -109,9 +109,13 @@ export default function Asistencia() {
             <div className={estilos.datosEvento}>
               <div className={estilos.tituloFila}>
                 <p className={estilos.nombreEvento}>{evento.titulo}</p>
-                {evento.esMasivo && (
+                {evento.tipo === "nasa" ? (
+                  <span className={estilos.badgeMasivo} style={{ background: "linear-gradient(135deg, #1d4ed8 0%, #7c3aed 100%)", color: "#ffffff" }}>
+                    🚀 Evento Especial NASA
+                  </span>
+                ) : evento.esMasivo ? (
                   <span className={estilos.badgeMasivo}>Aforo Libre · Evento Masivo</span>
-                )}
+                ) : null}
               </div>
               <p className={estilos.metaEvento}>
                 {formatearFecha(evento.fecha)} · {formatearHora(evento.hora)} ·{" "}
@@ -139,7 +143,7 @@ export default function Asistencia() {
                 </div>
               </div>
               <div className={estilos.accionesResumen}>
-                {evento.esMasivo && (
+                {evento.esMasivo && evento.tipo !== "nasa" && (
                   <button
                     type="button"
                     className={estilos.botonQrResumen}
@@ -332,7 +336,7 @@ export default function Asistencia() {
 
       <Notificacion mensaje={notificacion} onCerrar={() => setNotificacion("")} />
 
-      {evento?.esMasivo && (
+      {evento?.esMasivo && evento?.tipo !== "nasa" && (
         <ModalQrAsistencia
           abierto={modalQrAbierto}
           onCerrar={() => setModalQrAbierto(false)}

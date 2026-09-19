@@ -151,7 +151,7 @@ export default function TarjetaEvento({
       </div>
 
       <div className={estilos.acciones}>
-        {evento.esMasivo && (
+        {evento.esMasivo && evento.tipo !== "nasa" && (
           <button
             type="button"
             className={`${estilos.botonIcono} ${estilos.botonQr}`}
