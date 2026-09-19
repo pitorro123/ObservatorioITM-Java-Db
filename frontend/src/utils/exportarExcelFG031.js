@@ -80,10 +80,25 @@ export async function exportarExcelFG031(evento = {}, asistentes = []) {
           institucion = "Particular / Externo";
         }
 
-        const cargoOcupacion =
+        let cargoOcupacion =
           a.programaAcademico ||
           a.relacionUniversidad ||
           "Estudiante";
+
+        if (evento.tipo === "nasa") {
+          const partesLogistica = [];
+          if (a.eps) partesLogistica.push(`EPS: ${a.eps}`);
+          if (a.esVegetariano) partesLogistica.push("Vegetariano");
+          if (a.alergiasAlimentos && a.alergiasAlimentos.toLowerCase() !== "ninguna") {
+            partesLogistica.push(`Alergia: ${a.alergiasAlimentos}`);
+          }
+          if (a.tipoVehiculo && a.tipoVehiculo !== "Ninguno") {
+            partesLogistica.push(`Parq: ${a.tipoVehiculo} ${a.placaVehiculo || ""}`.trim());
+          }
+          if (partesLogistica.length > 0) {
+            cargoOcupacion = `${cargoOcupacion} [${partesLogistica.join(" | ")}]`;
+          }
+        }
 
         const telefono = a.telefono || "-";
         const correo = a.correo || "-";

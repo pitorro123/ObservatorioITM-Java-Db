@@ -171,6 +171,7 @@ export default function Asistencia() {
                   <th>Documento</th>
                   <th>Relación ITM</th>
                   <th>Contacto</th>
+                  {eventoSeleccionado?.tipo === "nasa" && <th>Logística NASA</th>}
                   <th>Código de registro</th>
                   <th>Asistencia</th>
                   <th className={estilos.columnaAccion}>Acción</th>
@@ -223,6 +224,43 @@ export default function Asistencia() {
                           <div className={estilos.telefonoTexto}>{inscripcion.telefono}</div>
                         )}
                       </td>
+                      {eventoSeleccionado?.tipo === "nasa" && (
+                        <td className={estilos.celdaLogistica}>
+                          <div className={estilos.logisticaTags}>
+                            {inscripcion.eps && (
+                              <span className={estilos.badgeEps} title="EPS Afiliado">
+                                🏥 {inscripcion.eps}
+                              </span>
+                            )}
+                            <span
+                              className={
+                                inscripcion.esVegetariano
+                                  ? estilos.badgeVegetariano
+                                  : estilos.badgeEstandar
+                              }
+                              title="Menú / Alimentación"
+                            >
+                              {inscripcion.esVegetariano ? "🥗 Vegetariano" : "🥩 Normal"}
+                            </span>
+                            {inscripcion.alergiasAlimentos &&
+                              inscripcion.alergiasAlimentos.toLowerCase() !== "ninguna" && (
+                                <span className={estilos.badgeAlergia} title="Alergias">
+                                  ⚠️ {inscripcion.alergiasAlimentos}
+                                </span>
+                              )}
+                            {inscripcion.tipoVehiculo && inscripcion.tipoVehiculo !== "Ninguno" ? (
+                              <span className={estilos.badgeVehiculo} title="Parqueadero reservado">
+                                {inscripcion.tipoVehiculo === "Carro" ? "🚗" : "🏍️"}{" "}
+                                {inscripcion.tipoVehiculo} · {inscripcion.placaVehiculo || "Sin placa"}
+                              </span>
+                            ) : (
+                              <span className={estilos.badgeSinVehiculo} title="Sin vehículo">
+                                🚶 Sin vehículo
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                      )}
                       <td>
                         {inscripcion.codigo ? (
                           <code className={estilos.codigo}>{inscripcion.codigo}</code>
