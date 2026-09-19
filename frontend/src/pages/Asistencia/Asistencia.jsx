@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   CalendarDays,
   Users,
@@ -25,20 +25,28 @@ export default function Asistencia() {
     inscripcionesPorEvento,
     marcarAsistencia,
     obtenerInscripcion,
+    cargando,
   } = useEventosContext();
 
-  const eventosConInscritos = eventos.filter(
-    (evento) => inscripcionesPorEvento(evento.id).length > 0
-  );
-
-  const [eventoId, setEventoId] = useState(
-    eventosConInscritos[0]?.id ?? eventos[0]?.id ?? ""
-  );
+  const [eventoId, setEventoId] = useState("");
   const [notificacion, setNotificacion] = useState("");
   const [marcandoId, setMarcandoId] = useState(null);
   const [modalQrAbierto, setModalQrAbierto] = useState(false);
 
-  const evento = eventos.find((e) => e.id === Number(eventoId));
+  // Auto-seleccionar evento cuando se carguen los eventos
+  useEffect(() => {
+    if (!eventoId || !eventos.some((e) => Number(e.id) === Number(eventoId))) {
+      if (eventos.length > 0) {
+        const conInscritos = eventos.find(
+          (evento) => inscripcionesPorEvento(evento.id).length > 0
+        );
+        setEventoId(conInscritos ? conInscritos.id : eventos[0].id);
+      }
+    }
+  }, [eventos, eventoId, inscripcionesPorEvento]);
+
+  const evento = eventos.find((e) => Number(e.id) === Number(eventoId));
+  const eventoSeleccionado = evento;
   const inscripciones = eventoId ? inscripcionesPorEvento(eventoId) : [];
   const totalInscritos = inscripciones.length;
   const totalAsistentes = inscripciones.filter(
@@ -154,7 +162,16 @@ export default function Asistencia() {
           </div>
         )}
 
-        {inscripciones.length === 0 ? (
+        {cargando && eventos.length === 0 ? (
+          <div className={estilos.vacio}>
+            <p>Cargando información de eventos y asistencia...</p>
+          </div>
+        ) : !evento ? (
+          <div className={estilos.vacio}>
+            <CalendarDays className={estilos.iconoVacio} aria-hidden="true" />
+            <p>Selecciona un evento para consultar y gestionar su listado de asistencia.</p>
+          </div>
+        ) : inscripciones.length === 0 ? (
           <div className={estilos.vacio}>
             <Users className={estilos.iconoVacio} aria-hidden="true" />
             <p>
@@ -194,9 +211,11 @@ export default function Asistencia() {
                         <p className={estilos.metaInscrito}>
                           <Clock className={estilos.iconoInline} aria-hidden="true" />
                           Inscrito el{" "}
-                          {new Date(inscripcion.fechaInscripcion).toLocaleDateString(
-                            "es-CO"
-                          )}
+                          {inscripcion.fechaInscripcion
+                            ? new Date(inscripcion.fechaInscripcion).toLocaleDateString(
+                                "es-CO"
+                              )
+                            : "-"}
                         </p>
                       </td>
                       <td>

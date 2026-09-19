@@ -61,7 +61,7 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  max-height: 190px;
+  max-height: 140px;
   scrollbar-width: thin;
   scrollbar-color: var(--color-borde) transparent;
 }

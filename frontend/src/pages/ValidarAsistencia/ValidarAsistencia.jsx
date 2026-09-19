@@ -38,6 +38,14 @@ export default function ValidarAsistencia() {
   const [eventoId, setEventoId] = useState(
     eventoParam || eventos[0]?.id || ""
   );
+
+  useEffect(() => {
+    if (!eventoId || !eventos.some((e) => String(e.id) === String(eventoId))) {
+      if (eventos.length > 0) {
+        setEventoId(eventoParam || eventos[0].id);
+      }
+    }
+  }, [eventos, eventoId, eventoParam]);
   const [codigo, setCodigo] = useState("");
   const [resultado, setResultado] = useState(null);
   const [tipoResultado, setTipoResultado] = useState("");
