@@ -63,6 +63,22 @@ public class Inscripcion {
 
 	private Boolean esMasivo;
 
+	// Campos logísticos especiales (Eventos NASA y visitas estratégicas)
+	@Column(name = "es_vegetariano")
+	private Boolean esVegetariano;
+
+	@Column(name = "alergias_alimentos", length = 255)
+	private String alergiasAlimentos;
+
+	@Column(name = "eps", length = 100)
+	private String eps;
+
+	@Column(name = "tipo_vehiculo", length = 50)
+	private String tipoVehiculo; // Ninguno | Carro | Moto
+
+	@Column(name = "placa_vehiculo", length = 20)
+	private String placaVehiculo;
+
 	@Column(nullable = false)
 	private String asistencia; // Pendiente | Asistió
 

@@ -85,7 +85,12 @@ public class InscripcionServicio {
 				inscripcion.getEsMasivo(),
 				estadoAsistencia,
 				fechaHoraAsistencia,
-				inscripcion.getFechaInscripcion());
+				inscripcion.getFechaInscripcion(),
+				inscripcion.getEsVegetariano(),
+				inscripcion.getAlergiasAlimentos(),
+				inscripcion.getEps(),
+				inscripcion.getTipoVehiculo(),
+				inscripcion.getPlacaVehiculo());
 	}
 
 	private String generarCodigo4Digitos(Long eventoId) {
@@ -216,6 +221,13 @@ public class InscripcionServicio {
 		if (programa != null) {
 			inscripcion.setProgramaAcademico(programa.getNombre());
 		}
+
+		// Datos logísticos (alimentación, salud y parqueadero)
+		inscripcion.setEsVegetariano(Boolean.TRUE.equals(request.esVegetariano()));
+		inscripcion.setAlergiasAlimentos(request.alergiasAlimentos() != null ? request.alergiasAlimentos().trim() : null);
+		inscripcion.setEps(request.eps() != null ? request.eps().trim() : null);
+		inscripcion.setTipoVehiculo(request.tipoVehiculo() != null ? request.tipoVehiculo().trim() : null);
+		inscripcion.setPlacaVehiculo(request.placaVehiculo() != null ? request.placaVehiculo().trim().toUpperCase() : null);
 
 		inscripcion = inscripciones.save(inscripcion);
 
