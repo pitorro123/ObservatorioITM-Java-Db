@@ -231,6 +231,11 @@ export function EventosProvider({ children }) {
     relacionUniversidad = "Externo",
     programaAcademico = "",
     programaId = null,
+    esVegetariano = false,
+    alergiasAlimentos = "",
+    eps = "",
+    tipoVehiculo = "Ninguno",
+    placaVehiculo = "",
   }) => {
     try {
       const inscripcion = await inscribirApi({
@@ -245,6 +250,11 @@ export function EventosProvider({ children }) {
         relacionUniversidad,
         programaAcademico: (programaAcademico || "").trim(),
         programaId: programaId ? Number(programaId) : null,
+        esVegetariano: Boolean(esVegetariano),
+        alergiasAlimentos: (alergiasAlimentos || "").trim(),
+        eps: (eps || "").trim(),
+        tipoVehiculo: (tipoVehiculo || "Ninguno").trim(),
+        placaVehiculo: (placaVehiculo || "").trim().toUpperCase(),
       });
 
       setInscripciones((prev) => [...prev, inscripcion]);

@@ -15,6 +15,9 @@ import {
   CloudRain,
   UserX,
   QrCode,
+  Utensils,
+  HeartPulse,
+  Car,
 } from "lucide-react";
 import ModalEventoCancelado from "../../../components/common/ModalEventoCancelado/ModalEventoCancelado.jsx";
 import { useEventosContext } from "../../../context/EventosContext.jsx";
@@ -69,6 +72,11 @@ export default function DetalleEvento() {
     telefono: "",
     relacionUniversidad: "Estudiante",
     programaAcademico: "",
+    esVegetariano: false,
+    alergiasAlimentos: "",
+    eps: "",
+    tipoVehiculo: "Ninguno",
+    placaVehiculo: "",
   });
   const [inscripcion, setInscripcion] = useState(null);
   const [copiado, setCopiado] = useState(false);
@@ -86,17 +94,27 @@ export default function DetalleEvento() {
   }
 
   const manejarCambio = (campo) => (eventoInput) => {
-    let valor = eventoInput.target.value;
+    let valor =
+      eventoInput.target.type === "checkbox"
+        ? eventoInput.target.checked
+        : eventoInput.target.value;
+
     if (campo === "telefono") {
       valor = valor.replace(/[^\d\s\-+()]/g, "");
     }
     if (campo === "numeroDocumento") {
       valor = valor.replace(/[^\w\-]/g, "");
     }
+    if (campo === "placaVehiculo") {
+      valor = valor.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    }
     setDatos((prev) => {
       const nuevos = { ...prev, [campo]: valor };
       if (campo === "relacionUniversidad" && valor !== "Estudiante") {
         nuevos.programaAcademico = "";
+      }
+      if (campo === "tipoVehiculo" && valor === "Ninguno") {
+        nuevos.placaVehiculo = "";
       }
       return nuevos;
     });
@@ -180,6 +198,17 @@ export default function DetalleEvento() {
       return;
     }
 
+    if (evento.tipo === "nasa") {
+      if (!datos.eps.trim()) {
+        setError("Por favor indica la EPS o entidad de salud a la que estás afiliado.");
+        return;
+      }
+      if (datos.tipoVehiculo !== "Ninguno" && !datos.placaVehiculo.trim()) {
+        setError("Por favor ingresa la placa de tu vehículo (carro o moto) para coordinar el parqueadero.");
+        return;
+      }
+    }
+
     const palabras = nombre.split(/\s+/).filter(Boolean);
     const nombres = palabras.length > 1 ? palabras.slice(0, -1).join(" ") : palabras[0];
     const apellidos = palabras.length > 1 ? palabras[palabras.length - 1] : palabras[0];
@@ -204,6 +233,11 @@ export default function DetalleEvento() {
         relacionUniversidad,
         programaAcademico,
         programaId,
+        esVegetariano: Boolean(datos.esVegetariano),
+        alergiasAlimentos: datos.alergiasAlimentos.trim() || "Ninguna",
+        eps: datos.eps.trim(),
+        tipoVehiculo: datos.tipoVehiculo,
+        placaVehiculo: datos.placaVehiculo.trim(),
       });
       if (!resultado.exito) {
         setError(resultado.error);
@@ -327,6 +361,29 @@ export default function DetalleEvento() {
                   {inscripcion.programaAcademico ? ` · ${inscripcion.programaAcademico}` : ""}
                 </span>
               </div>
+              {evento.tipo === "nasa" && (
+                <>
+                  <div className={estilos.resumenInscritoFila}>
+                    <span className={estilos.resumenInscritoEtiqueta}>EPS / Salud:</span>
+                    <span className={estilos.resumenInscritoValor}>{datos.eps}</span>
+                  </div>
+                  <div className={estilos.resumenInscritoFila}>
+                    <span className={estilos.resumenInscritoEtiqueta}>Alimentación:</span>
+                    <span className={estilos.resumenInscritoValor}>
+                      {datos.esVegetariano ? "Opción Vegetariana" : "Menú Estándar"}
+                      {datos.alergiasAlimentos ? ` (Alergias: ${datos.alergiasAlimentos})` : ""}
+                    </span>
+                  </div>
+                  <div className={estilos.resumenInscritoFila}>
+                    <span className={estilos.resumenInscritoEtiqueta}>Parqueadero:</span>
+                    <span className={estilos.resumenInscritoValor}>
+                      {datos.tipoVehiculo !== "Ninguno"
+                        ? `${datos.tipoVehiculo} · Placa ${datos.placaVehiculo} (Cupo reservado)`
+                        : "No requiere parqueadero"}
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
 
             {esMasivo ? (
@@ -613,6 +670,136 @@ export default function DetalleEvento() {
                     <span className={estilos.ayudaCampo}>
                       Selecciona la carrera o tecnología que estás cursando actualmente.
                     </span>
+                  </div>
+                )}
+
+                {evento.tipo === "nasa" && (
+                  <div className={estilos.seccionLogisticaNasa}>
+                    <div className={estilos.encabezadoLogisticaNasa}>
+                      <span className={estilos.badgeLogistica}>🚀 Logística Evento NASA</span>
+                      <h3 className={estilos.tituloLogistica}>Información para tu estadía y bienestar</h3>
+                      <p className={estilos.descLogistica}>
+                        Para coordinar tu refrigerio, atención de salud y acceso vehicular al campus del ITM, por favor completa estos datos:
+                      </p>
+                    </div>
+
+                    {/* Alimentación */}
+                    <div className={estilos.grupoLogistico}>
+                      <div className={estilos.subtituloGrupo}>
+                        <Utensils size={16} aria-hidden="true" />
+                        <span>Alimentación y Refrigerio</span>
+                      </div>
+
+                      <div className={estilos.campoCheckbox}>
+                        <label className={estilos.labelCheckbox}>
+                          <input
+                            type="checkbox"
+                            checked={datos.esVegetariano}
+                            onChange={manejarCambio("esVegetariano")}
+                            className={estilos.checkbox}
+                          />
+                          <span>Deseo opción de refrigerio o menú vegetariano</span>
+                        </label>
+                      </div>
+
+                      <div className={estilos.campo}>
+                        <label className={estilos.etiqueta} htmlFor="alergiasAlimentos">
+                          Alergias o restricciones alimentarias
+                        </label>
+                        <input
+                          id="alergiasAlimentos"
+                          type="text"
+                          value={datos.alergiasAlimentos}
+                          onChange={manejarCambio("alergiasAlimentos")}
+                          className={estilos.input}
+                          placeholder="Ej: Ninguna, alérgico al maní, intolerancia al gluten o lactosa..."
+                        />
+                      </div>
+                    </div>
+
+                    {/* Salud / EPS */}
+                    <div className={estilos.grupoLogistico}>
+                      <div className={estilos.subtituloGrupo}>
+                        <HeartPulse size={16} aria-hidden="true" />
+                        <span>Salud y Seguridad Social</span>
+                      </div>
+
+                      <div className={estilos.campo}>
+                        <label className={estilos.etiqueta} htmlFor="eps">
+                          EPS a la que estás afiliado *
+                        </label>
+                        <input
+                          id="eps"
+                          type="text"
+                          required
+                          value={datos.eps}
+                          onChange={manejarCambio("eps")}
+                          className={estilos.input}
+                          placeholder="Ej: SURA, Sisbén, Sanitas, Nueva EPS, Savia Salud..."
+                          list="lista-eps-sugeridas"
+                        />
+                        <datalist id="lista-eps-sugeridas">
+                          <option value="SURA" />
+                          <option value="Sisbén" />
+                          <option value="Sanitas" />
+                          <option value="Nueva EPS" />
+                          <option value="Salud Total" />
+                          <option value="Savia Salud" />
+                          <option value="Compensar" />
+                          <option value="Famisanar" />
+                          <option value="Coosalud" />
+                          <option value="Particular / Ninguna" />
+                        </datalist>
+                        <span className={estilos.ayudaCampo}>
+                          Requerido para el protocolo de seguridad y atención de emergencias en el campus.
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Movilidad / Parqueadero */}
+                    <div className={estilos.grupoLogistico}>
+                      <div className={estilos.subtituloGrupo}>
+                        <Car size={16} aria-hidden="true" />
+                        <span>Movilidad y Reserva de Parqueadero</span>
+                      </div>
+
+                      <div className={estilos.campo}>
+                        <label className={estilos.etiqueta} htmlFor="tipoVehiculo">
+                          ¿Asistirás en vehículo al campus? *
+                        </label>
+                        <select
+                          id="tipoVehiculo"
+                          value={datos.tipoVehiculo}
+                          onChange={manejarCambio("tipoVehiculo")}
+                          className={estilos.select}
+                        >
+                          <option value="Ninguno">No requiero parqueadero (Transporte público / A pie / Bicicleta)</option>
+                          <option value="Carro">Sí, asistiré en Carro (Separar celda de parqueadero)</option>
+                          <option value="Moto">Sí, asistiré en Moto (Separar celda de parqueadero)</option>
+                        </select>
+                      </div>
+
+                      {datos.tipoVehiculo !== "Ninguno" && (
+                        <div className={estilos.campo}>
+                          <label className={estilos.etiqueta} htmlFor="placaVehiculo">
+                            Placa del vehículo *
+                          </label>
+                          <input
+                            id="placaVehiculo"
+                            type="text"
+                            required
+                            maxLength={10}
+                            value={datos.placaVehiculo}
+                            onChange={manejarCambio("placaVehiculo")}
+                            className={estilos.input}
+                            placeholder="Ej: AAA123 (Carro) o ABC12D (Moto)"
+                          />
+                          <span className={estilos.ayudaCampo}>
+                            El personal de vigilancia del ITM autorizará el ingreso de esta placa a los parqueaderos del campus.
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
 

@@ -1014,3 +1014,86 @@
   margin-bottom: 16px;
   width: 100%;
 }
+
+/* ── Logística Eventos Especiales NASA ── */
+.seccionLogisticaNasa {
+  margin-top: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.04) 0%, rgba(59, 130, 246, 0.08) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: var(--radio-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.encabezadoLogisticaNasa {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.badgeLogistica {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  padding: 3px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 999px;
+  background-color: #1e3a8a;
+  color: #ffffff;
+  letter-spacing: 0.03em;
+}
+
+.tituloLogistica {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #172554;
+  margin: 4px 0 0 0;
+}
+
+.descLogistica {
+  font-size: 0.8rem;
+  color: var(--slate-600);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.grupoLogistico {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(59, 130, 246, 0.25);
+}
+
+.subtituloGrupo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+.campoCheckbox {
+  display: flex;
+  align-items: center;
+}
+
+.labelCheckbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--slate-700);
+  cursor: pointer;
+}
+
+.checkbox {
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+  accent-color: #2563eb;
+}
