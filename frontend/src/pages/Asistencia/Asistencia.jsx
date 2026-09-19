@@ -8,6 +8,7 @@ import {
   Clock,
   FileSpreadsheet,
   QrCode,
+  GraduationCap,
 } from "lucide-react";
 import Header from "../../components/layout/Header/Header.jsx";
 import BuscadorSelect from "../../components/common/BuscadorSelect/BuscadorSelect.jsx";
@@ -108,6 +109,12 @@ export default function Asistencia() {
                 {formatearFecha(evento.fecha)} · {formatearHora(evento.hora)} ·{" "}
                 <MapPin className={estilos.iconoInline} aria-hidden="true" />
                 {evento.lugar}
+                {evento.creadoPorNombre && (
+                  <>
+                    {" "}· <GraduationCap className={estilos.iconoInline} aria-hidden="true" /> Docente:{" "}
+                    <strong>{evento.creadoPorNombre}</strong>
+                  </>
+                )}
               </p>
             </div>
             <div className={estilos.contadoresYAcciones}>
