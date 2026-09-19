@@ -80,7 +80,9 @@ function CarruselSuperior({ eventos, onAbrirCancelado }) {
                   ? "Charla"
                   : evento.tipo === "observacion"
                     ? "Observación"
-                    : "Abierto al público"}
+                    : evento.tipo === "nasa"
+                      ? "🚀 Evento NASA"
+                      : "Abierto al público"}
               </span>
             </div>
 
@@ -252,6 +254,7 @@ export default function Eventos() {
               <option value="abierto">Abierto al público</option>
               <option value="charla">Charla</option>
               <option value="observacion">Observación</option>
+              <option value="nasa">Eventos Especiales NASA</option>
             </select>
             <ChevronDown className={estilos.selectChevron} aria-hidden="true" />
           </div>
@@ -372,7 +375,9 @@ export default function Eventos() {
                         ? "Charla"
                         : evento.tipo === "observacion"
                           ? "Observación"
-                          : "Abierto al público"}
+                          : evento.tipo === "nasa"
+                            ? "🚀 Evento NASA"
+                            : "Abierto al público"}
                     </span>
                   </div>
                 </div>
@@ -406,7 +411,9 @@ export default function Eventos() {
                         ? "Charla"
                         : evento.tipo === "observacion"
                           ? "Observación"
-                          : "Abierto al público"}
+                          : evento.tipo === "nasa"
+                            ? "🚀 Evento NASA"
+                            : "Abierto al público"}
                     </span>
                     {evento.esMasivo && (
                       <span className={estilos.badgeMasivo}>

@@ -93,7 +93,7 @@ export default function FormularioEvento({
     setError("");
     setCargando(false);
     if (evento) {
-      const tiposValidos = ["abierto", "charla", "observacion"];
+      const tiposValidos = ["abierto", "charla", "observacion", "nasa"];
       const tipoValido = tiposValidos.includes(evento.tipo)
         ? evento.tipo
         : "abierto";
@@ -583,6 +583,7 @@ export default function FormularioEvento({
                     <option value="abierto">Abierto / General</option>
                     <option value="charla">Charla Académica</option>
                     <option value="observacion">Observación con Telescopio</option>
+                    <option value="nasa">🚀 Evento Especial NASA</option>
                   </select>
                 </div>
 
@@ -638,6 +639,16 @@ export default function FormularioEvento({
                   )}
                 </div>
               </div>
+
+              {formulario.tipo === "nasa" && (
+                <div className={estilos.avisoTipoNasa} role="status">
+                  <strong>🚀 Evento Especial NASA habilitado:</strong>
+                  <p>
+                    La inscripción para este evento solicitará automáticamente preguntas logísticas:
+                    preferencias alimentarias (vegetarianismo y alergias), afiliación a EPS, tipo de documento y reserva de parqueadero institucional en el campus (carro o moto con placa).
+                  </p>
+                </div>
+              )}
 
               <div className={estilos.campo}>
                 <label className={estilos.etiqueta}>Imagen del evento</label>

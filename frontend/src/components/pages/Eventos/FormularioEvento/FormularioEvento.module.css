@@ -926,3 +926,25 @@
 .textoPronostico strong {
   font-weight: var(--peso-bold);
 }
+
+.avisoTipoNasa {
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.08) 0%, rgba(59, 130, 246, 0.12) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  border-radius: var(--radio-md);
+  padding: 12px 14px;
+  font-size: 0.82rem;
+  color: #1e3a8a;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.avisoTipoNasa strong {
+  font-weight: var(--peso-bold);
+  color: #172554;
+}
+
+.avisoTipoNasa p {
+  margin: 0;
+  line-height: 1.4;
+}

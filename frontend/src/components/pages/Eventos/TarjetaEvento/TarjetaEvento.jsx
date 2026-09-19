@@ -106,7 +106,9 @@ export default function TarjetaEvento({
             ? "Charla"
             : evento.tipo === "observacion"
               ? "Observación"
-              : "Abierto"}
+              : evento.tipo === "nasa"
+                ? "🚀 NASA"
+                : "Abierto"}
         </span>
         {evento.esMasivo && (
           <span className={estilos.insigniaMasivo}>

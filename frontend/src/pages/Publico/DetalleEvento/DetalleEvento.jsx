@@ -258,7 +258,9 @@ export default function DetalleEvento() {
                   ? "Charla"
                   : evento.tipo === "observacion"
                     ? "Observación"
-                    : "Abierto al público"}
+                    : evento.tipo === "nasa"
+                      ? "🚀 Evento Especial NASA"
+                      : "Abierto al público"}
               </span>
               {esCancelado && (
                 <span className={estilos.badgeCanceladoHero}>

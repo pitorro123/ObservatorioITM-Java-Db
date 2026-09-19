@@ -23,7 +23,7 @@ const EventosContext = createContext(null);
 
 function normalizarEventos(lista) {
   if (!Array.isArray(lista)) return [];
-  const tiposValidos = ["abierto", "charla", "observacion"];
+  const tiposValidos = ["abierto", "charla", "observacion", "nasa"];
   return lista.map((ev) => {
     let tipo = ev.tipo;
     if (!tiposValidos.includes(tipo)) {

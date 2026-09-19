@@ -521,6 +521,13 @@
   color: white;
 }
 
+.badgeTipo_nasa {
+  background: linear-gradient(135deg, #0b1f44 0%, #1e3a8a 100%);
+  color: #ffffff;
+  border: 1px solid rgba(147, 197, 253, 0.5);
+  box-shadow: 0 2px 6px rgba(30, 58, 138, 0.4);
+}
+
 .badgeMasivo {
   padding: 4px 10px;
   border-radius: 999px;

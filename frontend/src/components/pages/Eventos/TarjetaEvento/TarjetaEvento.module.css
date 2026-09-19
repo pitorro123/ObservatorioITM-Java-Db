@@ -79,6 +79,13 @@
   color: #b45309;
 }
 
+.insigniaTipo_nasa {
+  background: linear-gradient(135deg, #0b1f44 0%, #1e3a8a 100%);
+  color: #ffffff;
+  border: 1px solid rgba(147, 197, 253, 0.5);
+  box-shadow: 0 2px 6px rgba(30, 58, 138, 0.4);
+}
+
 .insigniaMasivo {
   position: absolute;
   bottom: var(--espacio-sm);
