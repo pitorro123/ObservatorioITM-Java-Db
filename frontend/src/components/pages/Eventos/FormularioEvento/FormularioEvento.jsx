@@ -16,8 +16,13 @@ import {
   Clock,
   Lock,
   ExternalLink,
+  CloudRain,
+  CloudSun,
+  Sun,
+  Info,
 } from "lucide-react";
 import { useAuth } from "../../../../context/AuthContext.jsx";
+import { useClima } from "../../../../hooks/useClima.js";
 import { listarInscripcionesEvento } from "../../../../api/servicios.js";
 import { exportarExcelFG031 } from "../../../../utils/exportarExcelFG031.js";
 import ModalQrAsistencia from "../../../common/ModalQrAsistencia/ModalQrAsistencia.jsx";
@@ -68,7 +73,8 @@ export default function FormularioEvento({
   onCerrar,
   onGuardar,
 }) {
-  const { usuarioActual, esAdmin, docentes } = useAuth();
+  const { usuarioActual, esAdmin, docentes, cargarDocentes } = useAuth();
+  const { obtenerPronosticoPorFecha } = useClima();
   const [formulario, setFormulario] = useState(formularioVacio);
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
@@ -81,6 +87,9 @@ export default function FormularioEvento({
 
   useEffect(() => {
     if (!abierto) return;
+    if (esAdmin) {
+      cargarDocentes?.();
+    }
     setError("");
     setCargando(false);
     if (evento) {
@@ -128,6 +137,11 @@ export default function FormularioEvento({
     ? `${origen}/eventos/${evento.id}?modo=asistencia`
     : "";
 
+  // Pronóstico meteorológico según la fecha seleccionada en el formulario
+  const pronosticoFecha = formulario.fecha
+    ? obtenerPronosticoPorFecha(formulario.fecha)
+    : null;
+
   const cambiarCampo = (clave) => (eventoInput) => {
     if (!puedeEditar) return;
     const valor =
@@ -158,35 +172,34 @@ export default function FormularioEvento({
     try {
       await navigator.clipboard.writeText(urlAsistencia);
       setCopiado(true);
-      setTimeout(() => setCopiado(false), 2000);
+      setTimeout(() => setCopiado(false), 2500);
     } catch {
-      // Fallback
+      setError("No se pudo copiar el enlace automáticamente.");
     }
   };
 
   const descargarQrPng = () => {
-    const svg = qrRef.current?.querySelector("svg");
-    if (!svg) return;
+    if (!qrRef.current) return;
+    const svgElement = qrRef.current.querySelector("svg");
+    if (!svgElement) return;
 
-    const svgData = new XMLSerializer().serializeToString(svg);
+    const svgData = new XMLSerializer().serializeToString(svgElement);
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     const img = new Image();
 
-    const size = 600;
-    canvas.width = size;
-    canvas.height = size;
-
     img.onload = () => {
+      canvas.width = img.width + 40;
+      canvas.height = img.height + 40;
       ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, size, size);
-      ctx.drawImage(img, 0, 0, size, size);
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 20, 20);
 
       const pngFile = canvas.toDataURL("image/png");
       const link = document.createElement("a");
-      const tituloLimpio = (formulario.titulo || evento?.titulo || "evento")
+      const tituloLimpio = (formulario.titulo || "evento")
         .toLowerCase()
-        .replace(/[^a-z0-9]/gi, "_")
+        .replace(/[^a-z0-9]/g, "_")
         .substring(0, 25);
       link.download = `QR_Asistencia_${tituloLimpio}_${evento?.id || "nuevo"}.png`;
       link.href = pngFile;
@@ -203,7 +216,7 @@ export default function FormularioEvento({
     try {
       const res = await listarInscripcionesEvento(evento.id);
       const lista = Array.isArray(res) ? res : res?.data || [];
-      exportarExcelFG031(evento, lista);
+      exportarExcelFG031({ ...evento, ...formulario }, lista);
     } catch (err) {
       console.error("Error al exportar FG 031:", err);
       setError("No se pudo generar el listado de asistencia en este momento.");
@@ -429,6 +442,39 @@ export default function FormularioEvento({
                 </div>
               </div>
 
+              {/* Banner de Pronóstico del Clima según la fecha seleccionada */}
+              {pronosticoFecha && (
+                <div
+                  className={`${estilos.bannerPronostico} ${
+                    pronosticoFecha.tipoAlerta === "lluvia"
+                      ? estilos.bannerPronosticoLluvia
+                      : pronosticoFecha.tipoAlerta === "parcial"
+                        ? estilos.bannerPronosticoParcial
+                        : pronosticoFecha.estado === "FUERA_RANGO"
+                          ? estilos.bannerPronosticoInfo
+                          : estilos.bannerPronosticoFavorable
+                  }`}
+                  role="status"
+                >
+                  <div className={estilos.iconoPronosticoWrap}>
+                    {pronosticoFecha.tipoAlerta === "lluvia" ? (
+                      <CloudRain className={estilos.iconoPronostico} aria-hidden="true" />
+                    ) : pronosticoFecha.tipoAlerta === "parcial" ? (
+                      <CloudSun className={estilos.iconoPronostico} aria-hidden="true" />
+                    ) : pronosticoFecha.estado === "FUERA_RANGO" ? (
+                      <Info className={estilos.iconoPronostico} aria-hidden="true" />
+                    ) : (
+                      <Sun className={estilos.iconoPronostico} aria-hidden="true" />
+                    )}
+                  </div>
+                  <div className={estilos.contenidoPronostico}>
+                    <p className={estilos.textoPronostico}>
+                      {pronosticoFecha.mensaje}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <div className={estilos.campo}>
                 <label className={estilos.etiqueta} htmlFor="ev-lugar">
                   <MapPin className={estilos.iconoCampo} aria-hidden="true" />
@@ -549,11 +595,21 @@ export default function FormularioEvento({
                     <select
                       id="ev-docente"
                       disabled={!puedeEditar}
-                      value={formulario.creadoPorId || usuarioActual?.id}
+                      value={formulario.creadoPorId || ""}
                       onChange={(e) => {
-                        const id = Number(e.target.value);
+                        const val = e.target.value;
+                        if (!val) {
+                          setFormulario((prev) => ({
+                            ...prev,
+                            creadoPorId: null,
+                            creadoPorNombre: "",
+                            creadoPorRol: "Docente",
+                          }));
+                          return;
+                        }
+                        const id = Number(val);
                         const doc =
-                          docentes.find((d) => d.id === id) ||
+                          (docentes || []).find((d) => d.id === id) ||
                           (id === usuarioActual?.id ? usuarioActual : null);
                         setFormulario((prev) => ({
                           ...prev,
@@ -564,9 +620,10 @@ export default function FormularioEvento({
                       }}
                       className={`${estilos.input} ${estilos.select}`}
                     >
-                      {docentes.map((doc) => (
+                      <option value="">-- Selecciona el docente responsable --</option>
+                      {(docentes || []).map((doc) => (
                         <option key={doc.id} value={doc.id}>
-                          {doc.nombre} ({doc.correo})
+                          Prof. {doc.nombre} ({doc.correo})
                         </option>
                       ))}
                       <option value={usuarioActual?.id}>

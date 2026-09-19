@@ -861,3 +861,68 @@
   color: var(--color-texto-secundario);
   line-height: 1.4;
 }
+
+/* ── Banner de Pronóstico del Clima en Formulario ── */
+.bannerPronostico {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radio-md);
+  margin-top: -2px;
+  margin-bottom: 4px;
+  font-size: var(--texto-xs);
+  line-height: 1.45;
+  transition: all var(--transicion-rapida);
+}
+
+.bannerPronosticoFavorable {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+
+.bannerPronosticoParcial {
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+}
+
+.bannerPronosticoLluvia {
+  background-color: #fefce8;
+  border: 1px solid #fef08a;
+  color: #854d0e;
+}
+
+.bannerPronosticoInfo {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #475569;
+}
+
+.iconoPronosticoWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.iconoPronostico {
+  width: 18px;
+  height: 18px;
+}
+
+.contenidoPronostico {
+  flex: 1;
+}
+
+.textoPronostico {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: var(--peso-normal);
+}
+
+.textoPronostico strong {
+  font-weight: var(--peso-bold);
+}
