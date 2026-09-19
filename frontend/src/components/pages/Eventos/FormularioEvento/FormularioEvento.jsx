@@ -385,78 +385,25 @@ export default function FormularioEvento({
                 </div>
               )}
 
-              {/* 1. Tipo de evento y Docente responsable (Primer campo solicitado) */}
-              <div className={estilos.fila}>
-                <div className={estilos.campo}>
-                  <label className={estilos.etiqueta} htmlFor="ev-tipo">
-                    <Sparkles className={estilos.iconoCampo} aria-hidden="true" />
-                    Tipo de evento *
-                  </label>
-                  <select
-                    id="ev-tipo"
-                    disabled={!puedeEditar}
-                    value={formulario.tipo}
-                    onChange={cambiarCampo("tipo")}
-                    className={`${estilos.input} ${estilos.select}`}
-                  >
-                    <option value="abierto">Abierto / General</option>
-                    <option value="charla">Charla Académica</option>
-                    <option value="observacion">Observación con Telescopio</option>
-                    <option value="nasa">🚀 Evento Especial NASA</option>
-                  </select>
-                </div>
 
-                <div className={estilos.campo}>
-                  <label className={estilos.etiqueta} htmlFor="ev-docente">
-                    <GraduationCap className={estilos.iconoCampo} aria-hidden="true" />
-                    Docente responsable
-                  </label>
-                  {esAdmin ? (
-                    <select
-                      id="ev-docente"
-                      disabled={!puedeEditar}
-                      value={formulario.creadoPorId || ""}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        if (!val) {
-                          setFormulario((prev) => ({
-                            ...prev,
-                            creadoPorId: null,
-                            creadoPorNombre: "",
-                            creadoPorRol: "Docente",
-                          }));
-                          return;
-                        }
-                        const id = Number(val);
-                        const doc =
-                          (docentes || []).find((d) => d.id === id) ||
-                          (id === usuarioActual?.id ? usuarioActual : null);
-                        setFormulario((prev) => ({
-                          ...prev,
-                          creadoPorId: id,
-                          creadoPorNombre: doc ? doc.nombre : "Docente ITM",
-                          creadoPorRol: doc ? doc.rol : "Docente",
-                        }));
-                      }}
-                      className={`${estilos.input} ${estilos.select}`}
-                    >
-                      <option value="">-- Selecciona el docente responsable --</option>
-                      {(docentes || []).map((doc) => (
-                        <option key={doc.id} value={doc.id}>
-                          Prof. {doc.nombre} ({doc.correo})
-                        </option>
-                      ))}
-                      <option value={usuarioActual?.id}>
-                        {usuarioActual?.nombre} (Administrador)
-                      </option>
-                    </select>
-                  ) : (
-                    <div className={estilos.docenteAsignadoFila}>
-                      <GraduationCap className={estilos.iconoDocenteAsignado} aria-hidden="true" />
-                      <span>{formulario.creadoPorNombre || usuarioActual?.nombre || "Docente ITM"}</span>
-                    </div>
-                  )}
-                </div>
+              {/* 1. Tipo de evento (Primer campo solicitado) */}
+              <div className={estilos.campo}>
+                <label className={estilos.etiqueta} htmlFor="ev-tipo">
+                  <Sparkles className={estilos.iconoCampo} aria-hidden="true" />
+                  Tipo de evento *
+                </label>
+                <select
+                  id="ev-tipo"
+                  disabled={!puedeEditar}
+                  value={formulario.tipo}
+                  onChange={cambiarCampo("tipo")}
+                  className={`${estilos.input} ${estilos.select}`}
+                >
+                  <option value="abierto">Abierto / General</option>
+                  <option value="charla">Charla Académica</option>
+                  <option value="observacion">Observación con Telescopio</option>
+                  <option value="nasa">🚀 Evento Especial NASA</option>
+                </select>
               </div>
 
               {formulario.tipo === "nasa" && (
@@ -467,6 +414,63 @@ export default function FormularioEvento({
                   </p>
                 </div>
               )}
+
+              {/* 2. Docente responsable */}
+              <div className={estilos.campo}>
+                <label className={estilos.etiqueta} htmlFor="ev-docente">
+                  <GraduationCap className={estilos.iconoCampo} aria-hidden="true" />
+                  Docente responsable
+                </label>
+                {esAdmin ? (
+                  <select
+                    id="ev-docente"
+                    disabled={!puedeEditar}
+                    value={formulario.creadoPorId || ""}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (!val) {
+                        setFormulario((prev) => ({
+                          ...prev,
+                          creadoPorId: null,
+                          creadoPorNombre: "",
+                          creadoPorRol: "Docente",
+                        }));
+                        return;
+                      }
+                      const id = Number(val);
+                      const doc =
+                        (docentes || []).find((d) => d.id === id) ||
+                        (id === usuarioActual?.id ? usuarioActual : null);
+                      setFormulario((prev) => ({
+                        ...prev,
+                        creadoPorId: id,
+                        creadoPorNombre: doc ? doc.nombre : "Docente ITM",
+                        creadoPorRol: doc ? doc.rol : "Docente",
+                      }));
+                    }}
+                    className={`${estilos.input} ${estilos.select}`}
+                  >
+                    <option value="">-- Selecciona el docente responsable --</option>
+                    {(docentes || [])
+                      .filter((doc) => doc.id !== usuarioActual?.id)
+                      .map((doc) => (
+                        <option key={doc.id} value={doc.id}>
+                          Prof. {doc.nombre} ({doc.correo})
+                        </option>
+                      ))}
+                    <option value={usuarioActual?.id}>
+                      {usuarioActual?.nombre?.toLowerCase() === "administrador"
+                        ? "Administrador (Tú)"
+                        : `${usuarioActual?.nombre || "Administrador"} (Administrador)`}
+                    </option>
+                  </select>
+                ) : (
+                  <div className={estilos.docenteAsignadoFila}>
+                    <GraduationCap className={estilos.iconoDocenteAsignado} aria-hidden="true" />
+                    <span>{formulario.creadoPorNombre || usuarioActual?.nombre || "Docente ITM"}</span>
+                  </div>
+                )}
+              </div>
 
               <div className={estilos.campo}>
                 <label className={estilos.etiqueta} htmlFor="ev-titulo">
