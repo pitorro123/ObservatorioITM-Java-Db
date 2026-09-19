@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { formatearFechaCorta } from "../utils/formato.js";
 
 const LAT = 6.2422;
 const LON = -75.5494;
@@ -154,19 +155,22 @@ export function useClima() {
     (fechaStr) => {
       if (!fechaStr || !clima?.daily?.time) return null;
 
+      const fechaLimpia = String(fechaStr).split("T")[0];
+      const fechaFormateada = formatearFechaCorta(fechaLimpia);
+
       // Calcular diferencia de días respecto a hoy
       const hoy = new Date();
       const hoyIso = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, "0")}-${String(hoy.getDate()).padStart(2, "0")}`;
 
-      const tHoy = new Date(hoyIso + "T00:00:00").getTime();
-      const tFecha = new Date(fechaStr + "T00:00:00").getTime();
+      const tHoy = new Date(hoyIso + "T12:00:00").getTime();
+      const tFecha = new Date(fechaLimpia + "T12:00:00").getTime();
       const diffDias = Math.round((tFecha - tHoy) / (1000 * 60 * 60 * 24));
 
       if (diffDias < 0) {
         return {
           estado: "PASADO",
           diffDias,
-          mensaje: "La fecha seleccionada ya pasó.",
+          mensaje: `La fecha seleccionada (${fechaFormateada}) ya pasó.`,
         };
       }
 
@@ -175,16 +179,16 @@ export function useClima() {
           estado: "FUERA_RANGO",
           diffDias,
           mensaje:
-            "Fecha a más de 15 días: Los modelos meteorológicos satelitales cubren hasta 15 días. El pronóstico detallado estará disponible conforme se aproxime la fecha.",
+            `Pronóstico para el día seleccionado (${fechaFormateada} - a ${diffDias} días): Los modelos meteorológicos satelitales cubren hasta 15 días. El pronóstico detallado estará disponible conforme se aproxime la fecha.`,
         };
       }
 
-      const indice = clima.daily.time.findIndex((t) => t === fechaStr);
+      const indice = clima.daily.time.findIndex((t) => t === fechaLimpia);
       if (indice === -1) {
         return {
           estado: "NO_DISPONIBLE",
           diffDias,
-          mensaje: "Pronóstico meteorológico no disponible para esta fecha.",
+          mensaje: `Pronóstico meteorológico no disponible para la fecha seleccionada (${fechaFormateada}).`,
         };
       }
 
@@ -215,11 +219,11 @@ export function useClima() {
 
       let mensaje = "";
       if (diffDias === 0) {
-        mensaje = `Pronóstico para hoy: Tendencia de ${tendencia} / ${probLluvia}% probabilidad de lluvia. (${tempMin}°C - ${tempMax}°C)`;
+        mensaje = `Pronóstico para el día seleccionado (${fechaFormateada}): Tendencia de ${tendencia} / ${probLluvia}% probabilidad de lluvia. (${tempMin}°C - ${tempMax}°C)`;
       } else if (diffDias === 1) {
-        mensaje = `Pronóstico para mañana: Tendencia de ${tendencia} / ${probLluvia}% probabilidad de lluvia. (${tempMin}°C - ${tempMax}°C)`;
+        mensaje = `Pronóstico para el día seleccionado (${fechaFormateada} - mañana): Tendencia de ${tendencia} / ${probLluvia}% probabilidad de lluvia. (${tempMin}°C - ${tempMax}°C)`;
       } else {
-        mensaje = `Pronóstico preliminar a ${diffDias} días: Tendencia de ${tendencia} / ${probLluvia}% probabilidad de lluvia. Recuerda que la certeza aumenta a partir de los 3 días previos al evento.`;
+        mensaje = `Pronóstico preliminar para el día seleccionado (${fechaFormateada} - a ${diffDias} días): Tendencia de ${tendencia} / ${probLluvia}% probabilidad de lluvia. (${tempMin}°C - ${tempMax}°C). Recuerda que la certeza aumenta a partir de los 3 días previos al evento.`;
       }
 
       return {
