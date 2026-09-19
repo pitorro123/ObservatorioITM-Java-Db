@@ -44,6 +44,7 @@ export default function DetalleEvento() {
 
   const esModoAsistencia =
     searchParams.get("modo") === "asistencia" || searchParams.get("qr") === "1";
+  const esNasa = evento?.tipo === "nasa";
   const esMasivo = Boolean(evento?.esMasivo);
   const capacidad = Number(evento?.capacidad) > 0 ? Number(evento.capacidad) : 50;
   const inscritos = Number(evento?.inscritos) || 0;
@@ -386,7 +387,7 @@ export default function DetalleEvento() {
               )}
             </div>
 
-            {esMasivo ? (
+            {esMasivo && !esNasa ? (
               <div className={estilos.cajaMasivoConfirmacion}>
                 <div className={estilos.badgeMasivoExito}>
                   <Sparkles className={estilos.iconoSparkle} aria-hidden="true" />
@@ -488,7 +489,7 @@ export default function DetalleEvento() {
                   Ver otros eventos disponibles
                 </Link>
               </div>
-            ) : esMasivo && !esModoAsistencia ? (
+            ) : esMasivo && !esNasa && !esModoAsistencia ? (
               <div className={estilos.cajaAvisoMasivo}>
                 <div className={estilos.iconoMasivoWrap}>
                   <QrCode className={estilos.iconoMasivo} aria-hidden="true" />
@@ -528,12 +529,16 @@ export default function DetalleEvento() {
                   </div>
                 )}
                 <h2 className={estilos.inscripcionTitulo}>
-                  {esMasivo ? "Registro de Asistencia en Sitio" : "Inscríbete a este evento"}
+                  {esModoAsistencia
+                    ? "Registro de Asistencia en Sitio"
+                    : "Inscríbete a este evento"}
                 </h2>
                 <p className={estilos.inscripcionTexto}>
-                  {esMasivo
+                  {esModoAsistencia
                     ? "Diligencia tus datos a continuación para registrar y confirmar tu asistencia en este evento masivo."
-                    : "Completa tus datos para reservar tu cupo. La entrada es gratuita."}
+                    : esNasa
+                      ? "Completa tus datos para recibir tu código de acceso de 4 dígitos y asegurar tu cupo de logística y parqueadero."
+                      : "Completa tus datos para reservar tu cupo. La entrada es gratuita."}
                 </p>
 
                 <form className={estilos.formulario} onSubmit={manejarEnvio} noValidate>
@@ -805,8 +810,8 @@ export default function DetalleEvento() {
 
                 <button type="submit" className={estilos.botonInscribirse} disabled={cargando}>
                   {cargando
-                    ? (esMasivo ? "Registrando asistencia..." : "Reservando cupo...")
-                    : (esMasivo ? "Confirmar mi asistencia" : "Inscribirme")}
+                    ? (esModoAsistencia ? "Registrando asistencia..." : "Completando inscripción...")
+                    : (esModoAsistencia ? "Confirmar mi asistencia" : "Inscribirme")}
                 </button>
               </form>
             </>
