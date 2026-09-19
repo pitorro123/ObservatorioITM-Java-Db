@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutGrid,
   CalendarDays,
+  History,
   ClipboardCheck,
   KeyRound,
   GraduationCap,
@@ -21,6 +22,7 @@ import estilos from "./Sidebar.module.css";
 const mapaIconos = {
   LayoutGrid: LayoutGrid,
   CalendarDays: CalendarDays,
+  History: History,
   ClipboardCheck: ClipboardCheck,
   KeyRound: KeyRound,
   GraduationCap: GraduationCap,

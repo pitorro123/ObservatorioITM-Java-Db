@@ -14,7 +14,7 @@ import { useClima } from "../../hooks/useClima.js";
 import { Plus, CloudRain } from "lucide-react";
 import estilos from "./Eventos.module.css";
 
-export default function Eventos() {
+export default function Eventos({ soloAnteriores = false }) {
   const { usuarioActual, esAdmin } = useAuth();
   const { eventos, crearEvento, editarEvento, eliminarEvento, publicarEvento, cancelarEvento } =
     useEventosContext();
@@ -35,7 +35,7 @@ export default function Eventos() {
     setPaginaActual,
     totalPaginas,
     eventosPagina,
-  } = useEventos(eventos, usuarioActual);
+  } = useEventos(eventos, usuarioActual, soloAnteriores);
 
   const [formularioAbierto, setFormularioAbierto] = useState(false);
   const [eventoEditando, setEventoEditando] = useState(null);
@@ -134,17 +134,19 @@ export default function Eventos() {
             formularioAbierto
               ? [
                   "Dashboard",
-                  "Eventos",
+                  soloAnteriores ? "Eventos anteriores" : "Eventos",
                   eventoEditando ? "Gestionar Evento" : "Crear Evento",
                 ]
-              : ["Dashboard", "Eventos"]
+              : ["Dashboard", soloAnteriores ? "Eventos anteriores" : "Eventos"]
           }
           titulo={
             formularioAbierto
               ? eventoEditando
                 ? "Gestión del Evento"
                 : "Crear Evento"
-              : "Eventos"
+              : soloAnteriores
+                ? "Eventos Anteriores"
+                : "Eventos"
           }
         />
 
@@ -201,23 +203,25 @@ export default function Eventos() {
             />
           </div>
 
-          <button
-            type="button"
-            className={estilos.botonFlotante}
-            aria-label="Crear evento"
-            onClick={abrirCrear}
-            onMouseEnter={mostrarTooltip}
-            onMouseLeave={ocultarTooltip}
-            onFocus={mostrarTooltip}
-            onBlur={ocultarTooltip}
-          >
-            <Plus className={estilos.iconoPlus} aria-hidden="true" />
-            <span
-              className={`${estilos.tooltip} ${tooltipOculto ? estilos.tooltipOculto : ""}`}
+          {!soloAnteriores && (
+            <button
+              type="button"
+              className={estilos.botonFlotante}
+              aria-label="Crear evento"
+              onClick={abrirCrear}
+              onMouseEnter={mostrarTooltip}
+              onMouseLeave={ocultarTooltip}
+              onFocus={mostrarTooltip}
+              onBlur={ocultarTooltip}
             >
-              Agregar un nuevo evento
-            </span>
-          </button>
+              <Plus className={estilos.iconoPlus} aria-hidden="true" />
+              <span
+                className={`${estilos.tooltip} ${tooltipOculto ? estilos.tooltipOculto : ""}`}
+              >
+                Agregar un nuevo evento
+              </span>
+            </button>
+          )}
         </>
       )}
 

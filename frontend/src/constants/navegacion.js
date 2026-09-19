@@ -1,6 +1,7 @@
 export const RUTAS = {
   DASHBOARD: "/admin/dashboard",
   EVENTOS: "/admin/eventos",
+  EVENTOS_ANTERIORES: "/admin/eventos-anteriores",
   ASISTENCIA: "/admin/asistencia",
   VALIDAR_ASISTENCIA: "/admin/validar-asistencia",
   DOCENTES: "/admin/docentes",
@@ -9,6 +10,7 @@ export const RUTAS = {
 export const ENLACES_NAVEGACION = [
   { etiqueta: "Dashboard", ruta: RUTAS.DASHBOARD, icono: "LayoutGrid", roles: ["Administrador", "Docente"] },
   { etiqueta: "Eventos", ruta: RUTAS.EVENTOS, icono: "CalendarDays", roles: ["Administrador", "Docente"] },
+  { etiqueta: "Eventos anteriores", ruta: RUTAS.EVENTOS_ANTERIORES, icono: "History", roles: ["Administrador", "Docente"] },
   { etiqueta: "Asistencia", ruta: RUTAS.ASISTENCIA, icono: "ClipboardCheck", roles: ["Administrador", "Docente"] },
   { etiqueta: "Validar Asistencia", ruta: RUTAS.VALIDAR_ASISTENCIA, icono: "KeyRound", roles: ["Administrador", "Docente"] },
   { etiqueta: "Docentes", ruta: RUTAS.DOCENTES, icono: "GraduationCap", roles: ["Administrador"] },

@@ -47,6 +47,7 @@ export default function AppRouter() {
       >
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="eventos" element={<Eventos />} />
+        <Route path="eventos-anteriores" element={<Eventos soloAnteriores={true} />} />
         <Route path="asistencia" element={<Asistencia />} />
         <Route path="validar-asistencia" element={<ValidarAsistencia />} />
         <Route
