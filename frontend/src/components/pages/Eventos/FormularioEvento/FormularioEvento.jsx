@@ -20,6 +20,7 @@ import {
   CloudSun,
   Sun,
   Info,
+  Sparkles,
 } from "lucide-react";
 import { useAuth } from "../../../../context/AuthContext.jsx";
 import { useClima } from "../../../../hooks/useClima.js";
@@ -98,7 +99,7 @@ export default function FormularioEvento({
         ? evento.tipo
         : "abierto";
 
-      const esMasivo = Boolean(evento.esMasivo);
+      const esMasivo = tipoValido === "nasa" ? true : Boolean(evento.esMasivo);
 
       setFormulario({
         titulo: evento.titulo || "",
@@ -148,7 +149,14 @@ export default function FormularioEvento({
       clave === "publicarDirectamente" || clave === "esMasivo"
         ? eventoInput.target.checked
         : eventoInput.target.value;
-    setFormulario((prev) => ({ ...prev, [clave]: valor }));
+    setFormulario((prev) => {
+      const nuevo = { ...prev, [clave]: valor };
+      if (clave === "tipo" && valor === "nasa") {
+        nuevo.esMasivo = true;
+        nuevo.capacidad = "";
+      }
+      return nuevo;
+    });
     if (error) setError("");
   };
 
@@ -255,8 +263,9 @@ export default function FormularioEvento({
       return;
     }
 
+    const esMasivoFinal = formulario.tipo === "nasa" ? true : Boolean(formulario.esMasivo);
     let capacidadFinal = null;
-    if (!formulario.esMasivo) {
+    if (!esMasivoFinal) {
       const capacidadNum = Number(formulario.capacidad);
       if (isNaN(capacidadNum) || capacidadNum < 1) {
         setError("Ingresa una capacidad de integrantes válida (mínimo 1 cupo).");
@@ -271,7 +280,7 @@ export default function FormularioEvento({
       fecha: formulario.fecha,
       hora: formulario.hora,
       lugar,
-      esMasivo: Boolean(formulario.esMasivo),
+      esMasivo: esMasivoFinal,
       capacidad: capacidadFinal,
       ubicacionMapa,
       imagen: formulario.imagen,
@@ -373,6 +382,89 @@ export default function FormularioEvento({
               {error && (
                 <div className={estilos.alertaError} role="alert">
                   {error}
+                </div>
+              )}
+
+              {/* 1. Tipo de evento y Docente responsable (Primer campo solicitado) */}
+              <div className={estilos.fila}>
+                <div className={estilos.campo}>
+                  <label className={estilos.etiqueta} htmlFor="ev-tipo">
+                    <Sparkles className={estilos.iconoCampo} aria-hidden="true" />
+                    Tipo de evento *
+                  </label>
+                  <select
+                    id="ev-tipo"
+                    disabled={!puedeEditar}
+                    value={formulario.tipo}
+                    onChange={cambiarCampo("tipo")}
+                    className={`${estilos.input} ${estilos.select}`}
+                  >
+                    <option value="abierto">Abierto / General</option>
+                    <option value="charla">Charla Académica</option>
+                    <option value="observacion">Observación con Telescopio</option>
+                    <option value="nasa">🚀 Evento Especial NASA</option>
+                  </select>
+                </div>
+
+                <div className={estilos.campo}>
+                  <label className={estilos.etiqueta} htmlFor="ev-docente">
+                    <GraduationCap className={estilos.iconoCampo} aria-hidden="true" />
+                    Docente responsable
+                  </label>
+                  {esAdmin ? (
+                    <select
+                      id="ev-docente"
+                      disabled={!puedeEditar}
+                      value={formulario.creadoPorId || ""}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (!val) {
+                          setFormulario((prev) => ({
+                            ...prev,
+                            creadoPorId: null,
+                            creadoPorNombre: "",
+                            creadoPorRol: "Docente",
+                          }));
+                          return;
+                        }
+                        const id = Number(val);
+                        const doc =
+                          (docentes || []).find((d) => d.id === id) ||
+                          (id === usuarioActual?.id ? usuarioActual : null);
+                        setFormulario((prev) => ({
+                          ...prev,
+                          creadoPorId: id,
+                          creadoPorNombre: doc ? doc.nombre : "Docente ITM",
+                          creadoPorRol: doc ? doc.rol : "Docente",
+                        }));
+                      }}
+                      className={`${estilos.input} ${estilos.select}`}
+                    >
+                      <option value="">-- Selecciona el docente responsable --</option>
+                      {(docentes || []).map((doc) => (
+                        <option key={doc.id} value={doc.id}>
+                          Prof. {doc.nombre} ({doc.correo})
+                        </option>
+                      ))}
+                      <option value={usuarioActual?.id}>
+                        {usuarioActual?.nombre} (Administrador)
+                      </option>
+                    </select>
+                  ) : (
+                    <div className={estilos.docenteAsignadoFila}>
+                      <GraduationCap className={estilos.iconoDocenteAsignado} aria-hidden="true" />
+                      <span>{formulario.creadoPorNombre || usuarioActual?.nombre || "Docente ITM"}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {formulario.tipo === "nasa" && (
+                <div className={estilos.avisoTipoNasa} role="status">
+                  <strong>🚀 Evento Especial NASA habilitado:</strong>
+                  <p>
+                    Este evento se configura automáticamente con <strong>aforo masivo ilimitado</strong>. Al inscribirse, cada participante recibirá su <strong>código de acceso de 4 dígitos y código QR</strong> a su correo. Además, se solicitarán datos de logística (preferencias alimentarias, EPS, tipo de documento y reserva de parqueadero con placa).
+                  </p>
                 </div>
               )}
 
@@ -536,14 +628,18 @@ export default function FormularioEvento({
                   <label className={estilos.cajaMasivo}>
                     <input
                       type="checkbox"
-                      disabled={!puedeEditar}
-                      checked={formulario.esMasivo}
+                      disabled={!puedeEditar || formulario.tipo === "nasa"}
+                      checked={formulario.tipo === "nasa" ? true : formulario.esMasivo}
                       onChange={cambiarCampo("esMasivo")}
                       className={estilos.checkbox}
                     />
                     <div className={estilos.textoMasivo}>
                       <strong>Evento masivo (Aforo libre)</strong>
-                      <span>Cupos ilimitados. Habilita asistencia por código QR en sitio.</span>
+                      <span>
+                        {formulario.tipo === "nasa"
+                          ? "Automático para eventos NASA. Cupos ilimitados y envío de código de acceso a los inscritos."
+                          : "Cupos ilimitados. Habilita asistencia por código QR en sitio."}
+                      </span>
                     </div>
                   </label>
                 </div>
@@ -557,98 +653,16 @@ export default function FormularioEvento({
                     id="ev-capacidad"
                     type="number"
                     min="1"
-                    disabled={!puedeEditar || formulario.esMasivo}
-                    value={formulario.esMasivo ? "" : formulario.capacidad}
+                    disabled={!puedeEditar || formulario.esMasivo || formulario.tipo === "nasa"}
+                    value={formulario.esMasivo || formulario.tipo === "nasa" ? "" : formulario.capacidad}
                     onChange={cambiarCampo("capacidad")}
                     className={`${estilos.input} ${
-                      formulario.esMasivo ? estilos.inputDeshabilitado : ""
+                      formulario.esMasivo || formulario.tipo === "nasa" ? estilos.inputDeshabilitado : ""
                     }`}
-                    placeholder={formulario.esMasivo ? "Ilimitada" : "50"}
+                    placeholder={formulario.esMasivo || formulario.tipo === "nasa" ? "Ilimitada (NASA / Masivo)" : "50"}
                   />
                 </div>
               </div>
-
-              <div className={estilos.fila}>
-                <div className={estilos.campo}>
-                  <label className={estilos.etiqueta} htmlFor="ev-tipo">
-                    Tipo de evento
-                  </label>
-                  <select
-                    id="ev-tipo"
-                    disabled={!puedeEditar}
-                    value={formulario.tipo}
-                    onChange={cambiarCampo("tipo")}
-                    className={`${estilos.input} ${estilos.select}`}
-                  >
-                    <option value="abierto">Abierto / General</option>
-                    <option value="charla">Charla Académica</option>
-                    <option value="observacion">Observación con Telescopio</option>
-                    <option value="nasa">🚀 Evento Especial NASA</option>
-                  </select>
-                </div>
-
-                <div className={estilos.campo}>
-                  <label className={estilos.etiqueta} htmlFor="ev-docente">
-                    <GraduationCap className={estilos.iconoCampo} aria-hidden="true" />
-                    Docente responsable
-                  </label>
-                  {esAdmin ? (
-                    <select
-                      id="ev-docente"
-                      disabled={!puedeEditar}
-                      value={formulario.creadoPorId || ""}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        if (!val) {
-                          setFormulario((prev) => ({
-                            ...prev,
-                            creadoPorId: null,
-                            creadoPorNombre: "",
-                            creadoPorRol: "Docente",
-                          }));
-                          return;
-                        }
-                        const id = Number(val);
-                        const doc =
-                          (docentes || []).find((d) => d.id === id) ||
-                          (id === usuarioActual?.id ? usuarioActual : null);
-                        setFormulario((prev) => ({
-                          ...prev,
-                          creadoPorId: id,
-                          creadoPorNombre: doc ? doc.nombre : "Docente ITM",
-                          creadoPorRol: doc ? doc.rol : "Docente",
-                        }));
-                      }}
-                      className={`${estilos.input} ${estilos.select}`}
-                    >
-                      <option value="">-- Selecciona el docente responsable --</option>
-                      {(docentes || []).map((doc) => (
-                        <option key={doc.id} value={doc.id}>
-                          Prof. {doc.nombre} ({doc.correo})
-                        </option>
-                      ))}
-                      <option value={usuarioActual?.id}>
-                        {usuarioActual?.nombre} (Administrador)
-                      </option>
-                    </select>
-                  ) : (
-                    <div className={estilos.docenteAsignadoFila}>
-                      <GraduationCap className={estilos.iconoDocenteAsignado} aria-hidden="true" />
-                      <span>{formulario.creadoPorNombre || usuarioActual?.nombre || "Docente ITM"}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {formulario.tipo === "nasa" && (
-                <div className={estilos.avisoTipoNasa} role="status">
-                  <strong>🚀 Evento Especial NASA habilitado:</strong>
-                  <p>
-                    La inscripción para este evento solicitará automáticamente preguntas logísticas:
-                    preferencias alimentarias (vegetarianismo y alergias), afiliación a EPS, tipo de documento y reserva de parqueadero institucional en el campus (carro o moto con placa).
-                  </p>
-                </div>
-              )}
 
               <div className={estilos.campo}>
                 <label className={estilos.etiqueta}>Imagen del evento</label>
