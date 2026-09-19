@@ -6,8 +6,8 @@ const LON = -75.5494;
 const URL_CONSULTA =
   `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}` +
   `&current=temperature_2m,relative_humidity_2m,cloud_cover,precipitation,weather_code` +
-  `&daily=precipitation_probability_max,temperature_2m_max,temperature_2m_min,weather_code` +
-  `&timezone=America%2FBogota&forecast_days=7`;
+  `&daily=precipitation_probability_max,temperature_2m_max,temperature_2m_min,weather_code,cloud_cover_mean` +
+  `&timezone=America%2FBogota&forecast_days=16`;
 
 const CODIGOS_CLIMA = {
   0: { descripcion: "Cielo despejado", grupo: "Noche despejada" },
@@ -150,5 +150,93 @@ export function useClima() {
     },
   };
 
-  return { clima, estado, cargando, error, consultar };
+  const obtenerPronosticoPorFecha = useCallback(
+    (fechaStr) => {
+      if (!fechaStr || !clima?.daily?.time) return null;
+
+      // Calcular diferencia de días respecto a hoy
+      const hoy = new Date();
+      const hoyIso = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, "0")}-${String(hoy.getDate()).padStart(2, "0")}`;
+
+      const tHoy = new Date(hoyIso + "T00:00:00").getTime();
+      const tFecha = new Date(fechaStr + "T00:00:00").getTime();
+      const diffDias = Math.round((tFecha - tHoy) / (1000 * 60 * 60 * 24));
+
+      if (diffDias < 0) {
+        return {
+          estado: "PASADO",
+          diffDias,
+          mensaje: "La fecha seleccionada ya pasó.",
+        };
+      }
+
+      if (diffDias > 15) {
+        return {
+          estado: "FUERA_RANGO",
+          diffDias,
+          mensaje:
+            "Fecha a más de 15 días: Los modelos meteorológicos satelitales cubren hasta 15 días. El pronóstico detallado estará disponible conforme se aproxime la fecha.",
+        };
+      }
+
+      const indice = clima.daily.time.findIndex((t) => t === fechaStr);
+      if (indice === -1) {
+        return {
+          estado: "NO_DISPONIBLE",
+          diffDias,
+          mensaje: "Pronóstico meteorológico no disponible para esta fecha.",
+        };
+      }
+
+      const probLluvia = clima.daily.precipitation_probability_max?.[indice] ?? 0;
+      const codigoClima = clima.daily.weather_code?.[indice];
+      const nubosidad = clima.daily.cloud_cover_mean?.[indice] ?? 0;
+      const tempMax = Math.round(clima.daily.temperature_2m_max?.[indice] ?? 0);
+      const tempMin = Math.round(clima.daily.temperature_2m_min?.[indice] ?? 0);
+
+      // Determinar tendencia y alerta
+      let tendencia = "cielo mayormente despejado";
+      let tipoAlerta = "favorable";
+
+      if (
+        probLluvia >= 60 ||
+        [53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(codigoClima)
+      ) {
+        tendencia = "probabilidad de lluvia / cielo cubierto";
+        tipoAlerta = "lluvia";
+      } else if (
+        nubosidad >= 40 ||
+        probLluvia >= 30 ||
+        [2, 3, 45, 48, 51].includes(codigoClima)
+      ) {
+        tendencia = "nubosidad parcial";
+        tipoAlerta = "parcial";
+      }
+
+      let mensaje = "";
+      if (diffDias === 0) {
+        mensaje = `Pronóstico para hoy: Tendencia de ${tendencia} / ${probLluvia}% probabilidad de lluvia. (${tempMin}°C - ${tempMax}°C)`;
+      } else if (diffDias === 1) {
+        mensaje = `Pronóstico para mañana: Tendencia de ${tendencia} / ${probLluvia}% probabilidad de lluvia. (${tempMin}°C - ${tempMax}°C)`;
+      } else {
+        mensaje = `Pronóstico preliminar a ${diffDias} días: Tendencia de ${tendencia} / ${probLluvia}% probabilidad de lluvia. Recuerda que la certeza aumenta a partir de los 3 días previos al evento.`;
+      }
+
+      return {
+        estado: "DISPONIBLE",
+        diffDias,
+        probLluvia,
+        nubosidad,
+        tempMax,
+        tempMin,
+        codigoClima,
+        tendencia,
+        tipoAlerta,
+        mensaje,
+      };
+    },
+    [clima]
+  );
+
+  return { clima, estado, cargando, error, consultar, obtenerPronosticoPorFecha };
 }
