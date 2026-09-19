@@ -100,7 +100,8 @@ public class EventoServicio {
 				? "borrador" : request.estado());
 		evento.setTipo(request.tipo() == null || request.tipo().isBlank()
 				? "abierto" : request.tipo());
-		boolean esMasivo = Boolean.TRUE.equals(request.esMasivo());
+		boolean esNasa = "nasa".equalsIgnoreCase(evento.getTipo());
+		boolean esMasivo = esNasa || Boolean.TRUE.equals(request.esMasivo());
 		evento.setEsMasivo(esMasivo);
 		evento.setCapacidad(esMasivo ? null : (request.capacidad() != null && request.capacidad() > 0 ? request.capacidad() : 50));
 		evento.setUbicacionMapa(request.ubicacionMapa() != null && !request.ubicacionMapa().isBlank()
@@ -132,7 +133,11 @@ public class EventoServicio {
 		if (request.lugar() != null && !request.lugar().isBlank()) evento.setLugar(request.lugar().trim());
 		if (request.imagen() != null && !request.imagen().isBlank()) evento.setImagen(request.imagen().trim());
 		if (request.tipo() != null && !request.tipo().isBlank()) evento.setTipo(request.tipo().trim());
-		if (request.esMasivo() != null) {
+		boolean esNasaEdicion = "nasa".equalsIgnoreCase(evento.getTipo());
+		if (esNasaEdicion) {
+			evento.setEsMasivo(true);
+			evento.setCapacidad(null);
+		} else if (request.esMasivo() != null) {
 			evento.setEsMasivo(request.esMasivo());
 			if (Boolean.TRUE.equals(request.esMasivo())) {
 				evento.setCapacidad(null);

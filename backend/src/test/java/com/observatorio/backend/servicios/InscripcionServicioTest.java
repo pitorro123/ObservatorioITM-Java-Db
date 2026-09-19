@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -164,6 +165,65 @@ class InscripcionServicioTest {
 		assertEquals(true, response.esMasivo());
 		assertEquals(1, evento.getAsistentes());
 		verify(asistencias).save(any(Asistencia.class));
+	}
+
+	@Test
+	@DisplayName("inscribir() en evento NASA masivo genera código de 4 dígitos y envía correo con QR")
+	void inscribir_eventoNasaMasivo_generaCodigoYEnviaCorreo() {
+		Evento evento = new Evento();
+		evento.setId(30L);
+		evento.setTitulo("🚀 Conferencia Espacial NASA");
+		evento.setTipo("nasa");
+		evento.setEstado("publicado");
+		evento.setEsMasivo(true);
+		evento.setFecha(LocalDate.now().plusDays(10));
+		evento.setHora("10:00");
+		evento.setLugar("Auditorio Mayor ITM");
+		evento.setInscritos(0);
+		evento.setAsistentes(0);
+
+		InscripcionRequest request = new InscripcionRequest(
+				30L,
+				"Astronauta Ramirez",
+				"Astronauta",
+				"Ramirez",
+				"CC",
+				"10203040",
+				"astro@itm.edu.co",
+				"3009998877",
+				"Docente",
+				"Astronomía",
+				null,
+				true,
+				"Ninguna",
+				"SURA",
+				"Carro",
+				"NASA999");
+
+		when(eventos.findById(30L)).thenReturn(Optional.of(evento));
+		when(inscripciones.existsByEventoIdAndCorreoIgnoreCase(30L, "astro@itm.edu.co")).thenReturn(false);
+		when(inscripciones.existsByEventoIdAndNumeroDocumentoIgnoreCase(30L, "10203040")).thenReturn(false);
+		when(inscripciones.existsByCodigo(anyString())).thenReturn(false);
+		when(participantes.findFirstByNumeroDocumentoIgnoreCase("10203040")).thenReturn(Optional.empty());
+		when(participantes.save(any(Participante.class))).thenAnswer(i -> i.getArgument(0));
+		when(inscripciones.save(any(Inscripcion.class))).thenAnswer(i -> {
+			Inscripcion ins = i.getArgument(0);
+			ins.setId(99L);
+			return ins;
+		});
+		when(qr.generarQrBase64(anyString(), anyInt())).thenReturn("base64nasaqr");
+		when(correo.plantillas()).thenReturn(new CorreoPlantillas());
+
+		InscripcionResponse response = inscripcionServicio.inscribir(request);
+
+		assertNotNull(response);
+		assertEquals(99L, response.id());
+		assertNotNull(response.codigo());
+		assertEquals("Pendiente", response.asistencia());
+		assertEquals(true, response.esMasivo());
+		verify(qr).generarQrBase64(anyString(), eq(300));
+		verify(correo).enviarHtmlAsync(eq("astro@itm.edu.co"), anyString(), anyString());
+		verify(asistencias, never()).save(any(Asistencia.class));
 	}
 
 	@Test

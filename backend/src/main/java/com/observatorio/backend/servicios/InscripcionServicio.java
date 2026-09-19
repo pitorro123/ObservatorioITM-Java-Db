@@ -202,14 +202,15 @@ public class InscripcionServicio {
 		participante = participantes.save(participante);
 
 		// 3. Crear Inscripción (3FN: Tabla asociativa Evento <-> Participante)
-		String codigo = esMasivo ? null : generarCodigo4Digitos(evento.getId());
+		boolean esNasa = "nasa".equalsIgnoreCase(evento.getTipo());
+		boolean debeGenerarCodigo = !esMasivo || esNasa;
+		String codigo = debeGenerarCodigo ? generarCodigo4Digitos(evento.getId()) : null;
 		Inscripcion inscripcion = new Inscripcion();
 		inscripcion.setCodigo(codigo);
 		inscripcion.setEventoId(evento.getId());
 		inscripcion.setParticipante(participante);
 		inscripcion.setEsMasivo(esMasivo);
-		inscripcion.setAsistencia("Pendiente");
-		inscripcion.setAsistencia(esMasivo ? "Asistió" : "Pendiente");
+		inscripcion.setAsistencia(esMasivo && !esNasa ? "Asistió" : "Pendiente");
 
 		// Sincronización en columnas legacy para seguridad y compatibilidad
 		inscripcion.setNombre(participante.getNombreCompleto());
@@ -231,7 +232,7 @@ public class InscripcionServicio {
 
 		inscripcion = inscripciones.save(inscripcion);
 
-		if (esMasivo) {
+		if (esMasivo && !esNasa) {
 			Asistencia asistencia = new Asistencia(inscripcion);
 			asistencia = asistencias.save(asistencia);
 			inscripcion.setAsistenciaRegistro(asistencia);
@@ -241,7 +242,7 @@ public class InscripcionServicio {
 		evento.setInscritos(inscritos + 1);
 		eventos.save(evento);
 
-		if (!esMasivo && codigo != null) {
+		if (codigo != null) {
 			String qrBase64 = qr.generarQrBase64(codigo, 300);
 			correo.enviarHtmlAsync(inscripcion.getCorreo(), "¡Inscripción confirmada! - Observatorio ITM",
 					correo.plantillas().correoConfirmacionInscripcion(
