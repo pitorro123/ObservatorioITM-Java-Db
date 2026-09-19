@@ -55,13 +55,28 @@
   display: flex;
   flex-direction: column;
   padding: var(--espacio-xs);
-  max-height: min(70vh, 480px);
 }
 
 .lista {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  max-height: 190px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-borde) transparent;
+}
+
+.lista::-webkit-scrollbar {
+  width: 6px;
+}
+
+.lista::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.lista::-webkit-scrollbar-thumb {
+  background-color: var(--color-borde);
+  border-radius: 4px;
 }
 
 .opcion {
