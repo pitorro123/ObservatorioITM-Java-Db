@@ -385,7 +385,6 @@ export default function FormularioEvento({
                 </div>
               )}
 
-
               {/* 1. Tipo de evento (Primer campo solicitado) */}
               <div className={estilos.campo}>
                 <label className={estilos.etiqueta} htmlFor="ev-tipo">

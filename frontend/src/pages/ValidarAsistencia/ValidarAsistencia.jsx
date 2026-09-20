@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   KeyRound,
@@ -40,9 +40,16 @@ export default function ValidarAsistencia() {
   );
 
   useEffect(() => {
-    if (!eventoId || !eventos.some((e) => String(e.id) === String(eventoId))) {
-      if (eventos.length > 0) {
-        setEventoId(eventoParam || eventos[0].id);
+    if (eventos && eventos.length > 0) {
+      const existeParam =
+        eventoParam && eventos.some((e) => String(e.id) === String(eventoParam));
+      const existeActual =
+        eventoId && eventos.some((e) => String(e.id) === String(eventoId));
+
+      if (existeParam && String(eventoId) !== String(eventoParam)) {
+        setEventoId(eventoParam);
+      } else if (!existeActual) {
+        setEventoId(existeParam ? eventoParam : String(eventos[0].id));
       }
     }
   }, [eventos, eventoId, eventoParam]);
@@ -54,16 +61,18 @@ export default function ValidarAsistencia() {
   const [confirmando, setConfirmando] = useState(false);
 
   const eventoSeleccionado = useMemo(() => {
-    return eventos.find((e) => String(e.id) === String(eventoId)) || null;
+    return (eventos || []).find((e) => String(e.id) === String(eventoId)) || null;
   }, [eventos, eventoId]);
 
   const inscritosEvento = useMemo(() => {
-    return eventoId ? inscripcionesPorEvento(eventoId) : [];
+    return eventoId && typeof inscripcionesPorEvento === "function"
+      ? inscripcionesPorEvento(eventoId)
+      : [];
   }, [eventoId, inscripcionesPorEvento]);
 
-  const totalInscritos = inscritosEvento.length;
+  const totalInscritos = inscritosEvento?.length || 0;
   const totalAsistentes = useMemo(() => {
-    return inscritosEvento.filter((i) => i.asistencia === "Asistió").length;
+    return (inscritosEvento || []).filter((i) => i.asistencia === "Asistió").length;
   }, [inscritosEvento]);
 
   const cambiarEvento = (nuevoId) => {
@@ -162,9 +171,12 @@ export default function ValidarAsistencia() {
             <span>Selecciona el evento para validar asistencia</span>
           </label>
           <BuscadorSelect
-            opciones={eventos.map((ev) => {
-              const inscritos = inscripcionesPorEvento(ev.id);
-              const asistieron = inscritos.filter((i) => i.asistencia === "Asistió").length;
+            opciones={(eventos || []).map((ev) => {
+              const inscritos =
+                typeof inscripcionesPorEvento === "function"
+                  ? inscripcionesPorEvento(ev.id)
+                  : [];
+              const asistieron = (inscritos || []).filter((i) => i.asistencia === "Asistió").length;
               return {
                 valor: ev.id,
                 etiqueta: `${ev.titulo} · (${asistieron}/${inscritos.length} asistieron)`,
@@ -346,10 +358,19 @@ export default function ValidarAsistencia() {
                     <Clock className={estilos.iconoMeta} aria-hidden="true" />
                     <span>
                       <strong>Hora de validación:</strong>{" "}
-                      {new Date(inscripcionVisible.fechaHoraAsistencia).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
+                      {(() => {
+                        try {
+                          const d = new Date(inscripcionVisible.fechaHoraAsistencia);
+                          return isNaN(d.getTime())
+                            ? String(inscripcionVisible.fechaHoraAsistencia)
+                            : d.toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              });
+                        } catch {
+                          return String(inscripcionVisible.fechaHoraAsistencia);
+                        }
+                      })()}
                     </span>
                   </li>
                 )}
