@@ -74,7 +74,8 @@ export default function DetalleEvento() {
     relacionUniversidad: "Estudiante",
     programaAcademico: "",
     esVegetariano: false,
-    alergiasAlimentos: "",
+    alergiasAlimentos: "Ninguna",
+    otraAlergia: "",
     eps: "",
     tipoVehiculo: "Ninguno",
     placaVehiculo: "",
@@ -235,7 +236,10 @@ export default function DetalleEvento() {
         programaAcademico,
         programaId,
         esVegetariano: Boolean(datos.esVegetariano),
-        alergiasAlimentos: datos.alergiasAlimentos.trim() || "Ninguna",
+        alergiasAlimentos:
+          datos.alergiasAlimentos === "Otra"
+            ? (datos.otraAlergia.trim() || "Otra restricción")
+            : (datos.alergiasAlimentos || "Ninguna"),
         eps: datos.eps.trim(),
         tipoVehiculo: datos.tipoVehiculo,
         placaVehiculo: datos.placaVehiculo.trim(),
@@ -372,7 +376,15 @@ export default function DetalleEvento() {
                     <span className={estilos.resumenInscritoEtiqueta}>Alimentación:</span>
                     <span className={estilos.resumenInscritoValor}>
                       {datos.esVegetariano ? "Opción Vegetariana" : "Menú Estándar"}
-                      {datos.alergiasAlimentos ? ` (Alergias: ${datos.alergiasAlimentos})` : ""}
+                      {(() => {
+                        const alergia =
+                          datos.alergiasAlimentos === "Otra"
+                            ? datos.otraAlergia.trim()
+                            : datos.alergiasAlimentos;
+                        return alergia && alergia.toLowerCase() !== "ninguna"
+                          ? ` (Alergias: ${alergia})`
+                          : " (Sin restricciones)";
+                      })()}
                     </span>
                   </div>
                   <div className={estilos.resumenInscritoFila}>
@@ -711,15 +723,39 @@ export default function DetalleEvento() {
                         <label className={estilos.etiqueta} htmlFor="alergiasAlimentos">
                           Alergias o restricciones alimentarias
                         </label>
-                        <input
+                        <select
                           id="alergiasAlimentos"
-                          type="text"
                           value={datos.alergiasAlimentos}
                           onChange={manejarCambio("alergiasAlimentos")}
-                          className={estilos.input}
-                          placeholder="Ej: Ninguna, alérgico al maní, intolerancia al gluten o lactosa..."
-                        />
+                          className={estilos.select}
+                        >
+                          <option value="Ninguna">Ninguna</option>
+                          <option value="Alérgico al maní">Alérgico al maní</option>
+                          <option value="Intolerancia a la lactosa">Intolerancia a la lactosa</option>
+                          <option value="Intolerancia al gluten">Intolerancia al gluten (Celiaquía)</option>
+                          <option value="Alérgico a frutos secos">Alérgico a frutos secos / nueces</option>
+                          <option value="Alérgico a mariscos o pescados">Alérgico a mariscos o pescados</option>
+                          <option value="Alérgico al huevo">Alérgico al huevo</option>
+                          <option value="Otra">Otra alergia o restricción (especificar)...</option>
+                        </select>
                       </div>
+
+                      {datos.alergiasAlimentos === "Otra" && (
+                        <div className={estilos.campo}>
+                          <label className={estilos.etiqueta} htmlFor="otraAlergia">
+                            Especifica tu alergia o restricción alimentaria *
+                          </label>
+                          <input
+                            id="otraAlergia"
+                            type="text"
+                            required
+                            value={datos.otraAlergia}
+                            onChange={manejarCambio("otraAlergia")}
+                            className={estilos.input}
+                            placeholder="Ej: Alérgico a la soya, sulfitos, colorantes..."
+                          />
+                        </div>
+                      )}
                     </div>
 
                     {/* Salud / EPS */}
