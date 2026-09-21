@@ -243,7 +243,7 @@ public class InscripcionServicio {
 		eventos.save(evento);
 
 		if (codigo != null) {
-			String qrBase64 = qr.generarQrBase64(codigo, 300);
+			String qrBase64 = esNasa ? null : qr.generarQrBase64(codigo, 300);
 			correo.enviarHtmlAsync(inscripcion.getCorreo(), "¡Inscripción confirmada! - Observatorio ITM",
 					correo.plantillas().correoConfirmacionInscripcion(
 							inscripcion.getNombre(), evento.getTitulo(),

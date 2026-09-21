@@ -93,9 +93,21 @@ public class CorreoPlantillas {
 		return envolver("Restablece tu contraseña", cuerpo);
 	}
 
-	/** Correo de confirmación de inscripción con su QR. */
+	/** Correo de confirmación de inscripción con su QR o solo código de 4 dígitos. */
 	public String correoConfirmacionInscripcion(String nombre, String evento, String fecha, String hora,
 			String lugar, String codigo, String qrBase64) {
+		boolean tieneQr = qrBase64 != null && !qrBase64.isBlank();
+		String mensajeInstruccion = tieneQr
+				? "Presenta este código QR o código numérico en la entrada del evento para registrar tu asistencia:"
+				: "Presenta este código de 4 dígitos o tu documento de identidad en la entrada del evento para validar tu asistencia en sitio:";
+
+		String seccionQr = tieneQr
+				? ("<p style=\"text-align:center;margin:12px 0 0;\">"
+						+ "<img src=\"data:image/png;base64," + qrBase64 + "\" alt=\"Código QR\" width=\"180\" height=\"180\""
+						+ " style=\"display:inline-block;border-radius:8px;border:1px solid #e2e8f0;background:#ffffff;padding:8px;\">"
+						+ "</p>")
+				: "";
+
 		String cuerpo =
 				"<p style=\"margin:0 0 14px;font-size:14px;line-height:1.6;\">¡Hola <strong>" + nombre
 				+ "</strong>! Tu inscripción al evento está confirmada.</p>"
@@ -105,13 +117,9 @@ public class CorreoPlantillas {
 						+ "<p style=\"margin:10px 0 0;font-size:13px;color:#334155;\">📅 Fecha: <strong>" + fecha + "</strong></p>"
 						+ "<p style=\"margin:4px 0;font-size:13px;color:#334155;\">🕒 Hora: <strong>" + hora + "</strong></p>"
 						+ "<p style=\"margin:4px 0 0;font-size:13px;color:#334155;\">📍 Lugar: <strong>" + lugar + "</strong></p>")
-				+ "<p style=\"margin:14px 0 0;font-size:13px;line-height:1.6;\">Presenta este código QR"
-				+ " en la entrada del evento para registrar tu asistencia:</p>"
+				+ "<p style=\"margin:14px 0 0;font-size:13px;line-height:1.6;\">" + mensajeInstruccion + "</p>"
 				+ bloqueCodigo(codigo)
-				+ "<p style=\"text-align:center;margin:10px 0 0;\">"
-				+ "<img src=\"data:image/png;base64," + qrBase64 + "\" alt=\"Código QR\" width=\"180\" height=\"180\""
-				+ " style=\"display:inline-block;border-radius:8px;border:1px solid #e2e8f0;background:#ffffff;padding:8px;\">"
-				+ "</p>";
+				+ seccionQr;
 		return envolver("¡Inscripción confirmada!", cuerpo);
 	}
 

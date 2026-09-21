@@ -168,7 +168,7 @@ class InscripcionServicioTest {
 	}
 
 	@Test
-	@DisplayName("inscribir() en evento NASA masivo genera código de 4 dígitos y envía correo con QR")
+	@DisplayName("inscribir() en evento NASA masivo genera código de 4 dígitos y envía correo con solo código (sin QR)")
 	void inscribir_eventoNasaMasivo_generaCodigoYEnviaCorreo() {
 		Evento evento = new Evento();
 		evento.setId(30L);
@@ -211,7 +211,6 @@ class InscripcionServicioTest {
 			ins.setId(99L);
 			return ins;
 		});
-		when(qr.generarQrBase64(anyString(), anyInt())).thenReturn("base64nasaqr");
 		when(correo.plantillas()).thenReturn(new CorreoPlantillas());
 
 		InscripcionResponse response = inscripcionServicio.inscribir(request);
@@ -221,7 +220,7 @@ class InscripcionServicioTest {
 		assertNotNull(response.codigo());
 		assertEquals("Pendiente", response.asistencia());
 		assertEquals(true, response.esMasivo());
-		verify(qr).generarQrBase64(anyString(), eq(300));
+		verify(qr, never()).generarQrBase64(anyString(), anyInt());
 		verify(correo).enviarHtmlAsync(eq("astro@itm.edu.co"), anyString(), anyString());
 		verify(asistencias, never()).save(any(Asistencia.class));
 	}
