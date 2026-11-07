@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin, Youtube, Facebook, Instagram } from "lucide-react";
+import { Mail, Phone, MapPin, Youtube, Facebook, Instagram, Sparkles } from "lucide-react";
 import { informacionContacto } from "../../../data/observatorio.js";
 import { redesSociales } from "../../../data/navegacion-publica.js";
 import { IMAGENES } from "../../../data/imagenes.js";
@@ -77,9 +77,18 @@ export default function Footer() {
       </div>
 
       <div className={styles.copyright}>
-        <p className={styles.copyrightText}>
-          © 2026 Observatorio Astronómico del ITM. Todos los derechos reservados
-        </p>
+        <div className={styles.copyrightContent}>
+          <p className={styles.agradecimientoText}>
+            <Sparkles className={styles.agradecimientoIcon} size={15} aria-hidden="true" />
+            <span>
+              Agradecimientos especiales al{" "}
+              <strong className={styles.agradecimientoHighlight}>SEMINARIO FÉNIX</strong>
+            </span>
+          </p>
+          <p className={styles.copyrightText}>
+            © 2026 Observatorio Astronómico del ITM. Todos los derechos reservados
+          </p>
+        </div>
       </div>
     </footer>
   );

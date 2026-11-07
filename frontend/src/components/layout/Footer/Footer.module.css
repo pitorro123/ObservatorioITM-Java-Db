@@ -110,28 +110,75 @@
   color: var(--obs-navy);
 }
 
-/* ── Copyright ── */
+/* ── Copyright y Agradecimientos ── */
 .copyright {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(10, 14, 39, 0.5);
 }
 
-.copyrightText {
+.copyrightContent {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 8px 16px;
+  padding: 16px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   text-align: center;
-  font-size: 0.75rem;
-  color: var(--slate-400);
 }
 
 @media (min-width: 640px) {
-  .copyrightText {
-    padding: 8px 24px;
+  .copyrightContent {
+    padding: 16px 24px;
+    gap: 6px;
   }
 }
 
 @media (min-width: 1024px) {
-  .copyrightText {
-    padding: 8px 32px;
+  .copyrightContent {
+    padding: 16px 32px;
   }
+}
+
+.agradecimientoText {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: var(--slate-300);
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+.agradecimientoIcon {
+  color: var(--obs-gold);
+  flex-shrink: 0;
+  animation: pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+.agradecimientoHighlight {
+  color: var(--obs-gold);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 12px rgba(245, 166, 35, 0.35);
+}
+
+.copyrightText {
+  margin: 0;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--slate-400);
 }
