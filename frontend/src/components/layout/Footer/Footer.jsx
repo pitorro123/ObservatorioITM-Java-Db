@@ -82,7 +82,7 @@ export default function Footer() {
             <Sparkles className={styles.agradecimientoIcon} size={15} aria-hidden="true" />
             <span>
               Agradecimientos especiales al{" "}
-              <strong className={styles.agradecimientoHighlight}>SEMINARIO FÉNIX</strong>
+              <strong className={styles.agradecimientoHighlight}>Semillero Fénix Agile</strong>
             </span>
           </p>
           <p className={styles.copyrightText}>
