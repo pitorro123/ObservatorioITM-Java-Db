@@ -43,7 +43,7 @@ class EventoServicioTest {
 		EventoRequest request = new EventoRequest(
 				"Noche de Estrellas",
 				"Observación con telescopios",
-				"2026-10-15",
+				LocalDate.now().plusDays(10).toString(),
 				"19:00",
 				"Terraza Bloque F",
 				"https://i.ibb.co/foto.jpg",
@@ -78,7 +78,7 @@ class EventoServicioTest {
 		EventoRequest request = new EventoRequest(
 				"",
 				"Sin titulo",
-				"2026-10-15",
+				LocalDate.now().plusDays(10).toString(),
 				"19:00",
 				"Lugar",
 				null, null, null, null, null, null, null, null, null, null);
@@ -89,12 +89,37 @@ class EventoServicioTest {
 	}
 
 	@Test
+	@DisplayName("crear() lanza 400 si la fecha del evento es anterior a la actual")
+	void crear_fechaPasada_lanza400() {
+		EventoRequest request = new EventoRequest(
+				"Noche de Estrellas",
+				"Observación con telescopios",
+				LocalDate.now().minusDays(1).toString(),
+				"19:00",
+				"Terraza Bloque F",
+				"https://i.ibb.co/foto.jpg",
+				"publicado",
+				"Observación",
+				true,
+				100,
+				"Medellín ITM",
+				1L,
+				"Admin ITM",
+				"Administrador",
+				null);
+
+		ApiException ex = assertThrows(ApiException.class, () -> eventoServicio.crear(request));
+		assertEquals(400, ex.getEstado());
+		assertEquals("Fecha inválida: la fecha del evento no puede ser anterior a la actual.", ex.getMessage());
+	}
+
+	@Test
 	@DisplayName("crear() lanza 400 si el estado no es válido")
 	void crear_estadoInvalido_lanza400() {
 		EventoRequest request = new EventoRequest(
 				"Conferencia",
 				"Descripcion",
-				"2026-10-15",
+				LocalDate.now().plusDays(10).toString(),
 				"10:00",
 				"Aula Magna",
 				null,

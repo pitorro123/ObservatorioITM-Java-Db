@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import {
   ArrowLeft,
@@ -86,6 +86,14 @@ export default function FormularioEvento({
 
   const esEdicion = Boolean(evento);
 
+  const hoyStr = useMemo(() => {
+    const ahora = new Date();
+    const año = ahora.getFullYear();
+    const mes = String(ahora.getMonth() + 1).padStart(2, "0");
+    const dia = String(ahora.getDate()).padStart(2, "0");
+    return `${año}-${mes}-${dia}`;
+  }, []);
+
   useEffect(() => {
     if (!abierto) return;
     if (esAdmin) {
@@ -157,6 +165,14 @@ export default function FormularioEvento({
       }
       return nuevo;
     });
+    if (clave === "fecha" && valor) {
+      if (!esEdicion || (evento && evento.fecha >= hoyStr)) {
+        if (valor < hoyStr) {
+          setError("Fecha inválida: la fecha del evento no puede ser anterior a la de hoy.");
+          return;
+        }
+      }
+    }
     if (error) setError("");
   };
 
@@ -254,9 +270,25 @@ export default function FormularioEvento({
       setError("Selecciona la fecha del evento.");
       return;
     }
+    if (!esEdicion && formulario.fecha < hoyStr) {
+      setError("Fecha inválida: la fecha del evento no puede ser anterior al día de hoy.");
+      return;
+    }
+    if (esEdicion && evento && evento.fecha >= hoyStr && formulario.fecha < hoyStr) {
+      setError("Fecha inválida: no puedes reprogramar el evento a una fecha anterior al día de hoy.");
+      return;
+    }
     if (!formulario.hora) {
       setError("Selecciona la hora del evento.");
       return;
+    }
+    if ((!esEdicion || (evento && evento.fecha >= hoyStr)) && formulario.fecha === hoyStr && formulario.hora) {
+      const ahora = new Date();
+      const horaActual = `${String(ahora.getHours()).padStart(2, "0")}:${String(ahora.getMinutes()).padStart(2, "0")}`;
+      if (formulario.hora < horaActual) {
+        setError("Hora inválida: para eventos el día de hoy, la hora seleccionada ya ha pasado.");
+        return;
+      }
     }
     if (lugar.length < 3) {
       setError("Escribe el lugar del evento.");
@@ -514,6 +546,7 @@ export default function FormularioEvento({
                     type="date"
                     required
                     disabled={!puedeEditar}
+                    min={!esEdicion || (evento && evento.fecha >= hoyStr) ? hoyStr : undefined}
                     value={formulario.fecha}
                     onChange={cambiarCampo("fecha")}
                     className={estilos.input}

@@ -88,10 +88,15 @@ public class EventoServicio {
 			throw new ApiException(400, "Completa todos los campos obligatorios del evento.");
 		}
 
+		LocalDate fechaEvento = validarFecha(request.fecha());
+		if (fechaEvento.isBefore(LocalDate.now())) {
+			throw new ApiException(400, "Fecha inválida: la fecha del evento no puede ser anterior a la actual.");
+		}
+
 		Evento evento = new Evento();
 		evento.setTitulo(request.titulo().trim());
 		evento.setDescripcion(request.descripcion().trim());
-		evento.setFecha(validarFecha(request.fecha()));
+		evento.setFecha(fechaEvento);
 		evento.setHora(request.hora().trim());
 		evento.setLugar(request.lugar().trim());
 		evento.setImagen(request.imagen() == null || request.imagen().isBlank()
@@ -128,7 +133,13 @@ public class EventoServicio {
 
 		if (request.titulo() != null && !request.titulo().isBlank()) evento.setTitulo(request.titulo().trim());
 		if (request.descripcion() != null && !request.descripcion().isBlank()) evento.setDescripcion(request.descripcion().trim());
-		if (request.fecha() != null && !request.fecha().isBlank()) evento.setFecha(validarFecha(request.fecha()));
+		if (request.fecha() != null && !request.fecha().isBlank()) {
+			LocalDate nuevaFecha = validarFecha(request.fecha());
+			if (nuevaFecha.isBefore(LocalDate.now()) && (evento.getFecha() == null || !evento.getFecha().isBefore(LocalDate.now()))) {
+				throw new ApiException(400, "Fecha inválida: la fecha del evento no puede ser anterior a la actual.");
+			}
+			evento.setFecha(nuevaFecha);
+		}
 		if (request.hora() != null && !request.hora().isBlank()) evento.setHora(request.hora().trim());
 		if (request.lugar() != null && !request.lugar().isBlank()) evento.setLugar(request.lugar().trim());
 		if (request.imagen() != null && !request.imagen().isBlank()) evento.setImagen(request.imagen().trim());
