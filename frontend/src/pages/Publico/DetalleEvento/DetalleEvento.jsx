@@ -78,7 +78,9 @@ export default function DetalleEvento() {
     telefono: "",
     relacionUniversidad: "Estudiante",
     programaAcademico: "",
+    preferenciaAlimenticia: "Estándar",
     esVegetariano: false,
+    esVegano: false,
     alergiasAlimentos: "Ninguna",
     otraAlergia: "",
     eps: "",
@@ -283,7 +285,9 @@ export default function DetalleEvento() {
         relacionUniversidad,
         programaAcademico,
         programaId,
-        esVegetariano: Boolean(datos.esVegetariano),
+        preferenciaAlimenticia: datos.preferenciaAlimenticia || (datos.esVegano ? "Vegano" : datos.esVegetariano ? "Vegetariano" : "Estándar"),
+        esVegetariano: Boolean(datos.esVegetariano || datos.preferenciaAlimenticia === "Vegetariano" || datos.preferenciaAlimenticia === "Vegano"),
+        esVegano: Boolean(datos.esVegano || datos.preferenciaAlimenticia === "Vegano"),
         alergiasAlimentos:
           datos.alergiasAlimentos === "Otra"
             ? (datos.otraAlergia.trim() || "Otra restricción")
@@ -423,15 +427,19 @@ export default function DetalleEvento() {
                   <div className={estilos.resumenInscritoFila}>
                     <span className={estilos.resumenInscritoEtiqueta}>Alimentación:</span>
                     <span className={estilos.resumenInscritoValor}>
-                      {datos.esVegetariano ? "Opción Vegetariana" : "Menú Estándar"}
+                      {datos.preferenciaAlimenticia === "Vegano" || datos.esVegano
+                        ? "🌱 Opción Vegana"
+                        : datos.esVegetariano || datos.preferenciaAlimenticia === "Vegetariano"
+                        ? "🥗 Opción Vegetariana"
+                        : "🥩 Menú Estándar"}
                       {(() => {
                         const alergia =
                           datos.alergiasAlimentos === "Otra"
                             ? datos.otraAlergia.trim()
                             : datos.alergiasAlimentos;
-                        return alergia && alergia.toLowerCase() !== "ninguna"
+                        return alergia && alergia.toLowerCase() !== "ninguna" && !alergia.includes("Dieta") && !alergia.includes("Opción")
                           ? ` (Alergias: ${alergia})`
-                          : " (Sin restricciones)";
+                          : " (Sin restricciones adicionales)";
                       })()}
                     </span>
                   </div>
@@ -764,16 +772,28 @@ export default function DetalleEvento() {
                         <span>Alimentación y Refrigerio</span>
                       </div>
 
-                      <div className={estilos.campoCheckbox}>
-                        <label className={estilos.labelCheckbox}>
-                          <input
-                            type="checkbox"
-                            checked={datos.esVegetariano}
-                            onChange={manejarCambio("esVegetariano")}
-                            className={estilos.checkbox}
-                          />
-                          <span>Deseo opción de refrigerio o menú vegetariano</span>
+                      <div className={estilos.campo}>
+                        <label className={estilos.etiqueta} htmlFor="preferenciaAlimenticia">
+                          Preferencia de menú / refrigerio *
                         </label>
+                        <select
+                          id="preferenciaAlimenticia"
+                          value={datos.preferenciaAlimenticia || (datos.esVegano ? "Vegano" : datos.esVegetariano ? "Vegetariano" : "Estándar")}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setDatos((prev) => ({
+                              ...prev,
+                              preferenciaAlimenticia: val,
+                              esVegetariano: val === "Vegetariano" || val === "Vegano",
+                              esVegano: val === "Vegano",
+                            }));
+                          }}
+                          className={estilos.select}
+                        >
+                          <option value="Estándar">🥩 Menú Tradicional / Estándar</option>
+                          <option value="Vegetariano">🥗 Opción Vegetariana (sin carnes)</option>
+                          <option value="Vegano">🌱 Opción Vegana (100% origen vegetal)</option>
+                        </select>
                       </div>
 
                       <div className={estilos.campo}>
@@ -783,12 +803,29 @@ export default function DetalleEvento() {
                         <select
                           id="alergiasAlimentos"
                           value={datos.alergiasAlimentos}
-                          onChange={manejarCambio("alergiasAlimentos")}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setDatos((prev) => {
+                              const nuevo = { ...prev, alergiasAlimentos: val };
+                              if (val === "Opción Vegetariana") {
+                                nuevo.preferenciaAlimenticia = "Vegetariano";
+                                nuevo.esVegetariano = true;
+                                nuevo.esVegano = false;
+                              } else if (val === "Opción Vegana") {
+                                nuevo.preferenciaAlimenticia = "Vegano";
+                                nuevo.esVegetariano = true;
+                                nuevo.esVegano = true;
+                              }
+                              return nuevo;
+                            });
+                          }}
                           className={estilos.select}
                         >
                           <option value="Ninguna">Ninguna</option>
-                          <option value="Alérgico al maní">Alérgico al maní</option>
+                          <option value="Opción Vegetariana">🥗 Dieta Vegetariana</option>
+                          <option value="Opción Vegana">🌱 Dieta Vegana</option>
                           <option value="Intolerancia a la lactosa">Intolerancia a la lactosa</option>
+                          <option value="Alérgico al maní">Alérgico al maní</option>
                           <option value="Intolerancia al gluten">Intolerancia al gluten (Celiaquía)</option>
                           <option value="Alérgico a frutos secos">Alérgico a frutos secos / nueces</option>
                           <option value="Alérgico a mariscos o pescados">Alérgico a mariscos o pescados</option>

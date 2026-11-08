@@ -87,6 +87,8 @@ public class InscripcionServicio {
 				fechaHoraAsistencia,
 				inscripcion.getFechaInscripcion(),
 				inscripcion.getEsVegetariano(),
+				inscripcion.getEsVegano(),
+				inscripcion.getPreferenciaAlimenticia(),
 				inscripcion.getAlergiasAlimentos(),
 				inscripcion.getEps(),
 				inscripcion.getTipoVehiculo(),
@@ -224,7 +226,15 @@ public class InscripcionServicio {
 		}
 
 		// Datos logísticos (alimentación, salud y parqueadero)
-		inscripcion.setEsVegetariano(Boolean.TRUE.equals(request.esVegetariano()));
+		boolean esVegano = Boolean.TRUE.equals(request.esVegano()) || "Vegano".equalsIgnoreCase(request.preferenciaAlimenticia());
+		boolean esVegetariano = esVegano || Boolean.TRUE.equals(request.esVegetariano()) || "Vegetariano".equalsIgnoreCase(request.preferenciaAlimenticia());
+		String prefAlimenticia = request.preferenciaAlimenticia() != null && !request.preferenciaAlimenticia().isBlank()
+				? request.preferenciaAlimenticia().trim()
+				: (esVegano ? "Vegano" : esVegetariano ? "Vegetariano" : "Estándar");
+
+		inscripcion.setEsVegetariano(esVegetariano);
+		inscripcion.setEsVegano(esVegano);
+		inscripcion.setPreferenciaAlimenticia(prefAlimenticia);
 		inscripcion.setAlergiasAlimentos(request.alergiasAlimentos() != null ? request.alergiasAlimentos().trim() : null);
 		inscripcion.setEps(request.eps() != null ? request.eps().trim() : null);
 		inscripcion.setTipoVehiculo(request.tipoVehiculo() != null ? request.tipoVehiculo().trim() : null);

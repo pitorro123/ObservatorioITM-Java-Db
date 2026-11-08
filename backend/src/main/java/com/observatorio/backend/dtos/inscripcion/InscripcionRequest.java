@@ -13,6 +13,8 @@ public record InscripcionRequest(
 		String programaAcademico,
 		Long programaId,
 		Boolean esVegetariano,
+		Boolean esVegano,
+		String preferenciaAlimenticia,
 		String alergiasAlimentos,
 		String eps,
 		String tipoVehiculo,
@@ -30,6 +32,6 @@ public record InscripcionRequest(
 			String relacionUniversidad,
 			String programaAcademico,
 			Long programaId) {
-		this(eventoId, nombre, nombres, apellidos, tipoDocumento, numeroDocumento, correo, telefono, relacionUniversidad, programaAcademico, programaId, false, null, null, null, null);
+		this(eventoId, nombre, nombres, apellidos, tipoDocumento, numeroDocumento, correo, telefono, relacionUniversidad, programaAcademico, programaId, false, false, "Estándar", null, null, null, null);
 	}
 }

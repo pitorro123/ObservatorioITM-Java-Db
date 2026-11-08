@@ -88,7 +88,11 @@ export async function exportarExcelFG031(evento = {}, asistentes = []) {
         if (evento.tipo === "nasa") {
           const partesLogistica = [];
           if (a.eps) partesLogistica.push(`EPS: ${a.eps}`);
-          if (a.esVegetariano) partesLogistica.push("Vegetariano");
+          if (a.esVegano || a.preferenciaAlimenticia === "Vegano") {
+            partesLogistica.push("Vegano");
+          } else if (a.esVegetariano || a.preferenciaAlimenticia === "Vegetariano") {
+            partesLogistica.push("Vegetariano");
+          }
           if (a.alergiasAlimentos && a.alergiasAlimentos.toLowerCase() !== "ninguna") {
             partesLogistica.push(`Alergia: ${a.alergiasAlimentos}`);
           }

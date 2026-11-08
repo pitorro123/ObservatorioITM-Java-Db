@@ -21,6 +21,8 @@ public record InscripcionResponse(
 		Instant fechaHoraAsistencia,
 		Instant fechaInscripcion,
 		Boolean esVegetariano,
+		Boolean esVegano,
+		String preferenciaAlimenticia,
 		String alergiasAlimentos,
 		String eps,
 		String tipoVehiculo,
@@ -44,6 +46,6 @@ public record InscripcionResponse(
 			String asistencia,
 			Instant fechaHoraAsistencia,
 			Instant fechaInscripcion) {
-		this(id, codigo, eventoId, nombre, nombres, apellidos, tipoDocumento, numeroDocumento, correo, telefono, relacionUniversidad, programaAcademico, programaId, esMasivo, asistencia, fechaHoraAsistencia, fechaInscripcion, false, null, null, null, null);
+		this(id, codigo, eventoId, nombre, nombres, apellidos, tipoDocumento, numeroDocumento, correo, telefono, relacionUniversidad, programaAcademico, programaId, esMasivo, asistencia, fechaHoraAsistencia, fechaInscripcion, false, false, "Estándar", null, null, null, null);
 	}
 }

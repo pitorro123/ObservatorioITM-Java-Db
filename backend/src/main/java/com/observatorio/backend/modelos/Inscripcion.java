@@ -67,6 +67,12 @@ public class Inscripcion {
 	@Column(name = "es_vegetariano")
 	private Boolean esVegetariano;
 
+	@Column(name = "es_vegano")
+	private Boolean esVegano;
+
+	@Column(name = "preferencia_alimenticia", length = 50)
+	private String preferenciaAlimenticia;
+
 	@Column(name = "alergias_alimentos", length = 255)
 	private String alergiasAlimentos;
 

@@ -257,13 +257,19 @@ export default function Asistencia() {
                             )}
                             <span
                               className={
-                                inscripcion.esVegetariano
+                                inscripcion.esVegano || inscripcion.preferenciaAlimenticia === "Vegano"
+                                  ? estilos.badgeVegano
+                                  : inscripcion.esVegetariano || inscripcion.preferenciaAlimenticia === "Vegetariano"
                                   ? estilos.badgeVegetariano
                                   : estilos.badgeEstandar
                               }
                               title="Menú / Alimentación"
                             >
-                              {inscripcion.esVegetariano ? "🥗 Vegetariano" : "🥩 Normal"}
+                              {inscripcion.esVegano || inscripcion.preferenciaAlimenticia === "Vegano"
+                                ? "🌱 Vegano"
+                                : inscripcion.esVegetariano || inscripcion.preferenciaAlimenticia === "Vegetariano"
+                                ? "🥗 Vegetariano"
+                                : "🥩 Normal"}
                             </span>
                             {inscripcion.alergiasAlimentos &&
                               inscripcion.alergiasAlimentos.toLowerCase() !== "ninguna" && (

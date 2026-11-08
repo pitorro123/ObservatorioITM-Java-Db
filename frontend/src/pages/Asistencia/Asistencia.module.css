@@ -488,6 +488,18 @@
   border: 1px solid #bbf7d0;
 }
 
+.badgeVegano {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: var(--radio-sm);
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #6ee7b7;
+}
+
 .badgeEstandar {
   display: inline-flex;
   align-items: center;
