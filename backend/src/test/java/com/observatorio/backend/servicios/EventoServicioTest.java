@@ -149,15 +149,11 @@ class EventoServicioTest {
 	}
 
 	@Test
-	@DisplayName("obtenerPublico() lanza 404 si el evento está en borrador")
-	void obtenerPublico_enBorrador_lanza404() {
-		Evento e = new Evento();
-		e.setId(2L);
-		e.setEstado("borrador");
+	@DisplayName("obtenerPublico() lanza 404 si el evento no existe")
+	void obtenerPublico_noExiste_lanza404() {
+		when(repositorio.findById(99L)).thenReturn(Optional.empty());
 
-		when(repositorio.findById(2L)).thenReturn(Optional.of(e));
-
-		ApiException ex = assertThrows(ApiException.class, () -> eventoServicio.obtenerPublico(2L));
+		ApiException ex = assertThrows(ApiException.class, () -> eventoServicio.obtenerPublico(99L));
 		assertEquals(404, ex.getEstado());
 	}
 

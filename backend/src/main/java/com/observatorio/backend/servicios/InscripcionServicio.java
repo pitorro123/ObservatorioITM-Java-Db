@@ -115,8 +115,8 @@ public class InscripcionServicio {
 		Evento evento = eventos.findById(request.eventoId())
 				.orElseThrow(() -> new ApiException(404, "El evento no existe."));
 
-		if (!"publicado".equals(evento.getEstado())) {
-			throw new ApiException(400, "El evento no está disponible para inscripción.");
+		if ("cancelado".equalsIgnoreCase(evento.getEstado())) {
+			throw new ApiException(400, "El evento ha sido cancelado y no admite inscripciones ni asistencia.");
 		}
 
 		boolean esMasivo = Boolean.TRUE.equals(evento.getEsMasivo());

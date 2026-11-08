@@ -73,9 +73,6 @@ public class EventoServicio {
 	public EventoResponse obtenerPublico(Long id) {
 		Evento evento = repositorio.findById(id)
 				.orElseThrow(() -> new ApiException(404, "El evento no existe."));
-		if (!"publicado".equals(evento.getEstado())) {
-			throw new ApiException(404, "El evento no existe.");
-		}
 		return aRespuesta(evento);
 	}
 

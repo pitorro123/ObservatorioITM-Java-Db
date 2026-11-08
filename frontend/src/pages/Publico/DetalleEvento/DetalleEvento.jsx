@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, Navigate, Link, useSearchParams } from "react-router-dom";
+import { obtenerEventoPublico } from "../../../api/servicios.js";
 import {
   CalendarDays,
   Clock,
@@ -39,8 +40,12 @@ function construirUrlMapa(direccion) {
 export default function DetalleEvento() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
-  const { obtenerEvento, inscribir, programasAcademicos } = useEventosContext();
-  const evento = obtenerEvento(id);
+  const { obtenerEvento, inscribir, programasAcademicos, cargando: cargandoEventosContexto } = useEventosContext();
+  const eventoContexto = obtenerEvento(id);
+  const [eventoDirecto, setEventoDirecto] = useState(null);
+  const [cargandoApiDirecta, setCargandoApiDirecta] = useState(!eventoContexto);
+
+  const evento = eventoContexto || eventoDirecto;
 
   const esModoAsistencia =
     searchParams.get("modo") === "asistencia" || searchParams.get("qr") === "1";
@@ -88,10 +93,53 @@ export default function DetalleEvento() {
   const inscripcionRef = useRef(null);
 
   useEffect(() => {
-    inscripcionRef.current?.scrollIntoView({ block: "start" });
-  }, []);
+    if (eventoContexto) {
+      setCargandoApiDirecta(false);
+      return;
+    }
+    let montado = true;
+    obtenerEventoPublico(id)
+      .then((datos) => {
+        if (montado && datos) {
+          setEventoDirecto(datos);
+        }
+      })
+      .catch((err) => {
+        console.warn("No se pudo cargar el evento directamente de la API:", err);
+      })
+      .finally(() => {
+        if (montado) setCargandoApiDirecta(false);
+      });
+    return () => {
+      montado = false;
+    };
+  }, [id, eventoContexto]);
 
-  if (!evento || (evento.estado !== "publicado" && evento.estado !== "cancelado")) {
+  useEffect(() => {
+    if (evento && esModoAsistencia) {
+      setTimeout(() => {
+        inscripcionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 150);
+    } else {
+      inscripcionRef.current?.scrollIntoView({ block: "start" });
+    }
+  }, [evento, esModoAsistencia]);
+
+  const estaCargando = (!evento && cargandoEventosContexto) || (!evento && cargandoApiDirecta);
+
+  if (estaCargando) {
+    return (
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh", flexDirection: "column", gap: "1rem" }}>
+        <p style={{ color: "var(--color-texto-secundario, #64748b)", fontSize: "1.1rem" }}>Cargando información del evento...</p>
+      </div>
+    );
+  }
+
+  if (!evento) {
+    return <Navigate to="/eventos" replace />;
+  }
+
+  if (!esModoAsistencia && evento.estado !== "publicado" && evento.estado !== "cancelado") {
     return <Navigate to="/eventos" replace />;
   }
 
@@ -519,6 +567,15 @@ export default function DetalleEvento() {
                     <li>En el auditorio o entrada, el docente proyectará un <strong>código QR</strong> en pantalla.</li>
                     <li>Escanea el código QR con tu celular y completa el breve formulario móvil para que tu asistencia quede confirmada al instante.</li>
                   </ol>
+                  <div style={{ marginTop: "1.25rem", textAlign: "center" }}>
+                    <Link
+                      to={`/eventos/${evento.id}?modo=asistencia`}
+                      className={estilos.botonInscribirse}
+                      style={{ display: "inline-block", textDecoration: "none" }}
+                    >
+                      Registrar mi asistencia ahora
+                    </Link>
+                  </div>
                 </div>
               </div>
             ) : estaAgotado ? (

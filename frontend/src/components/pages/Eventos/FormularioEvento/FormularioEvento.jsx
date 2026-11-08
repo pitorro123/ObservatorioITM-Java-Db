@@ -43,7 +43,7 @@ const formularioVacio = {
   creadoPorId: null,
   creadoPorNombre: "",
   creadoPorRol: "Docente",
-  publicarDirectamente: false,
+  publicarDirectamente: true,
 };
 
 const LUGARES_SUGERIDOS = [
@@ -162,6 +162,10 @@ export default function FormularioEvento({
       if (clave === "tipo" && valor === "nasa") {
         nuevo.esMasivo = true;
         nuevo.capacidad = "";
+        nuevo.publicarDirectamente = true;
+      }
+      if (clave === "esMasivo" && valor) {
+        nuevo.publicarDirectamente = true;
       }
       return nuevo;
     });
