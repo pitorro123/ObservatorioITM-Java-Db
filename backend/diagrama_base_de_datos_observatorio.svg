@@ -1,0 +1,253 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2050 860" width="100%" height="100%" style="background-color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="1"/>
+    </pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#818cf8"/>
+    </marker>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Background grid -->
+  <rect width="100%" height="100%" fill="url(#grid)" />
+
+  <!-- Header Banner -->
+  <g transform="translate(50, 25)">
+    <rect width="1950" height="70" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+    <path d="M 0 68 L 1950 68" stroke="#6366f1" stroke-width="3" stroke-linecap="round"/>
+    <text x="25" y="32" fill="#f8fafc" font-size="20" font-weight="700">OBSERVATORIO ASTRONÓMICO ITM  -  DIAGRAMA ENTIDAD RELACIÓN (3FN)</text>
+    <text x="25" y="55" fill="#94a3b8" font-size="12">Motor: PostgreSQL (Neon Tech Cloud)  |  Modelo Relacional Normalizado con Control de Asistencia QR</text>
+  </g>
+
+  <!-- 1. roles -->
+  <g transform="translate(50, 120)">
+    <rect width="280" height="90" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+    <rect width="280" height="34" rx="10" fill="#0f172a"/>
+    <text x="12" y="23" fill="#f8fafc" font-size="14" font-weight="700">🛡️ roles</text>
+    <text x="12" y="55" fill="#34d399" font-size="10" font-weight="700">PK</text>
+    <text x="45" y="55" fill="#f8fafc" font-size="12" font-family="monospace">id</text>
+    <text x="180" y="55" fill="#fbbf24" font-size="11" font-family="monospace">BIGSERIAL</text>
+    <text x="45" y="77" fill="#f8fafc" font-size="12" font-family="monospace">nombre</text>
+    <text x="180" y="77" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(50)</text>
+  </g>
+
+  <!-- 2. roles_permisos -->
+  <g transform="translate(380, 120)">
+    <rect width="280" height="90" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+    <rect width="280" height="34" rx="10" fill="#0f172a"/>
+    <text x="12" y="23" fill="#f8fafc" font-size="14" font-weight="700">🔗 roles_permisos</text>
+    <text x="12" y="55" fill="#fbbf24" font-size="10" font-weight="700">PK/FK</text>
+    <text x="55" y="55" fill="#f8fafc" font-size="12" font-family="monospace">rol_id</text>
+    <text x="195" y="55" fill="#fbbf24" font-size="11" font-family="monospace">BIGINT</text>
+    <text x="12" y="77" fill="#fbbf24" font-size="10" font-weight="700">PK/FK</text>
+    <text x="55" y="77" fill="#f8fafc" font-size="12" font-family="monospace">permiso_id</text>
+    <text x="195" y="77" fill="#fbbf24" font-size="11" font-family="monospace">BIGINT</text>
+  </g>
+
+  <!-- 3. permisos -->
+  <g transform="translate(710, 120)">
+    <rect width="280" height="90" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+    <rect width="280" height="34" rx="10" fill="#0f172a"/>
+    <text x="12" y="23" fill="#f8fafc" font-size="14" font-weight="700">🔑 permisos</text>
+    <text x="12" y="55" fill="#34d399" font-size="10" font-weight="700">PK</text>
+    <text x="45" y="55" fill="#f8fafc" font-size="12" font-family="monospace">id</text>
+    <text x="175" y="55" fill="#fbbf24" font-size="11" font-family="monospace">BIGSERIAL</text>
+    <text x="45" y="77" fill="#f8fafc" font-size="12" font-family="monospace">nombre</text>
+    <text x="175" y="77" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(100)</text>
+  </g>
+
+  <!-- 4. usuarios -->
+  <g transform="translate(50, 240)">
+    <rect width="330" height="225" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+    <rect width="330" height="34" rx="10" fill="#0f172a"/>
+    <text x="12" y="23" fill="#f8fafc" font-size="14" font-weight="700">👤 usuarios</text>
+    <text x="12" y="55" fill="#34d399" font-size="10" font-weight="700">PK</text>
+    <text x="45" y="55" fill="#f8fafc" font-size="12" font-family="monospace">id</text>
+    <text x="220" y="55" fill="#fbbf24" font-size="11" font-family="monospace">BIGSERIAL</text>
+    <text x="45" y="77" fill="#f8fafc" font-size="12" font-family="monospace">nombre</text>
+    <text x="220" y="77" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(255)</text>
+    <text x="45" y="99" fill="#f8fafc" font-size="12" font-family="monospace">correo (UNIQUE)</text>
+    <text x="220" y="99" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(255)</text>
+    <text x="45" y="121" fill="#f8fafc" font-size="12" font-family="monospace">password (BCrypt)</text>
+    <text x="220" y="121" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(255)</text>
+    <text x="12" y="143" fill="#60a5fa" font-size="10" font-weight="700">FK</text>
+    <text x="45" y="143" fill="#f8fafc" font-size="12" font-family="monospace">rol_id</text>
+    <text x="220" y="143" fill="#fbbf24" font-size="11" font-family="monospace">BIGINT</text>
+    <text x="45" y="165" fill="#f8fafc" font-size="12" font-family="monospace">estado</text>
+    <text x="220" y="165" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(50)</text>
+    <text x="12" y="187" fill="#60a5fa" font-size="10" font-weight="700">FK</text>
+    <text x="45" y="187" fill="#f8fafc" font-size="12" font-family="monospace">creado_por_id</text>
+    <text x="220" y="187" fill="#fbbf24" font-size="11" font-family="monospace">BIGINT</text>
+    <text x="45" y="209" fill="#f8fafc" font-size="12" font-family="monospace">fecha_creacion</text>
+    <text x="220" y="209" fill="#fbbf24" font-size="11" font-family="monospace">TIMESTAMP</text>
+  </g>
+
+  <!-- 5. eventos -->
+  <g transform="translate(420, 240)">
+    <rect width="360" height="270" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+    <rect width="360" height="34" rx="10" fill="#0f172a"/>
+    <text x="12" y="23" fill="#f8fafc" font-size="14" font-weight="700">🔭 eventos</text>
+    <text x="12" y="55" fill="#34d399" font-size="10" font-weight="700">PK</text>
+    <text x="45" y="55" fill="#f8fafc" font-size="12" font-family="monospace">id</text>
+    <text x="245" y="55" fill="#fbbf24" font-size="11" font-family="monospace">BIGSERIAL</text>
+    <text x="45" y="77" fill="#f8fafc" font-size="12" font-family="monospace">titulo</text>
+    <text x="245" y="77" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(255)</text>
+    <text x="45" y="99" fill="#f8fafc" font-size="12" font-family="monospace">descripcion</text>
+    <text x="245" y="99" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(2000)</text>
+    <text x="45" y="121" fill="#f8fafc" font-size="12" font-family="monospace">fecha (validada)</text>
+    <text x="245" y="121" fill="#fbbf24" font-size="11" font-family="monospace">DATE</text>
+    <text x="45" y="143" fill="#f8fafc" font-size="12" font-family="monospace">hora</text>
+    <text x="245" y="143" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(20)</text>
+    <text x="45" y="165" fill="#f8fafc" font-size="12" font-family="monospace">lugar</text>
+    <text x="245" y="165" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(255)</text>
+    <text x="45" y="187" fill="#f8fafc" font-size="12" font-family="monospace">estado</text>
+    <text x="245" y="187" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(50)</text>
+    <text x="45" y="209" fill="#f8fafc" font-size="12" font-family="monospace">es_masivo</text>
+    <text x="245" y="209" fill="#fbbf24" font-size="11" font-family="monospace">BOOLEAN</text>
+    <text x="45" y="231" fill="#f8fafc" font-size="12" font-family="monospace">capacidad</text>
+    <text x="245" y="231" fill="#fbbf24" font-size="11" font-family="monospace">INTEGER</text>
+    <text x="12" y="253" fill="#60a5fa" font-size="10" font-weight="700">FK</text>
+    <text x="45" y="253" fill="#f8fafc" font-size="12" font-family="monospace">creado_por_usuario_id</text>
+    <text x="245" y="253" fill="#fbbf24" font-size="11" font-family="monospace">BIGINT</text>
+  </g>
+
+  <!-- 6. inscripciones -->
+  <g transform="translate(820, 240)">
+    <rect width="380" height="270" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+    <rect width="380" height="34" rx="10" fill="#0f172a"/>
+    <text x="12" y="23" fill="#f8fafc" font-size="14" font-weight="700">🎟️ inscripciones</text>
+    <text x="12" y="55" fill="#34d399" font-size="10" font-weight="700">PK</text>
+    <text x="45" y="55" fill="#f8fafc" font-size="12" font-family="monospace">id</text>
+    <text x="260" y="55" fill="#fbbf24" font-size="11" font-family="monospace">BIGSERIAL</text>
+    <text x="45" y="77" fill="#f8fafc" font-size="12" font-family="monospace">codigo (Hash QR)</text>
+    <text x="260" y="77" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(40)</text>
+    <text x="12" y="99" fill="#60a5fa" font-size="10" font-weight="700">FK</text>
+    <text x="45" y="99" fill="#f8fafc" font-size="12" font-family="monospace">evento_id</text>
+    <text x="260" y="99" fill="#fbbf24" font-size="11" font-family="monospace">BIGINT</text>
+    <text x="12" y="121" fill="#60a5fa" font-size="10" font-weight="700">FK</text>
+    <text x="45" y="121" fill="#f8fafc" font-size="12" font-family="monospace">participante_id</text>
+    <text x="260" y="121" fill="#fbbf24" font-size="11" font-family="monospace">BIGINT</text>
+    <text x="45" y="143" fill="#f8fafc" font-size="12" font-family="monospace">es_vegetariano</text>
+    <text x="260" y="143" fill="#fbbf24" font-size="11" font-family="monospace">BOOLEAN</text>
+    <text x="45" y="165" fill="#f8fafc" font-size="12" font-family="monospace">es_vegano</text>
+    <text x="260" y="165" fill="#fbbf24" font-size="11" font-family="monospace">BOOLEAN</text>
+    <text x="45" y="187" fill="#f8fafc" font-size="12" font-family="monospace">preferencia_alimenticia</text>
+    <text x="260" y="187" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(50)</text>
+    <text x="45" y="209" fill="#f8fafc" font-size="12" font-family="monospace">alergias_alimentos</text>
+    <text x="260" y="209" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(255)</text>
+    <text x="45" y="231" fill="#f8fafc" font-size="12" font-family="monospace">asistencia (Pendiente/Asistió)</text>
+    <text x="260" y="231" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(50)</text>
+    <text x="45" y="253" fill="#f8fafc" font-size="12" font-family="monospace">fecha_inscripcion</text>
+    <text x="260" y="253" fill="#fbbf24" font-size="11" font-family="monospace">TIMESTAMP</text>
+  </g>
+
+  <!-- 7. asistencias -->
+  <g transform="translate(820, 545)">
+    <rect width="380" height="110" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+    <rect width="380" height="34" rx="10" fill="#0f172a"/>
+    <text x="12" y="23" fill="#f8fafc" font-size="14" font-weight="700">✅ asistencias</text>
+    <text x="12" y="55" fill="#34d399" font-size="10" font-weight="700">PK</text>
+    <text x="45" y="55" fill="#f8fafc" font-size="12" font-family="monospace">id</text>
+    <text x="260" y="55" fill="#fbbf24" font-size="11" font-family="monospace">BIGSERIAL</text>
+    <text x="12" y="77" fill="#fbbf24" font-size="10" font-weight="700">PK/FK</text>
+    <text x="55" y="77" fill="#f8fafc" font-size="12" font-family="monospace">inscripcion_id (UNIQUE)</text>
+    <text x="260" y="77" fill="#fbbf24" font-size="11" font-family="monospace">BIGINT</text>
+    <text x="45" y="99" fill="#f8fafc" font-size="12" font-family="monospace">fecha_hora_asistencia</text>
+    <text x="260" y="99" fill="#fbbf24" font-size="11" font-family="monospace">TIMESTAMP</text>
+  </g>
+
+  <!-- 8. participantes -->
+  <g transform="translate(1240, 240)">
+    <rect width="360" height="225" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+    <rect width="360" height="34" rx="10" fill="#0f172a"/>
+    <text x="12" y="23" fill="#f8fafc" font-size="14" font-weight="700">👥 participantes</text>
+    <text x="12" y="55" fill="#34d399" font-size="10" font-weight="700">PK</text>
+    <text x="45" y="55" fill="#f8fafc" font-size="12" font-family="monospace">id</text>
+    <text x="250" y="55" fill="#fbbf24" font-size="11" font-family="monospace">BIGSERIAL</text>
+    <text x="45" y="77" fill="#f8fafc" font-size="12" font-family="monospace">nombres</text>
+    <text x="250" y="77" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(100)</text>
+    <text x="45" y="99" fill="#f8fafc" font-size="12" font-family="monospace">apellidos</text>
+    <text x="250" y="99" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(100)</text>
+    <text x="45" y="121" fill="#f8fafc" font-size="12" font-family="monospace">numero_documento</text>
+    <text x="250" y="121" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(50)</text>
+    <text x="45" y="143" fill="#f8fafc" font-size="12" font-family="monospace">correo</text>
+    <text x="250" y="143" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(150)</text>
+    <text x="45" y="165" fill="#f8fafc" font-size="12" font-family="monospace">telefono</text>
+    <text x="250" y="165" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(30)</text>
+    <text x="12" y="187" fill="#60a5fa" font-size="10" font-weight="700">FK</text>
+    <text x="45" y="187" fill="#f8fafc" font-size="12" font-family="monospace">programa_id</text>
+    <text x="250" y="187" fill="#fbbf24" font-size="11" font-family="monospace">BIGINT</text>
+  </g>
+
+  <!-- 9. programas_academicos -->
+  <g transform="translate(1240, 500)">
+    <rect width="360" height="90" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+    <rect width="360" height="34" rx="10" fill="#0f172a"/>
+    <text x="12" y="23" fill="#f8fafc" font-size="14" font-weight="700">🎓 programas_academicos</text>
+    <text x="12" y="55" fill="#34d399" font-size="10" font-weight="700">PK</text>
+    <text x="45" y="55" fill="#f8fafc" font-size="12" font-family="monospace">id</text>
+    <text x="250" y="55" fill="#fbbf24" font-size="11" font-family="monospace">BIGSERIAL</text>
+    <text x="45" y="77" fill="#f8fafc" font-size="12" font-family="monospace">nombre (UNIQUE)</text>
+    <text x="250" y="77" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(150)</text>
+  </g>
+
+  <!-- 10. contenidos -->
+  <g transform="translate(50, 500)">
+    <rect width="330" height="130" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+    <rect width="330" height="34" rx="10" fill="#0f172a"/>
+    <text x="12" y="23" fill="#f8fafc" font-size="14" font-weight="700">📰 contenidos</text>
+    <text x="12" y="55" fill="#34d399" font-size="10" font-weight="700">PK</text>
+    <text x="45" y="55" fill="#f8fafc" font-size="12" font-family="monospace">id</text>
+    <text x="220" y="55" fill="#fbbf24" font-size="11" font-family="monospace">BIGSERIAL</text>
+    <text x="45" y="77" fill="#f8fafc" font-size="12" font-family="monospace">clave (UNIQUE)</text>
+    <text x="220" y="77" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(100)</text>
+    <text x="45" y="99" fill="#f8fafc" font-size="12" font-family="monospace">valor (JSON)</text>
+    <text x="220" y="99" fill="#fbbf24" font-size="11" font-family="monospace">VARCHAR(5000)</text>
+    <text x="45" y="121" fill="#f8fafc" font-size="12" font-family="monospace">actualizado_en</text>
+    <text x="220" y="121" fill="#fbbf24" font-size="11" font-family="monospace">TIMESTAMP</text>
+  </g>
+
+  <!-- Flechas y Conexiones -->
+  <!-- 1. roles -> roles_permisos -->
+  <path d="M 330 165 L 380 165" stroke="#818cf8" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="345" y="156" width="22" height="16" rx="4" fill="#312e81"/>
+  <text x="347" y="168" fill="#c7d2fe" font-size="9" font-weight="700">1:N</text>
+
+  <!-- 2. roles_permisos -> permisos -->
+  <path d="M 660 165 L 710 165" stroke="#818cf8" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="675" y="156" width="22" height="16" rx="4" fill="#312e81"/>
+  <text x="677" y="168" fill="#c7d2fe" font-size="9" font-weight="700">N:1</text>
+
+  <!-- 3. roles -> usuarios -->
+  <path d="M 190 210 L 190 240" stroke="#818cf8" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="179" y="218" width="22" height="16" rx="4" fill="#312e81"/>
+  <text x="181" y="230" fill="#c7d2fe" font-size="9" font-weight="700">1:N</text>
+
+  <!-- 4. usuarios -> eventos -->
+  <path d="M 380 375 L 420 375" stroke="#818cf8" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="390" y="366" width="22" height="16" rx="4" fill="#312e81"/>
+  <text x="392" y="378" fill="#c7d2fe" font-size="9" font-weight="700">1:N</text>
+
+  <!-- 5. eventos -> inscripciones -->
+  <path d="M 780 375 L 820 375" stroke="#818cf8" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="790" y="366" width="22" height="16" rx="4" fill="#312e81"/>
+  <text x="792" y="378" fill="#c7d2fe" font-size="9" font-weight="700">1:N</text>
+
+  <!-- 6. participantes -> inscripciones -->
+  <path d="M 1240 375 L 1200 375" stroke="#818cf8" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="1210" y="366" width="22" height="16" rx="4" fill="#312e81"/>
+  <text x="1212" y="378" fill="#c7d2fe" font-size="9" font-weight="700">1:N</text>
+
+  <!-- 7. programas_academicos -> participantes -->
+  <path d="M 1420 500 L 1420 465" stroke="#818cf8" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="1409" y="475" width="22" height="16" rx="4" fill="#312e81"/>
+  <text x="1411" y="487" fill="#c7d2fe" font-size="9" font-weight="700">1:N</text>
+
+  <!-- 8. inscripciones -> asistencias -->
+  <path d="M 1010 510 L 1010 545" stroke="#818cf8" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="999" y="520" width="22" height="16" rx="4" fill="#312e81"/>
+  <text x="1001" y="532" fill="#c7d2fe" font-size="9" font-weight="700">1:1</text>
+</svg>
